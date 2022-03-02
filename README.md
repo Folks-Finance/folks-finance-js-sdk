@@ -17,4 +17,4 @@ Portions of the codebase are written in TypeScript, so running examples requires
 ```
 $ npm run example examples/liquidate.ts 
 ```
-Make sure to set your desired configuration in `examples.config.ts` first.
+Make sure to set your desired configuration in `examples/config.ts` first.
