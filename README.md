@@ -6,7 +6,7 @@ Using [Node.js](https://nodejs.org/en/download/):
 ```
 git clone git@github.com:Folks-Finance/folks-finance-js-sdk.git
 cd folks-finance-js-sdk
-npm install
+npm install && npm run build
 ```
 
 ## Documentation
