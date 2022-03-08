@@ -1,6 +1,6 @@
-import {Oracle, Pool, TokenPair} from "./types";
+import { Oracle, Pool, TokenPair } from "./types";
 
-type TestnetPoolsKeys = "ALGO" | "USDC" | "USDt" | "goBTC";
+type TestnetPoolsKeys = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
 const TestnetPools: Record<TestnetPoolsKeys, Pool> = {
   "ALGO": {
     appId: 70993130,
@@ -26,10 +26,22 @@ const TestnetPools: Record<TestnetPoolsKeys, Pool> = {
     fAssetId: 70993577,
     frAssetId: 70993578,
   },
+  "goETH": {
+    appId: 76601031,
+    assetId: 76598897,
+    fAssetId: 76601047,
+    frAssetId: 76601048,
+  },
+  "xUSD": {
+    appId: 76601432,
+    assetId: 62281549,
+    fAssetId: 76601447,
+    frAssetId: 76601448,
+  },
 };
 
 // CollateralPool-BorrowPool
-type TestnetTokenPairsKeys = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt";
+type TestnetTokenPairsKeys = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
 const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
   "ALGO-USDC": {
     appId: 71021458,
@@ -49,6 +61,18 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
     borrowPool: TestnetPools.goBTC,
     linkAddr: "TWXT4D3LG3PPDI6RCWYAKDUMXOXM2BHG25GODJ6GVQNFENFAUPCAUINVVY",
   },
+  "ALGO-goETH": {
+    appId: 76603356,
+    collateralPool: TestnetPools.ALGO,
+    borrowPool: TestnetPools.goETH,
+    linkAddr: "UZ4BFVUCL5CZOJELM4BTDXPMEWEO5V6R7ESY3BV6V4RPEXHHWSOZTA7KLA",
+  },
+  "ALGO-xUSD": {
+    appId: 76605205,
+    collateralPool: TestnetPools.ALGO,
+    borrowPool: TestnetPools.xUSD,
+    linkAddr: "67SMT24TIZY2SVOJ4BKVOOLU5UON2WCZU6DV3FDEGHMN2UDHS24BLUSSEM",
+  },
   "USDC-ALGO": {
     appId: 71021575,
     collateralPool: TestnetPools.USDC,
@@ -66,6 +90,18 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
     collateralPool: TestnetPools.USDC,
     borrowPool: TestnetPools.goBTC,
     linkAddr: "YWNN4AHE5QREP5LMHGJKH5XPFTNNYUBHN3WJI7AUARTPCQDBOMP6WMLFL4",
+  },
+  "USDC-goETH": {
+    appId: 76603539,
+    collateralPool: TestnetPools.USDC,
+    borrowPool: TestnetPools.goETH,
+    linkAddr: "MUWZ2G3WNZ6FX3BQGUCLAGKWIPJBFWX4T7XQ64LXSUP2MJ6XSESODMZY74",
+  },
+  "USDC-xUSD": {
+    appId: 76605480,
+    collateralPool: TestnetPools.USDC,
+    borrowPool: TestnetPools.xUSD,
+    linkAddr: "4SNM7SOXN2N2JAT4P3TFQCVIH4PRWBTJG7AU6U7DNDTHX4KL5TNHDPGLA4",
   },
   "USDt-ALGO": {
     appId: 71021885,
@@ -85,6 +121,18 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
     borrowPool: TestnetPools.goBTC,
     linkAddr: "RTNMVHSS2FFTIEMVH74RYU6O77QG7QSBIUMZ4KTJMILKPA6ZA5CUEWOKUA",
   },
+  "USDt-goETH": {
+    appId: 76604015,
+    collateralPool: TestnetPools.USDt,
+    borrowPool: TestnetPools.goETH,
+    linkAddr: "US2Y4GOHRQ2SWUOZEDMS6KCVTONC52J36CAOQVGXGVEZLJE7MJ7EYFBOK4",
+  },
+  "USDt-xUSD": {
+    appId: 76605902,
+    collateralPool: TestnetPools.USDt,
+    borrowPool: TestnetPools.xUSD,
+    linkAddr: "V4AQZ6VR7VSLKPQET7CGQJT5EJVJK46VTTCF53U3LAV6GQQ3GIIZECATMI",
+  },
   "goBTC-ALGO": {
     appId: 71022125,
     collateralPool: TestnetPools.goBTC,
@@ -102,6 +150,78 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
     collateralPool: TestnetPools.goBTC,
     borrowPool: TestnetPools.USDt,
     linkAddr: "XOBUZ4YRUJFN67SOGZ6S4WXWOFVSAVMOLULZC63PG5RIR3JMBEJTCJVQH4",
+  },
+  "goBTC-goETH": {
+    appId: 76604346,
+    collateralPool: TestnetPools.goBTC,
+    borrowPool: TestnetPools.goETH,
+    linkAddr: "2PPD6WMJEMR6JXSSPZD76VNTQU2JOBZQWRMW6B2AZRKMEJEQNRZBQ2MNQA",
+  },
+  "goBTC-xUSD": {
+    appId: 76606056,
+    collateralPool: TestnetPools.goBTC,
+    borrowPool: TestnetPools.xUSD,
+    linkAddr: "2UH4MLTYC6BJUGYZX4BWPZTNPRGL66EJN3M3DFH5WOYDPT2VM4FTVUPPXU",
+  },
+  "goETH-ALGO": {
+    appId: 76603077,
+    collateralPool: TestnetPools.goETH,
+    borrowPool: TestnetPools.ALGO,
+    linkAddr: "YGN55EMIT3LUA76V5ODBAOKN56VCVQVOUDLMF3W44KRPVRIOZ3OUOORWME",
+  },
+  "goETH-USDC": {
+    appId: 76603710,
+    collateralPool: TestnetPools.goETH,
+    borrowPool: TestnetPools.USDC,
+    linkAddr: "3M6JWN4J6W2WH2SZNXRRVNAGEAUCQUQ7PAHCUWZ2A7G3SYW3CH3LLPLAZY",
+  },
+  "goETH-USDt": {
+    appId: 76603873,
+    collateralPool: TestnetPools.goETH,
+    borrowPool: TestnetPools.USDt,
+    linkAddr: "LGL5P7BKFSIETFDTX6ETROWZOJVINQEIK3CQKYEKS2MKVISR4EFCSH4SYU",
+  },
+  "goETH-goBTC": {
+    appId: 76604472,
+    collateralPool: TestnetPools.goETH,
+    borrowPool: TestnetPools.goBTC,
+    linkAddr: "6OTTO42RWIJ4U6FXOP6BBTCTR62JAY3HUPOEBFHFLVBXC24NQ4A6JE5ESE",
+  },
+  "goETH-xUSD": {
+    appId: 76604688,
+    collateralPool: TestnetPools.goETH,
+    borrowPool: TestnetPools.xUSD,
+    linkAddr: "MN3VJHHCELVUR7DJFYZIC73RG77D6XIXLANZZ6GQXY7RURLY6O6VQXYPN4",
+  },
+  "xUSD-ALGO": {
+    appId: 76604980,
+    collateralPool: TestnetPools.xUSD,
+    borrowPool: TestnetPools.ALGO,
+    linkAddr: "XKM3FCDQT4FHY55JKPTJ5B4WWBLKAC4U3EAFIZ2E52FJEFLLBJKJDVDKXY",
+  },
+  "xUSD-USDC": {
+    appId: 76605680,
+    collateralPool: TestnetPools.xUSD,
+    borrowPool: TestnetPools.USDC,
+    linkAddr: "DC3XPGPML7FDRZBEEGPLWR4WVN2JM7R333FRHAMZSLZDJRUR3JFSQ6FGAU",
+  },
+  "xUSD-USDt": {
+    appId: 76605769,
+    collateralPool: TestnetPools.xUSD,
+    borrowPool: TestnetPools.USDt,
+    linkAddr: "VVERUBNX2GL3QJYKLWJFFVICTERY6HRINORJQYFZZHSQ4GHXRNXRGBT3O4",
+  },
+  "xUSD-goBTC": {
+    appId: 76606191,
+    collateralPool: TestnetPools.xUSD,
+    borrowPool: TestnetPools.goBTC,
+    linkAddr: "LPMIFGWM7MT4JDU5ZACA323RMEASYFRJPQPYCPSBRH7DDRHWHPGCN46MBE",
+  },
+  "xUSD-goETH": {
+    appId: 76604778,
+    collateralPool: TestnetPools.xUSD,
+    borrowPool: TestnetPools.goETH,
+    linkAddr: "WYNR6L6W57KBP63C5PUC4UCY5HR7JHIBG57EX3KL2KYVXZV7DH4OTHKEFA",
   },
 };
 
