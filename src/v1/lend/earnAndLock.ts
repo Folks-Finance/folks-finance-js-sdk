@@ -51,7 +51,7 @@ async function getEarnAndLockInfo(indexerClient: IndexerClient, appId: number): 
   const { application } = await indexerClient.lookupApplications(appId).do();
   const state = application['params']['global-state'];
 
-  const rewardsRatio = BigInt(getParsedValueFromState(state, 'reward_ratio') || 0);
+  const rewardsRatio = BigInt(getParsedValueFromState(state, 'rewards_ratio') || 0);
   const timeLocked = BigInt(getParsedValueFromState(state, 'time_locked') || 0);
 
   return { rewardsRatio, timeLocked };
