@@ -44,7 +44,7 @@ async function getTokenPairInfo(indexerClient: IndexerClient, tokenPair: TokenPa
  * @param tokenPair - token pair to add escrow for
  * @param senderAddr - account address for the sender
  * @param params - suggested params for the transactions with the fees overwritten
- * @returns { txns: Transaction[], escrow: Account } object containing add escrow group transaction and escrow account
+ * @returns { txns: Transaction[], escrow: Account } object containing group transaction and escrow account
  */
 function prepareAddEscrowTransactions(
   tokenPair: TokenPair,
