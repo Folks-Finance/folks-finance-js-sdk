@@ -16,9 +16,27 @@ interface PoolInfo {
   utilizationRatio: bigint; // 14 d.p.
   optimalUtilizationRatio: bigint; // 14 d.p.
   epsilon: bigint; // 14 d.p.
-  latestUpdate: bigint; // 14 d.p.
+  latestUpdate: bigint;
   isPaused: boolean;
   isRewardsPaused: boolean;
+}
+
+interface EarnAndLock {
+  appId: number;
+  pool: Pool;
+  linkAddr: string;
+}
+
+interface EarnAndLockInfo {
+  rewardsRatio: bigint; // 14 d.p.
+  timeLocked: bigint;
+}
+
+interface LockedDepositInfo {
+  escrowAddress: string;
+  userAddress: string;
+  lockedBalance: bigint;
+  release: bigint;
 }
 
 interface TokenPair {
@@ -65,6 +83,9 @@ type ReserveAddress = string;
 export {
   Pool,
   PoolInfo,
+  EarnAndLock,
+  EarnAndLockInfo,
+  LockedDepositInfo,
   TokenPair,
   TokenPairInfo,
   LoanInfo,
