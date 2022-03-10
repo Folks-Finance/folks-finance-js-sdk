@@ -7,36 +7,42 @@ const TestnetPools: Record<TestnetPoolsKeys, Pool> = {
     assetId: 0,
     fAssetId: 70993146,
     frAssetId: 70993147,
+    assetDecimals: 6,
   },
   "USDC": {
     appId: 70993719,
     assetId: 67395862,
     fAssetId: 70993731,
     frAssetId: 70993732,
+    assetDecimals: 6,
   },
   "USDt": {
     appId: 70993826,
     assetId: 67396430,
     fAssetId: 70993856,
     frAssetId: 70993857,
+    assetDecimals: 6,
   },
   "goBTC": {
     appId: 70993569,
     assetId: 67396528,
     fAssetId: 70993577,
     frAssetId: 70993578,
+    assetDecimals: 8,
   },
   "goETH": {
     appId: 76601031,
     assetId: 76598897,
     fAssetId: 76601047,
     frAssetId: 76601048,
+    assetDecimals: 8,
   },
   "xUSD": {
     appId: 76601432,
     assetId: 62281549,
     fAssetId: 76601447,
     frAssetId: 76601448,
+    assetDecimals: 6,
   },
 };
 

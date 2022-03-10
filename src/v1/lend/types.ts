@@ -3,6 +3,7 @@ interface Pool {
   assetId: number;
   fAssetId: number;
   frAssetId: number;
+  assetDecimals: number;
 }
 
 interface PoolInfo {
