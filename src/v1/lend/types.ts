@@ -22,13 +22,13 @@ interface PoolInfo {
   isRewardsPaused: boolean;
 }
 
-interface EarnAndLock {
+interface LockAndEarn {
   appId: number;
   pool: Pool;
   linkAddr: string;
 }
 
-interface EarnAndLockInfo {
+interface LockAndEarnInfo {
   rewardsRatio: bigint; // 14 d.p.
   timeLocked: bigint;
 }
@@ -84,8 +84,8 @@ type ReserveAddress = string;
 export {
   Pool,
   PoolInfo,
-  EarnAndLock,
-  EarnAndLockInfo,
+  LockAndEarn,
+  LockAndEarnInfo,
   LockedDepositInfo,
   TokenPair,
   TokenPairInfo,
