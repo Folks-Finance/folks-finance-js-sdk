@@ -61,7 +61,6 @@ async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): 
  *
  * Returns a group transaction to provide liquidity in lock and earn.
  *
- * @param pool - pool to provide liquidity in
  * @param lockAndEarn - lock and earn
  * @param senderAddr - account address for the sender
  * @param depositAmount - amount to deposit (will be locked)
@@ -69,14 +68,13 @@ async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): 
  * @returns { txns: Transaction[], escrow: Account } object containing group transaction and escrow account
  */
 function prepareProvideLiquidityTransactions(
-  pool: Pool,
   lockAndEarn: LockAndEarn,
   senderAddr: string,
   depositAmount: number | bigint,
   params: SuggestedParams,
 ): ({ txns: Transaction[], escrow: Account }) {
+  const { linkAddr, pool } = lockAndEarn;
   const { assetId, fAssetId, frAssetId } = pool;
-  const { linkAddr } = lockAndEarn;
 
   const escrow = generateAccount();
 
