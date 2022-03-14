@@ -47,7 +47,7 @@ async function getLockAndEarns(indexerClient: IndexerClient, pool: Pool): Promis
  * @param appId - lock and earn app id
  * @returns LockAndEarnInfo[] lock and earn info
  */
-async function getEarnAndLockInfo(indexerClient: IndexerClient, appId: number): Promise<LockAndEarnInfo> {
+async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): Promise<LockAndEarnInfo> {
   const { application } = await indexerClient.lookupApplications(appId).do();
   const state = application['params']['global-state'];
 
@@ -151,7 +151,7 @@ function prepareClaimLockedDepositTransactions(
 
 export {
   getLockAndEarns,
-  getEarnAndLockInfo,
+  getLockAndEarnInfo,
   prepareProvideLiquidityTransactions,
   getLockedDepositInfo,
   prepareClaimLockedDepositTransactions,
