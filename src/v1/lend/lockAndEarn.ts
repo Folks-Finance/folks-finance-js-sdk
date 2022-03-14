@@ -28,7 +28,7 @@ async function getLockAndEarns(indexerClient: IndexerClient, pool: Pool): Promis
   // build array of lock and earns
   const lockAndEarns: LockAndEarn[] = [];
   res['accounts'].forEach((account: any) => {
-      const state = account['apps-local-state'].find((app: any) => app.id === appId)?.['key-value'];
+      const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
       const liquidityAppId = getParsedValueFromState(state, 'liquidity_app_id');
       if (liquidityAppId !== undefined) lockAndEarns.push({
         appId: Number(liquidityAppId),
@@ -110,11 +110,11 @@ async function getLockedDepositInfo(
   const { account } = await indexerClient.lookupAccountByID(escrowAddr).do();
 
   // escrow balance
-  const lockedBalance = account['assets'].find((asset: any) => asset['asset-id'] === pool.fAssetId)?.['amount'];
+  const lockedBalance = account['assets']?.find((asset: any) => asset['asset-id'] === pool.fAssetId)?.['amount'];
   if (lockedBalance === undefined) throw new Error("Unable to get escrow: " + escrowAddr + " locked balance.");
 
   // escrow local state
-  const state = account['apps-local-state'].find((app: any) => app.id === appId)?.['key-value'];
+  const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
   if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for lock and earn " + appId + ".");
   const ua = String(getParsedValueFromState(state, 'user_address'));
   const release = BigInt(getParsedValueFromState(state, 'release') || 0);

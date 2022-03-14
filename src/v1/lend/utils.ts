@@ -29,11 +29,11 @@ function loanInfo(
   const { rate, decimals } = conversionRate;
 
   // escrow balance
-  const collateralBalance = escrow['assets'].find((asset: any) => asset['asset-id'] === collateralPool.fAssetId)?.['amount'];
+  const collateralBalance = escrow['assets']?.find((asset: any) => asset['asset-id'] === collateralPool.fAssetId)?.['amount'];
   if (collateralBalance === undefined) throw new Error("Unable to get escrow: " + escrowAddr + " collateral balance.");
 
   // escrow local state
-  const state = escrow['apps-local-state'].find((app: any) => app.id === appId)?.['key-value'];
+  const state = escrow['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
   if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for token pair " + appId + ".");
   if (getParsedValueFromState(state, 'borrowed') === undefined) throw new Error("No loan for escrow: " + escrowAddr + " for token pair " + appId + ".");
 
