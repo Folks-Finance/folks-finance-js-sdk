@@ -122,7 +122,7 @@ async function getLockedDepositInfo(
   return {
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua)),
-    lockedBalance,
+    lockedBalance: BigInt(lockedBalance),
     release,
   }
 }

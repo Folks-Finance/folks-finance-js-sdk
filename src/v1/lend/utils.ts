@@ -51,7 +51,7 @@ function loanInfo(
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua)),
     borrowed,
-    collateralBalance,
+    collateralBalance: BigInt(collateralBalance),
     borrowBalance,
     borrowBalanceLiquidationThreshold: threshold,
     healthFactor,
