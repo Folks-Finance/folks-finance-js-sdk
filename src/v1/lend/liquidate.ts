@@ -84,7 +84,7 @@ async function getLoansInfo(
 
   return {
     loans,
-    nextToken: res['nextToken'],
+    nextToken: res['next-token'],
   };
 }
 
