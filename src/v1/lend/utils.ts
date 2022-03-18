@@ -12,6 +12,7 @@ import { ConversionRate, LoanInfo, PoolInfo, TokenPair, TokenPairInfo } from "./
  * @param tokenPair - token pair of the loan
  * @param tokenPairInfo - token pair info
  * @param collateralPoolInfo - collateral pool info
+ * @param borrowPoolInfo - borrow pool info
  * @param conversionRate - conversion rate from collateral to borrow asset
  * @returns LoanInfo loan info
  */
@@ -20,12 +21,14 @@ function loanInfo(
   tokenPair: TokenPair,
   tokenPairInfo: TokenPairInfo,
   collateralPoolInfo: PoolInfo,
+  borrowPoolInfo: PoolInfo,
   conversionRate: ConversionRate,
 ): LoanInfo {
   const escrowAddr = escrow.address;
   const { appId, collateralPool } = tokenPair;
   const { liquidationThreshold } = tokenPairInfo;
-  const { depositInterestIndex, borrowInterestIndex } = collateralPoolInfo;
+  const { depositInterestIndex } = collateralPoolInfo;
+  const { borrowInterestIndex } = borrowPoolInfo;
   const { rate, decimals } = conversionRate;
 
   // escrow balance

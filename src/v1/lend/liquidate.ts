@@ -40,11 +40,12 @@ async function getLoanInfo(
   const conversionRate = getConversionRate(oraclePrices[collateralPool.assetId].price, oraclePrices[borrowPool.assetId].price);
 
   // get collateral pool and token pair info
-  const collateralPoolInfo = await getPoolInfo(indexerClient, tokenPair.collateralPool);
+  const collateralPoolInfo = await getPoolInfo(indexerClient, collateralPool);
+  const borrowPoolInfo = await getPoolInfo(indexerClient, borrowPool);
   const tokenPairInfo = await getTokenPairInfo(indexerClient, tokenPair);
 
   // derive loan info
-  return loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, conversionRate);
+  return loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate);
 }
 
 /**
@@ -56,6 +57,7 @@ async function getLoanInfo(
  * @param tokenPair - token pair of the loan
  * @param tokenPairInfo - token pair info
  * @param collateralPoolInfo - collateral pool info
+ * @param borrowPoolInfo - borrow pool info
  * @param conversionRate - conversion rate from collateral to borrow asset
  * @param nextToken - token for retrieving next escrows
  * @returns Promise<{ loans: LoanInfo[], nextToken?: string}> object containing loan infos and next token
@@ -65,6 +67,7 @@ async function getLoansInfo(
   tokenPair: TokenPair,
   tokenPairInfo: TokenPairInfo,
   collateralPoolInfo: PoolInfo,
+  borrowPoolInfo: PoolInfo,
   conversionRate: ConversionRate,
   nextToken?: string,
 ): Promise<{ loans: LoanInfo[], nextToken?: string }> {
@@ -75,7 +78,7 @@ async function getLoansInfo(
   let loans: LoanInfo[] = [];
   res['accounts'].forEach((account: any) => {
     try {
-      const loan = loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, conversionRate);
+      const loan = loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate);
       loans.push(loan);
     } catch (e) {
       console.error(e);

@@ -69,14 +69,15 @@ async function main() {
   const conversionRate = getConversionRate(oraclePrices[collateralPool.assetId].price, oraclePrices[borrowPool.assetId].price);
 
   // get collateral pool and token pair info
-  const collateralPoolInfo = await getPoolInfo(indexerClient, tokenPair.collateralPool);
+  const collateralPoolInfo = await getPoolInfo(indexerClient, collateralPool);
+  const borrowPoolInfo = await getPoolInfo(indexerClient, borrowPool);
   const tokenPairInfo = await getTokenPairInfo(indexerClient, tokenPair);
 
   // retrieve params
   const params = await algodClient.getTransactionParams().do();
 
   // loop through escrows
-  let loansInfo = await getLoansInfo(indexerClient, tokenPair, tokenPairInfo, collateralPoolInfo, conversionRate);
+  let loansInfo = await getLoansInfo(indexerClient, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate);
   let loans = loansInfo.loans;
   let nextToken = loansInfo.nextToken;
 
@@ -88,7 +89,7 @@ async function main() {
     await sleep(100);
 
     // next loop of escrows
-    loansInfo = await getLoansInfo(indexerClient, tokenPair, tokenPairInfo, collateralPoolInfo, conversionRate, nextToken);
+    loansInfo = await getLoansInfo(indexerClient, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate, nextToken);
     loans = loansInfo.loans;
     nextToken = loansInfo.nextToken;
 
