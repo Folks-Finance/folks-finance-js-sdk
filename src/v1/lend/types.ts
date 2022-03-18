@@ -40,6 +40,37 @@ interface LockedDepositInfo {
   release: bigint;
 }
 
+interface RewardsAggregator {
+  appId: number;
+  pool: Pool;
+}
+
+interface AssetRewardsInfo {
+  assetId: number;
+  periodRewards: {
+    claimed: bigint;
+    limit: bigint;
+    conversionRate: bigint; // 10 d.p.
+  }[];
+}
+
+interface RewardsAggregatorInfo {
+  vestingPeriodLengths: bigint[];
+  assetsRewards: AssetRewardsInfo[];
+}
+
+interface StakedRewardsInfo {
+  escrowAddress: string;
+  userAddress: string;
+  start: bigint;
+  latest: bigint;
+  end: bigint;
+  rewards: {
+    claimed: bigint;
+    total: bigint;
+  }[];
+}
+
 interface TokenPair {
   appId: number;
   collateralPool: Pool;
@@ -87,6 +118,10 @@ export {
   LockAndEarn,
   LockAndEarnInfo,
   LockedDepositInfo,
+  RewardsAggregator,
+  AssetRewardsInfo,
+  RewardsAggregatorInfo,
+  StakedRewardsInfo,
   TokenPair,
   TokenPairInfo,
   LoanInfo,
