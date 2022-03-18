@@ -169,16 +169,16 @@ async function getStakedRewardsInfo(
 
 /**
  *
- * Returns a group transaction to immediately exchange frAsset for rewards.
+ * Returns a transaction to claim staked rewards.
  *
  * @param rewardsAggregator - rewards aggregator to exchange rewards using
  * @param senderAddr - account address for the sender
  * @param escrowAddr - escrow address that holds the staked rewards parameters
  * @param rewardAssetIds - asset ids for the rewards given to the user
  * @param params - suggested params for the transactions with the fees overwritten
- * @returns Transaction[] exchange group transaction
+ * @returns Transaction claim stake rewards transaction
  */
-function prepareClaimedRewardsTransaction(
+function prepareClaimRewardsTransaction(
   rewardsAggregator: RewardsAggregator,
   senderAddr: string,
   escrowAddr: string,
@@ -197,5 +197,5 @@ export {
   prepareRewardImmediateExchangeTransactions,
   prepareRewardStakedExchangeTransactions,
   getStakedRewardsInfo,
-  prepareClaimedRewardsTransaction,
+  prepareClaimRewardsTransaction,
 }
