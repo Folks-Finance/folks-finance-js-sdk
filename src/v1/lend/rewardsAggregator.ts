@@ -67,13 +67,13 @@ async function getRewardsAggregatorInfo(indexerClient: IndexerClient, appId: num
  * @param params - suggested params for the transactions with the fees overwritten
  * @returns Transaction[] exchange group transaction
  */
-async function prepareRewardImmediateExchangeTransactions(
+function prepareRewardImmediateExchangeTransactions(
   rewardsAggregator: RewardsAggregator,
   senderAddr: string,
   rewardAssetIds: number[],
   frAssetAmount: number | bigint,
   params: SuggestedParams,
-) {
+): Transaction[] {
   const { appId, pool } = rewardsAggregator;
 
   const fee = 2000 + rewardAssetIds.length * 1000;
