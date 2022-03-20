@@ -78,7 +78,7 @@ async function prepareRewardImmediateExchangeTransactions(
 
   const fee = 2000 + rewardAssetIds.length * 1000;
 
-  const appCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee, flatFee: true }, appId, [enc.encode("e"), encodeUint64(0)], undefined, undefined, rewardAssetIds);
+  const appCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee, flatFee: true }, appId, [enc.encode("ie"), encodeUint64(0)], undefined, undefined, rewardAssetIds);
   const assetTransfer = transferAlgoOrAsset(pool.frAssetId, senderAddr, getApplicationAddress(pool.appId), frAssetAmount, { ...params, fee: 0, flatFee: true });
   return assignGroupID([appCall, assetTransfer]);
 }
@@ -111,9 +111,10 @@ function prepareRewardStakedExchangeTransactions(
 
   const algoTransfer = transferAlgoOrAsset(0, senderAddr, escrow.addr, 0.5e6,  { ...params, fee: 0, flatFee: true });
   const optInCall = makeApplicationOptInTxn(escrow.addr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("e"), encodeUint64(period)], undefined, undefined, undefined, undefined, undefined, getApplicationAddress(appId));
-  const assetTransfer = transferAlgoOrAsset(pool.frAssetId, senderAddr, getApplicationAddress(pool.appId), frAssetAmount, { ...params, fee: 3000, flatFee: true });
+  const appCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("e")], [escrow.addr]);
+  const assetTransfer = transferAlgoOrAsset(pool.frAssetId, senderAddr, getApplicationAddress(pool.appId), frAssetAmount, { ...params, fee: 4000, flatFee: true });
   return {
-    txns: assignGroupID([algoTransfer, optInCall, assetTransfer]),
+    txns: assignGroupID([algoTransfer, optInCall, appCall, assetTransfer]),
     escrow,
   };
 }
