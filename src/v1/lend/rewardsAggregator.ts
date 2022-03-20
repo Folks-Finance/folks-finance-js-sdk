@@ -89,7 +89,6 @@ async function prepareRewardImmediateExchangeTransactions(
  *
  * @param rewardsAggregator - rewards aggregator to exchange rewards using
  * @param senderAddr - account address for the sender
- * @param rewardAssetIds - asset ids for the rewards given to the user
  * @param period - number from 1-4 indicate staking period
  * @param frAssetAmount - amount of frAsset to send
  * @param params - suggested params for the transactions with the fees overwritten
@@ -98,7 +97,6 @@ async function prepareRewardImmediateExchangeTransactions(
 function prepareRewardStakedExchangeTransactions(
   rewardsAggregator: RewardsAggregator,
   senderAddr: string,
-  rewardAssetIds: number[],
   period: number,
   frAssetAmount: number | bigint,
   params: SuggestedParams,
