@@ -66,6 +66,7 @@ interface StakedRewardsInfo {
   latest: bigint;
   end: bigint;
   rewards: {
+    assetId: number;
     claimed: bigint;
     total: bigint;
   }[];

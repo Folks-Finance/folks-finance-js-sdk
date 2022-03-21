@@ -151,6 +151,7 @@ async function getStakedRewardsInfo(
   const rewards = assetIds.map(assetId => {
     const asset = parseUint64s(String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), 'hex')));
     return {
+      assetId: Number(assetId),
       claimed: asset[0],
       total: asset[1],
     }
