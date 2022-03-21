@@ -27,6 +27,7 @@ export function divVariable(n1: bigint, n2: bigint, dec: number): bigint {
  * @return utilizationRate (14dp)
  */
 function calcUtilizationRatio(totalBorrows: bigint, totalDeposits: bigint): bigint {
+  if (totalDeposits === BigInt(0)) return BigInt(0);
   return div14(totalBorrows, totalDeposits);
 }
 
