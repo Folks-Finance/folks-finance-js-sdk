@@ -131,14 +131,10 @@ async function getStakedRewardsInfo(
   rewardsAggregator: RewardsAggregator,
   escrowAddr: string,
 ): Promise<StakedRewardsInfo> {
-  const { appId, pool } = rewardsAggregator;
+  const { appId } = rewardsAggregator;
 
   // get escrow account
   const { account } = await indexerClient.lookupAccountByID(escrowAddr).do();
-
-  // escrow balance
-  const lockedBalance = account['assets']?.find((asset: any) => asset['asset-id'] === pool.fAssetId)?.['amount'];
-  if (lockedBalance === undefined) throw new Error("Unable to get escrow: " + escrowAddr + " locked balance.");
 
   // escrow local state
   const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
