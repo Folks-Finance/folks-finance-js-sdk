@@ -86,10 +86,10 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
     linkAddr: "VW4GYRHMN5WJ6KQ7E3OQVR5NJZIPWL7Y6VAMTJY3GLTATIH7SBKC3CXCJE",
   },
   "USDC-USDt": {
-    appId: 79427101,
+    appId: 79957120,
     collateralPool: TestnetPools.USDC,
     borrowPool: TestnetPools.USDt,
-    linkAddr: "XMNTZOYM7NXVO2ZSEG3THR6DD456U4GCP22EBTK6UADVJ4IKEHBS3ER64M",
+    linkAddr: "XBNNO4AK7NDS22KACW3CPOMSXVRLK2JPEV42TSMLKFNFX3IWD2J6N3FQPY",
   },
   "USDC-goBTC": {
     appId: 79426562,
