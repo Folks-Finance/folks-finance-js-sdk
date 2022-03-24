@@ -31,6 +31,8 @@ interface LockAndEarn {
 interface LockAndEarnInfo {
   rewardsRatio: bigint; // 14 d.p.
   timeLocked: bigint;
+  deposits: bigint;
+  limit: bigint;
 }
 
 interface LockedDepositInfo {

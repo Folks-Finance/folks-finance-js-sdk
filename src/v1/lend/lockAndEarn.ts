@@ -53,8 +53,10 @@ async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): 
 
   const rewardsRatio = BigInt(getParsedValueFromState(state, 'rewards_ratio') || 0);
   const timeLocked = BigInt(getParsedValueFromState(state, 'time_locked') || 0);
+  const deposits = BigInt(getParsedValueFromState(state, 'deposits') || 0);
+  const limit = BigInt(getParsedValueFromState(state, 'limit') || 0);
 
-  return { rewardsRatio, timeLocked };
+  return { rewardsRatio, timeLocked, deposits, limit };
 }
 
 /**
