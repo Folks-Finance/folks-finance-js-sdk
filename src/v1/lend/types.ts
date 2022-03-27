@@ -7,6 +7,7 @@ interface Pool {
 }
 
 interface PoolInfo {
+  currentRound: number;
   depositInterestRate: bigint; // 14 d.p.
   depositInterestIndex: bigint; // 14 d.p.
   borrowInterestRate: bigint; // 14 d.p.
@@ -29,6 +30,7 @@ interface LockAndEarn {
 }
 
 interface LockAndEarnInfo {
+  currentRound: number;
   rewardsRatio: bigint; // 14 d.p.
   timeLocked: bigint;
   deposits: bigint;
@@ -36,6 +38,7 @@ interface LockAndEarnInfo {
 }
 
 interface LockedDepositInfo {
+  currentRound: number;
   escrowAddress: string;
   userAddress: string;
   lockedBalance: bigint;
@@ -57,11 +60,13 @@ interface AssetRewardsInfo {
 }
 
 interface RewardsAggregatorInfo {
+  currentRound: number;
   vestingPeriodLengths: bigint[];
   assetsRewards: AssetRewardsInfo[];
 }
 
 interface StakedRewardsInfo {
+  currentRound: number;
   escrowAddress: string;
   userAddress: string;
   start: bigint;
@@ -82,12 +87,14 @@ interface TokenPair {
 }
 
 interface TokenPairInfo {
+  currentRound: number;
   loanToValueRatio: bigint; // 14 d.p.
   liquidationThreshold: bigint; // 14 d.p.
   safetyThreshold: bigint; // 14 d.p.
 }
 
 interface LoanInfo {
+  currentRound: number;
   escrowAddress: string;
   userAddress: string;
   borrowed: bigint;
@@ -106,6 +113,11 @@ interface Oracle {
 interface OraclePrice {
   price: bigint; // price in USD for amount 1 of asset in lowest denomination
   timestamp: bigint;
+}
+
+interface OraclePrices {
+  currentRound: number;
+  prices: Record<number, OraclePrice>,
 }
 
 interface ConversionRate {
@@ -130,6 +142,7 @@ export {
   LoanInfo,
   Oracle,
   OraclePrice,
+  OraclePrices,
   ConversionRate,
   ReserveAddress,
 };

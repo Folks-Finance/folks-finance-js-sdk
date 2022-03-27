@@ -14,8 +14,8 @@ import { Pool, PoolInfo } from "./types";
  */
 async function getPoolInfo(indexerClient: IndexerClient, pool: Pool): Promise<PoolInfo> {
   const { appId } = pool;
-  const { application } = await indexerClient.lookupApplications(appId).do();
-  const state = application['params']['global-state'];
+  const res = await indexerClient.lookupApplications(appId).do();
+  const state = res['application']['params']['global-state'];
 
   const dir = BigInt(getParsedValueFromState(state, 'deposit_interest_rate') || 0);
   const dii = BigInt(getParsedValueFromState(state, 'deposit_interest_index') || 0);
@@ -32,6 +32,7 @@ async function getPoolInfo(indexerClient: IndexerClient, pool: Pool): Promise<Po
   const isRewardsPaused = Boolean(getParsedValueFromState(state, 'is_rewards_paused') || 0);
 
   return {
+    currentRound: res['current-round'],
     depositInterestRate: dir,
     depositInterestIndex: calcInterestIndex(dii, dir, lu),
     borrowInterestRate: bir,

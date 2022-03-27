@@ -65,8 +65,8 @@ async function main() {
   const { collateralPool, borrowPool } = tokenPair;
 
   // get conversion rate
-  const oraclePrices = await getOraclePrices(indexerClient, oracle, [collateralPool.assetId, borrowPool.assetId]);
-  const conversionRate = getConversionRate(oraclePrices[collateralPool.assetId].price, oraclePrices[borrowPool.assetId].price);
+  const { prices } = await getOraclePrices(indexerClient, oracle, [collateralPool.assetId, borrowPool.assetId]);
+  const conversionRate = getConversionRate(prices[collateralPool.assetId].price, prices[borrowPool.assetId].price);
 
   // get collateral pool and token pair info
   const collateralPoolInfo = await getPoolInfo(indexerClient, collateralPool);

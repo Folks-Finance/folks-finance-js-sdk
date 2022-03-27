@@ -22,6 +22,7 @@ import { getEscrows, loanInfo } from "./utils";
  * @param tokenPair - token pair of the loan
  * @param oracle - oracle to query for prices
  * @param escrowAddr - escrow address to query about
+ * @param round - results for specified round
  * @returns Promise<LoanInfo> loan info
  */
 async function getLoanInfo(
@@ -29,15 +30,18 @@ async function getLoanInfo(
   tokenPair: TokenPair,
   oracle: Oracle,
   escrowAddr: string,
+  round?: number,
 ): Promise<LoanInfo> {
   const { collateralPool, borrowPool } = tokenPair;
 
   // get escrow account
-  const { account } = await indexerClient.lookupAccountByID(escrowAddr).do();
+  const req = indexerClient.lookupAccountByID(escrowAddr);
+  if (round) req.round(round);
+  const res = await req.do();
 
   // get conversion rate
-  const oraclePrices = await getOraclePrices(indexerClient, oracle, [collateralPool.assetId, borrowPool.assetId]);
-  const conversionRate = getConversionRate(oraclePrices[collateralPool.assetId].price, oraclePrices[borrowPool.assetId].price);
+  const { prices } = await getOraclePrices(indexerClient, oracle, [collateralPool.assetId, borrowPool.assetId]);
+  const conversionRate = getConversionRate(prices[collateralPool.assetId].price, prices[borrowPool.assetId].price);
 
   // get collateral pool and token pair info
   const collateralPoolInfo = await getPoolInfo(indexerClient, collateralPool);
@@ -45,7 +49,15 @@ async function getLoanInfo(
   const tokenPairInfo = await getTokenPairInfo(indexerClient, tokenPair);
 
   // derive loan info
-  return loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate);
+  return loanInfo(
+    res['account'],
+    tokenPair,
+    tokenPairInfo,
+    collateralPoolInfo,
+    borrowPoolInfo,
+    conversionRate,
+    res['current-round'],
+  );
 }
 
 /**
@@ -60,6 +72,7 @@ async function getLoanInfo(
  * @param borrowPoolInfo - borrow pool info
  * @param conversionRate - conversion rate from collateral to borrow asset
  * @param nextToken - token for retrieving next escrows
+ * @param round - results for specified round
  * @returns Promise<{ loans: LoanInfo[], nextToken?: string}> object containing loan infos and next token
  */
 async function getLoansInfo(
@@ -70,15 +83,24 @@ async function getLoansInfo(
   borrowPoolInfo: PoolInfo,
   conversionRate: ConversionRate,
   nextToken?: string,
+  round?: number,
 ): Promise<{ loans: LoanInfo[], nextToken?: string }> {
   // retrieve loans
-  const res = await getEscrows(indexerClient, tokenPair, nextToken);
+  const res = await getEscrows(indexerClient, tokenPair, nextToken, round);
 
   // derive loans info
   let loans: LoanInfo[] = [];
   res['accounts'].forEach((account: any) => {
     try {
-      const loan = loanInfo(account, tokenPair, tokenPairInfo, collateralPoolInfo, borrowPoolInfo, conversionRate);
+      const loan = loanInfo(
+        account,
+        tokenPair,
+        tokenPairInfo,
+        collateralPoolInfo,
+        borrowPoolInfo,
+        conversionRate,
+        res['current-round'],
+      );
       loans.push(loan);
     } catch (e) {
       console.error(e);
