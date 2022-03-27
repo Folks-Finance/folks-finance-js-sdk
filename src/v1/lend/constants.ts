@@ -1,7 +1,7 @@
 import { Oracle, Pool, TokenPair } from "./types";
 
-type TestnetPoolsKeys = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
-const TestnetPools: Record<TestnetPoolsKeys, Pool> = {
+type TestnetPoolsKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
+const TestnetPools: Record<TestnetPoolsKey, Pool> = {
   "ALGO": {
     appId: 79413571,
     assetId: 0,
@@ -47,8 +47,8 @@ const TestnetPools: Record<TestnetPoolsKeys, Pool> = {
 };
 
 // CollateralPool-BorrowPool
-type TestnetTokenPairsKeys = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
-const TestnetTokenPairs: Record<TestnetTokenPairsKeys, TokenPair> = {
+type TestnetTokenPairsKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
+const TestnetTokenPairs: Record<TestnetTokenPairsKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 79423184,
     collateralPool: TestnetPools.ALGO,
@@ -240,9 +240,9 @@ const TestnetOracle: Oracle = {
 const TestnetReserveAddress = "5ISPVI3JMQ4MP5XWWK4ILLKJAYU34U4TGZGXNC5BKR5AK3JBVAMJYBRYEI";
 
 export {
-  TestnetPoolsKeys,
+  TestnetPoolsKey,
   TestnetPools,
-  TestnetTokenPairsKeys,
+  TestnetTokenPairsKey,
   TestnetTokenPairs,
   TestnetOracle,
   TestnetReserveAddress,

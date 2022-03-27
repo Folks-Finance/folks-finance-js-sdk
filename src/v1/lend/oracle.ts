@@ -1,7 +1,7 @@
 import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
 import { fromIntToBytes8Hex, getParsedValueFromState } from "../utils";
 import { calcConversionRate } from "./math";
-import { ConversionRate, Oracle, OraclePrice } from "./types";
+import { ConversionRate, Oracle, OraclePrice, OraclePrices } from "./types";
 
 function parseOracleValue(base64Value: string) {
   const value = Buffer.from(base64Value, 'base64').toString('hex');
@@ -19,23 +19,24 @@ function parseOracleValue(base64Value: string) {
  * @param indexerClient - Algorand indexer client to query
  * @param oracle - oracle to query
  * @param assets - assets to get prices for
- * @returns Record<bigint,OraclePrice> oracle prices
+ * @returns OraclePrices oracle prices
  */
 async function getOraclePrices(
   indexerClient: IndexerClient,
   oracle: Oracle,
   assets: number[],
-): Promise<Record<number, OraclePrice>> {
+): Promise<OraclePrices> {
   const { oracleAppId } = oracle;
-  const { application } = await indexerClient.lookupApplications(oracleAppId).do();
-  const state = application['params']['global-state'];
+  const res = await indexerClient.lookupApplications(oracleAppId).do();
+  const state = res['application']['params']['global-state'];
 
-  let oraclePrices: Record<number, OraclePrice> = {};
+  let prices: Record<number, OraclePrice> = {};
   assets.forEach(assetId => {
     const base64Value = String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), 'hex'));
-    oraclePrices[assetId] = parseOracleValue(base64Value);
+    prices[assetId] = parseOracleValue(base64Value);
   });
-  return oraclePrices;
+
+  return { currentRound: res['current-round'], prices };
 }
 
 /**

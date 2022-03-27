@@ -14,6 +14,7 @@ import { ConversionRate, LoanInfo, PoolInfo, TokenPair, TokenPairInfo } from "./
  * @param collateralPoolInfo - collateral pool info
  * @param borrowPoolInfo - borrow pool info
  * @param conversionRate - conversion rate from collateral to borrow asset
+ * @param currentRound - results for specified round
  * @returns LoanInfo loan info
  */
 function loanInfo(
@@ -23,6 +24,7 @@ function loanInfo(
   collateralPoolInfo: PoolInfo,
   borrowPoolInfo: PoolInfo,
   conversionRate: ConversionRate,
+  currentRound: number,
 ): LoanInfo {
   const escrowAddr = escrow.address;
   const { appId, collateralPool } = tokenPair;
@@ -51,6 +53,7 @@ function loanInfo(
   const healthFactor = calcHealthFactor(threshold, borrowBalance);
 
   return {
+    currentRound,
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua)),
     borrowed,
@@ -68,12 +71,14 @@ function loanInfo(
  * @param indexerClient - Algorand indexer client to query
  * @param tokenPair - token pair to query about
  * @param nextToken - token for retrieving next escrows
+ * @param round - results for specified round
  * @returns response with structure https://developer.algorand.org/docs/rest-apis/indexer/#searchforaccounts-response-200
  */
 async function getEscrows(
   indexerClient: IndexerClient,
   tokenPair: TokenPair,
   nextToken?: string,
+  round?: number,
 ): Promise<any> {
   const { appId, collateralPool } = tokenPair;
   const req = indexerClient
@@ -82,6 +87,7 @@ async function getEscrows(
     .assetID(collateralPool.fAssetId)
     .currencyGreaterThan("0" as any); // TODO: https://github.com/algorand/indexer/issues/144
   if (nextToken) req.nextToken(nextToken);
+  if (round) req.round(round);
   return await req.do();
 }
 

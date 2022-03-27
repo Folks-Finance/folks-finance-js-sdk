@@ -48,15 +48,21 @@ async function getLockAndEarns(indexerClient: IndexerClient, pool: Pool): Promis
  * @returns LockAndEarnInfo[] lock and earn info
  */
 async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): Promise<LockAndEarnInfo> {
-  const { application } = await indexerClient.lookupApplications(appId).do();
-  const state = application['params']['global-state'];
+  const res = await indexerClient.lookupApplications(appId).do();
+  const state = res['application']['params']['global-state'];
 
   const rewardsRatio = BigInt(getParsedValueFromState(state, 'rewards_ratio') || 0);
   const timeLocked = BigInt(getParsedValueFromState(state, 'time_locked') || 0);
   const deposits = BigInt(getParsedValueFromState(state, 'deposits') || 0);
   const limit = BigInt(getParsedValueFromState(state, 'limit') || 0);
 
-  return { rewardsRatio, timeLocked, deposits, limit };
+  return {
+    currentRound: res['current-round'],
+    rewardsRatio,
+    timeLocked,
+    deposits,
+    limit,
+  };
 }
 
 /**
@@ -99,17 +105,22 @@ function prepareProvideLiquidityTransactions(
  * @param indexerClient - Algorand indexer client to query
  * @param lockAndEarn - lock and earn of the deposit
  * @param escrowAddr - escrow address to query about
+ * @param round - results for specified round
  * @returns Promise<LoanInfo> loan info
  */
 async function getLockedDepositInfo(
   indexerClient: IndexerClient,
   lockAndEarn: LockAndEarn,
-  escrowAddr: string
+  escrowAddr: string,
+  round?: number,
 ): Promise<LockedDepositInfo> {
   const { appId, pool } = lockAndEarn;
 
   // get escrow account
-  const { account } = await indexerClient.lookupAccountByID(escrowAddr).do();
+  const req = indexerClient.lookupAccountByID(escrowAddr);
+  if (round) req.round(round);
+  const res = await req.do();
+  const account = res['account'];
 
   // escrow balance
   const lockedBalance = account['assets']?.find((asset: any) => asset['asset-id'] === pool.fAssetId)?.['amount'];
@@ -122,6 +133,7 @@ async function getLockedDepositInfo(
   const release = BigInt(getParsedValueFromState(state, 'release') || 0);
 
   return {
+    currentRound: res['current-round'],
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua)),
     lockedBalance: BigInt(lockedBalance),

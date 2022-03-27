@@ -34,8 +34,8 @@ function parseUint64s(base64Value: string): bigint[] {
  * @returns RewardsAggregatorInfo rewards aggregator info
  */
 async function getRewardsAggregatorInfo(indexerClient: IndexerClient, appId: number): Promise<RewardsAggregatorInfo> {
-  const { application } = await indexerClient.lookupApplications(appId).do();
-  const state = application['params']['global-state'];
+  const res = await indexerClient.lookupApplications(appId).do();
+  const state = res['application']['params']['global-state'];
 
   const vestingPeriodLengths = parseUint64s(String(getParsedValueFromState(state, "periods")));
   const assetIds = parseUint64s(String(getParsedValueFromState(state, "assets")));
@@ -53,7 +53,11 @@ async function getRewardsAggregatorInfo(indexerClient: IndexerClient, appId: num
     return { assetId: Number(assetId), periodRewards };
   });
 
-  return { vestingPeriodLengths, assetsRewards };
+  return {
+    currentRound: res['current-round'],
+    vestingPeriodLengths,
+    assetsRewards,
+  };
 }
 
 /**
@@ -124,20 +128,24 @@ function prepareRewardStakedExchangeTransactions(
  * @param indexerClient - Algorand indexer client to query
  * @param rewardsAggregator - rewards aggregator
  * @param escrowAddr - escrow address to query about
+ * @param round - results for specified round
  * @returns Promise<StakedRewardsInfo> staked rewards info
  */
 async function getStakedRewardsInfo(
   indexerClient: IndexerClient,
   rewardsAggregator: RewardsAggregator,
   escrowAddr: string,
+  round?: number,
 ): Promise<StakedRewardsInfo> {
   const { appId } = rewardsAggregator;
 
   // get escrow account
-  const { account } = await indexerClient.lookupAccountByID(escrowAddr).do();
+  const req = indexerClient.lookupAccountByID(escrowAddr);
+  if (round) req.round(round);
+  const res = await req.do();
 
   // escrow local state
-  const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
+  const state = res['account']['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
   if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for rewards aggregator " + appId + ".");
   const ua = String(getParsedValueFromState(state, 'user_address'));
 
@@ -154,6 +162,7 @@ async function getStakedRewardsInfo(
   });
 
   return {
+    currentRound: res['current-round'],
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua)),
     start: times[0],

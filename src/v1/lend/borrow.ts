@@ -23,14 +23,15 @@ import { Oracle, ReserveAddress, TokenPair, TokenPairInfo } from "./types";
  */
 async function getTokenPairInfo(indexerClient: IndexerClient, tokenPair: TokenPair): Promise<TokenPairInfo> {
   const { appId } = tokenPair;
-  const { application } = await indexerClient.lookupApplications(appId).do();
-  const state = application['params']['global-state'];
+  const res = await indexerClient.lookupApplications(appId).do();
+  const state = res['application']['params']['global-state'];
 
   const s1 = BigInt(getParsedValueFromState(state, 'S1') || 0);
   const s2 = BigInt(getParsedValueFromState(state, 'S2') || 0);
   const s3 = BigInt(getParsedValueFromState(state, 'S3') || 0);
 
   return {
+    currentRound: res['current-round'],
     loanToValueRatio: s1,
     liquidationThreshold: s2,
     safetyThreshold: s3,
