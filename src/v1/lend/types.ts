@@ -105,7 +105,8 @@ interface LoanInfo {
 }
 
 interface Oracle {
-  oracleAppId: number;
+  oracle1AppId: number,
+  oracle2AppId?: number,
   oracleAdapterAppId: number;
   decimals: number;
 }

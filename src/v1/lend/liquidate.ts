@@ -136,9 +136,9 @@ function prepareLiquidateTransactions(
   params: SuggestedParams,
 ): Transaction[] {
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
-  const { oracleAppId, oracleAdapterAppId } = oracle;
+  const { oracle1AppId, oracle2AppId, oracleAdapterAppId } = oracle;
 
-  const oracleAdapterAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], undefined, [oracleAppId]);
+  const oracleAdapterAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], undefined, oracle2AppId ? [oracle1AppId, oracle2AppId] : [oracle1AppId]);
   const collateralDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 8000, flatFee: true }, collateralPool.appId, [enc.encode("l")], [linkAddr, escrowAddr], [appId], [collateralPool.fAssetId]);
   const borrowDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, borrowPool.appId, [enc.encode("l")], [linkAddr, escrowAddr, reserveAddr], [appId], borrowPool.assetId ? [borrowPool.assetId] : undefined);
   const tokenPairAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("l")], [escrowAddr], [borrowPool.appId], [collateralPool.fAssetId]);

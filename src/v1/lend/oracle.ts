@@ -26,8 +26,8 @@ async function getOraclePrices(
   oracle: Oracle,
   assets: number[],
 ): Promise<OraclePrices> {
-  const { oracleAppId } = oracle;
-  const res = await indexerClient.lookupApplications(oracleAppId).do();
+  const { oracle1AppId } = oracle;
+  const res = await indexerClient.lookupApplications(oracle1AppId).do();
   const state = res['application']['params']['global-state'];
 
   let prices: Record<number, OraclePrice> = {};
