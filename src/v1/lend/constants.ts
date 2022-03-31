@@ -234,7 +234,7 @@ const TestnetTokenPairs: Record<TestnetTokenPairsKey, TokenPair> = {
 const TestnetOracle: Oracle = {
   oracle1AppId: 81298955,
   oracle2AppId: 67734391,
-  oracleAdapterAppId: 81302353,
+  oracleAdapterAppId: 81312355,
   decimals: 14,
 }
 
