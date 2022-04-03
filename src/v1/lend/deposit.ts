@@ -22,6 +22,9 @@ async function getPoolInfo(indexerClient: IndexerClient, pool: Pool): Promise<Po
   const bir = BigInt(getParsedValueFromState(state, 'borrow_interest_rate') || 0);
   const bii = BigInt(getParsedValueFromState(state, 'borrow_interest_index') || 0);
   const lu = BigInt(getParsedValueFromState(state, 'latest_update') || 0);
+  const r0 = BigInt(getParsedValueFromState(state, 'R0') || 0);
+  const r1 = BigInt(getParsedValueFromState(state, 'R1') || 0);
+  const r2 = BigInt(getParsedValueFromState(state, 'R2') || 0);
   const eps = BigInt(getParsedValueFromState(state, 'EPS') || 0);
   const rf = BigInt(getParsedValueFromState(state, 'RF') || 0);
   const srr = BigInt(getParsedValueFromState(state, 'SRR') || 0);
@@ -37,6 +40,9 @@ async function getPoolInfo(indexerClient: IndexerClient, pool: Pool): Promise<Po
     depositInterestIndex: calcInterestIndex(dii, dir, lu),
     borrowInterestRate: bir,
     borrowInterestIndex: calcInterestIndex(bii, bir, lu, eps),
+    baseRate: r0,
+    slope1Rate: r1,
+    slope2Rate: r2,
     retentionRate: rf + srr,
     totalDeposits: td,
     totalBorrows: tb,

@@ -12,6 +12,9 @@ interface PoolInfo {
   depositInterestIndex: bigint; // 14 d.p.
   borrowInterestRate: bigint; // 14 d.p.
   borrowInterestIndex: bigint; // 14 d.p.
+  baseRate: bigint; // 14 d.p.
+  slope1Rate: bigint; // 14 d.p.
+  slope2Rate: bigint; // 14 d.p.
   retentionRate: bigint; // 14 d.p.
   totalDeposits: bigint;
   totalBorrows: bigint;
