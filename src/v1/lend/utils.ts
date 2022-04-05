@@ -55,7 +55,7 @@ function loanInfo(
   return {
     currentRound,
     escrowAddress: escrowAddr,
-    userAddress: encodeAddress(Buffer.from(ua)),
+    userAddress: encodeAddress(Buffer.from(ua, "base64")),
     borrowed,
     collateralBalance: BigInt(collateralBalance),
     borrowBalance,

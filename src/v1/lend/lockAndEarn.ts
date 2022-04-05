@@ -135,7 +135,7 @@ async function getLockedDepositInfo(
   return {
     currentRound: res['current-round'],
     escrowAddress: escrowAddr,
-    userAddress: encodeAddress(Buffer.from(ua)),
+    userAddress: encodeAddress(Buffer.from(ua, "base64")),
     lockedBalance: BigInt(lockedBalance),
     release,
   }

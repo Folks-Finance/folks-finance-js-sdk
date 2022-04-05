@@ -164,7 +164,7 @@ async function getStakedRewardsInfo(
   return {
     currentRound: res['current-round'],
     escrowAddress: escrowAddr,
-    userAddress: encodeAddress(Buffer.from(ua)),
+    userAddress: encodeAddress(Buffer.from(ua, "base64")),
     start: times[0],
     latest: times[1],
     end: times[2],
