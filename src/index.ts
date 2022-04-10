@@ -1,5 +1,6 @@
 export * from "./v1/lend/borrow";
-export * from "./v1/lend/constants";
+export * from "./v1/lend/constants/mainnetConstants";
+export * from "./v1/lend/constants/testnetConstants";
 export * from "./v1/lend/deposit";
 export * from "./v1/lend/liquidate";
 export * from "./v1/lend/lockAndEarn";
