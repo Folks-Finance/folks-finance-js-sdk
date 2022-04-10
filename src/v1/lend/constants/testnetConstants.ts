@@ -1,7 +1,7 @@
-import { Oracle, Pool, TokenPair } from "./types";
+import { Oracle, Pool, ReserveAddress, TokenPair } from "../types";
 
-type TestnetPoolsKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
-const TestnetPools: Record<TestnetPoolsKey, Pool> = {
+type TestnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
+const TestnetPools: Record<TestnetPoolKey, Pool> = {
   "ALGO": {
     appId: 79413571,
     assetId: 0,
@@ -47,8 +47,8 @@ const TestnetPools: Record<TestnetPoolsKey, Pool> = {
 };
 
 // CollateralPool-BorrowPool
-type TestnetTokenPairsKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
-const TestnetTokenPairs: Record<TestnetTokenPairsKey, TokenPair> = {
+type TestnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
+const TestnetTokenPairs: Record<TestnetTokenPairKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 79423184,
     collateralPool: TestnetPools.ALGO,
@@ -238,12 +238,12 @@ const TestnetOracle: Oracle = {
   decimals: 14,
 }
 
-const TestnetReserveAddress = "5ISPVI3JMQ4MP5XWWK4ILLKJAYU34U4TGZGXNC5BKR5AK3JBVAMJYBRYEI";
+const TestnetReserveAddress: ReserveAddress = "5ISPVI3JMQ4MP5XWWK4ILLKJAYU34U4TGZGXNC5BKR5AK3JBVAMJYBRYEI";
 
 export {
-  TestnetPoolsKey,
+  TestnetPoolKey,
   TestnetPools,
-  TestnetTokenPairsKey,
+  TestnetTokenPairKey,
   TestnetTokenPairs,
   TestnetOracle,
   TestnetReserveAddress,
