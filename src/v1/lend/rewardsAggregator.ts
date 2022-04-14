@@ -5,12 +5,12 @@ import {
   encodeUint64,
   generateAccount,
   getApplicationAddress,
+  Indexer,
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
   Transaction
 } from "algosdk";
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
 import { enc, fromIntToBytes8Hex, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
 import { AssetRewardsInfo, RewardsAggregator, RewardsAggregatorInfo, StakedRewardsInfo } from "./types";
 
@@ -33,7 +33,7 @@ function parseUint64s(base64Value: string): bigint[] {
  * @param appId - rewards aggregator app id
  * @returns RewardsAggregatorInfo rewards aggregator info
  */
-async function getRewardsAggregatorInfo(indexerClient: IndexerClient, appId: number): Promise<RewardsAggregatorInfo> {
+async function getRewardsAggregatorInfo(indexerClient: Indexer, appId: number): Promise<RewardsAggregatorInfo> {
   const res = await indexerClient.lookupApplications(appId).do();
   const state = res['application']['params']['global-state'];
 
@@ -132,7 +132,7 @@ function prepareRewardStakedExchangeTransactions(
  * @returns Promise<StakedRewardsInfo> staked rewards info
  */
 async function getStakedRewardsInfo(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   rewardsAggregator: RewardsAggregator,
   escrowAddr: string,
   round?: number,

@@ -1,5 +1,4 @@
-import { encodeAddress } from "algosdk";
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
+import { encodeAddress, Indexer } from "algosdk";
 import { getParsedValueFromState } from "../utils";
 import { calcBorrowBalance, calcHealthFactor, calcThreshold } from "./math";
 import { ConversionRate, LoanInfo, PoolInfo, TokenPair, TokenPairInfo } from "./types";
@@ -75,7 +74,7 @@ function loanInfo(
  * @returns response with structure https://developer.algorand.org/docs/rest-apis/indexer/#searchforaccounts-response-200
  */
 async function getEscrows(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   tokenPair: TokenPair,
   nextToken?: string,
   round?: number,

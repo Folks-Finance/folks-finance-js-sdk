@@ -4,12 +4,12 @@ import {
   encodeUint64,
   generateAccount,
   getApplicationAddress,
+  Indexer,
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
   Transaction
 } from "algosdk";
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
 import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
 import { Oracle, ReserveAddress, TokenPair, TokenPairInfo } from "./types";
 
@@ -21,7 +21,7 @@ import { Oracle, ReserveAddress, TokenPair, TokenPairInfo } from "./types";
  * @param tokenPair - token pair to query about
  * @returns Promise<TokenPairInfo[]> token pair info
  */
-async function getTokenPairInfo(indexerClient: IndexerClient, tokenPair: TokenPair): Promise<TokenPairInfo> {
+async function getTokenPairInfo(indexerClient: Indexer, tokenPair: TokenPair): Promise<TokenPairInfo> {
   const { appId } = tokenPair;
   const res = await indexerClient.lookupApplications(appId).do();
   const state = res['application']['params']['global-state'];

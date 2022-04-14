@@ -1,5 +1,11 @@
-import { assignGroupID, getApplicationAddress, makeApplicationNoOpTxn, SuggestedParams, Transaction } from "algosdk";
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
+import {
+  assignGroupID,
+  getApplicationAddress,
+  Indexer,
+  makeApplicationNoOpTxn,
+  SuggestedParams,
+  Transaction
+} from "algosdk";
 import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
 import { calcInterestIndex, calcUtilizationRatio } from "./math";
 import { Pool, PoolInfo } from "./types";
@@ -12,7 +18,7 @@ import { Pool, PoolInfo } from "./types";
  * @param pool - pool to query about
  * @returns PoolInfo[] pool info
  */
-async function getPoolInfo(indexerClient: IndexerClient, pool: Pool): Promise<PoolInfo> {
+async function getPoolInfo(indexerClient: Indexer, pool: Pool): Promise<PoolInfo> {
   const { appId } = pool;
   const res = await indexerClient.lookupApplications(appId).do();
   const state = res['application']['params']['global-state'];

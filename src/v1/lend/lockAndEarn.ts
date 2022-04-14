@@ -1,4 +1,3 @@
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
 import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
 import { LockAndEarn, LockAndEarnInfo, LockedDepositInfo, Pool } from "./types";
 import {
@@ -7,6 +6,7 @@ import {
   encodeAddress,
   generateAccount,
   getApplicationAddress,
+  Indexer,
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
@@ -21,7 +21,7 @@ import {
  * @param pool - pool to query about
  * @returns LockAndEarn[] lock and earns
  */
-async function getLockAndEarns(indexerClient: IndexerClient, pool: Pool): Promise<LockAndEarn[]> {
+async function getLockAndEarns(indexerClient: Indexer, pool: Pool): Promise<LockAndEarn[]> {
   const { appId } = pool;
   const res = await indexerClient.searchAccounts().applicationID(pool.appId).do();
 
@@ -47,7 +47,7 @@ async function getLockAndEarns(indexerClient: IndexerClient, pool: Pool): Promis
  * @param appId - lock and earn app id
  * @returns LockAndEarnInfo[] lock and earn info
  */
-async function getLockAndEarnInfo(indexerClient: IndexerClient, appId: number): Promise<LockAndEarnInfo> {
+async function getLockAndEarnInfo(indexerClient: Indexer, appId: number): Promise<LockAndEarnInfo> {
   const res = await indexerClient.lookupApplications(appId).do();
   const state = res['application']['params']['global-state'];
 
@@ -109,7 +109,7 @@ function prepareProvideLiquidityTransactions(
  * @returns Promise<LoanInfo> loan info
  */
 async function getLockedDepositInfo(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   lockAndEarn: LockAndEarn,
   escrowAddr: string,
   round?: number,

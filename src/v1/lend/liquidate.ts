@@ -2,11 +2,11 @@ import {
   assignGroupID,
   encodeUint64,
   getApplicationAddress,
+  Indexer,
   makeApplicationNoOpTxn,
   SuggestedParams,
   Transaction
 } from "algosdk";
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
 import { enc, transferAlgoOrAsset } from "../utils";
 import { getTokenPairInfo } from "./borrow";
 import { getPoolInfo } from "./deposit";
@@ -26,7 +26,7 @@ import { getEscrows, loanInfo } from "./utils";
  * @returns Promise<LoanInfo> loan info
  */
 async function getLoanInfo(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   tokenPair: TokenPair,
   oracle: Oracle,
   escrowAddr: string,
@@ -76,7 +76,7 @@ async function getLoanInfo(
  * @returns Promise<{ loans: LoanInfo[], nextToken?: string}> object containing loan infos and next token
  */
 async function getLoansInfo(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   tokenPair: TokenPair,
   tokenPairInfo: TokenPairInfo,
   collateralPoolInfo: PoolInfo,
@@ -102,9 +102,7 @@ async function getLoansInfo(
         res['current-round'],
       );
       loans.push(loan);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   });
 
   return {

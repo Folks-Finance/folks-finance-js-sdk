@@ -1,4 +1,4 @@
-import IndexerClient from "algosdk/dist/types/src/client/v2/indexer/indexer";
+import { Indexer } from "algosdk";
 import { fromIntToBytes8Hex, getParsedValueFromState } from "../utils";
 import { calcConversionRate } from "./math";
 import { ConversionRate, Oracle, OraclePrice, OraclePrices } from "./types";
@@ -22,7 +22,7 @@ function parseOracleValue(base64Value: string) {
  * @returns OraclePrices oracle prices
  */
 async function getOraclePrices(
-  indexerClient: IndexerClient,
+  indexerClient: Indexer,
   oracle: Oracle,
   assets: number[],
 ): Promise<OraclePrices> {
