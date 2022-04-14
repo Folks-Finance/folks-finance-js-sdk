@@ -21,7 +21,7 @@
     "example": "ts-node"
   },
   "dependencies": {
-    "algosdk": "^1.13.1"
+    "algosdk": "^1.15.0"
   },
   "devDependencies": {
     "@types/mocha": "^9.1.0",
