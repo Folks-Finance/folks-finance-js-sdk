@@ -1,10 +1,20 @@
-interface Pool {
+interface BasePool {
   appId: number;
   assetId: number;
   fAssetId: number;
   frAssetId: number;
   assetDecimals: number;
 }
+
+interface TinymanLPTokenPool extends BasePool {
+  poolAppAddress: string;
+}
+
+interface PactLPTokenPool extends BasePool {
+  poolAppId: number;
+}
+
+type Pool = BasePool | TinymanLPTokenPool | PactLPTokenPool;
 
 interface PoolInfo {
   currentRound: number;
@@ -111,6 +121,7 @@ interface Oracle {
   oracle1AppId: number,
   oracle2AppId?: number,
   oracleAdapterAppId: number;
+  tinymanValidatorAppId: number;
   decimals: number;
 }
 
@@ -129,9 +140,30 @@ interface ConversionRate {
   decimals: number;
 }
 
+interface BaseLPToken {
+  provider: string;
+  asset0Id: number;
+  asset1Id: number;
+}
+
+interface TinymanLPToken extends BaseLPToken {
+  provider: "Tinyman";
+  poolAddress: string;
+}
+
+interface PactLPToken extends BaseLPToken {
+  provider: "Pact";
+  poolAppId: number;
+}
+
+type LPToken = TinymanLPToken | PactLPToken;
+
 type ReserveAddress = string;
 
 export {
+  BasePool,
+  TinymanLPTokenPool,
+  PactLPTokenPool,
   Pool,
   PoolInfo,
   LockAndEarn,
@@ -148,5 +180,8 @@ export {
   OraclePrice,
   OraclePrices,
   ConversionRate,
+  TinymanLPToken,
+  PactLPToken,
+  LPToken,
   ReserveAddress,
 };
