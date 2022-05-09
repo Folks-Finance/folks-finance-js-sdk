@@ -30,7 +30,7 @@ function getOracleAdapterForeignApps(oracle: Oracle, tokenPair: TokenPair): numb
   if (oracle2AppId) oracleAdapterForeignApps.push(oracle2AppId);
   if (pools.some(pool => isTinymanLPTokenPool(pool))) oracleAdapterForeignApps.push(tinymanValidatorAppId);
   for (const pool of pools) {
-    if (isPactLPTokenPool(pool)) oracleAdapterForeignApps.push((collateralPool as PactLPTokenPool).poolAppId);
+    if (isPactLPTokenPool(pool)) oracleAdapterForeignApps.push((pool as PactLPTokenPool).poolAppId);
   }
   return oracleAdapterForeignApps;
 }
@@ -41,7 +41,7 @@ function getOracleAdapterForeignAccounts(oracle: Oracle, tokenPair: TokenPair): 
 
   const oracleAdapterForeignAccounts = [];
   for (const pool of pools) {
-    if (isTinymanLPTokenPool(pool)) oracleAdapterForeignAccounts.push((collateralPool as TinymanLPTokenPool).poolAppAddress);
+    if (isTinymanLPTokenPool(pool)) oracleAdapterForeignAccounts.push((pool as TinymanLPTokenPool).poolAppAddress);
   }
   return oracleAdapterForeignAccounts;
 }
