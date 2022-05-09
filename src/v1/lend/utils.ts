@@ -1,7 +1,50 @@
 import { encodeAddress, Indexer } from "algosdk";
 import { getParsedValueFromState } from "../utils";
 import { calcBorrowBalance, calcHealthFactor, calcThreshold } from "./math";
-import { ConversionRate, LoanInfo, PoolInfo, TokenPair, TokenPairInfo } from "./types";
+import {
+  ConversionRate,
+  LoanInfo,
+  Oracle,
+  PactLPTokenPool,
+  Pool,
+  PoolInfo,
+  TinymanLPTokenPool,
+  TokenPair,
+  TokenPairInfo
+} from "./types";
+
+function isTinymanLPTokenPool(pool: Pool): boolean {
+  return "poolAppAddress" in pool;
+}
+
+function isPactLPTokenPool(pool: Pool): boolean {
+  return "poolAppId" in pool;
+}
+
+function getOracleAdapterForeignApps(oracle: Oracle, tokenPair: TokenPair): number[] {
+  const { collateralPool, borrowPool } = tokenPair;
+  const pools = [collateralPool, borrowPool];
+  const { oracle1AppId, oracle2AppId, tinymanValidatorAppId } = oracle;
+
+  const oracleAdapterForeignApps = [oracle1AppId];
+  if (oracle2AppId) oracleAdapterForeignApps.push(oracle2AppId);
+  if (pools.some(pool => isTinymanLPTokenPool(pool))) oracleAdapterForeignApps.push(tinymanValidatorAppId);
+  for (const pool of pools) {
+    if (isPactLPTokenPool(pool)) oracleAdapterForeignApps.push((collateralPool as PactLPTokenPool).poolAppId);
+  }
+  return oracleAdapterForeignApps;
+}
+
+function getOracleAdapterForeignAccounts(oracle: Oracle, tokenPair: TokenPair): string[] {
+  const { collateralPool, borrowPool } = tokenPair;
+  const pools = [collateralPool, borrowPool];
+
+  const oracleAdapterForeignAccounts = [];
+  for (const pool of pools) {
+    if (isTinymanLPTokenPool(pool)) oracleAdapterForeignAccounts.push((collateralPool as TinymanLPTokenPool).poolAppAddress);
+  }
+  return oracleAdapterForeignAccounts;
+}
 
 /**
  *
@@ -90,4 +133,11 @@ async function getEscrows(
   return await req.do();
 }
 
-export { loanInfo, getEscrows };
+export {
+  isTinymanLPTokenPool,
+  isPactLPTokenPool,
+  getOracleAdapterForeignApps,
+  getOracleAdapterForeignAccounts,
+  loanInfo,
+  getEscrows,
+};

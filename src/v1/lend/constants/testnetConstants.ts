@@ -235,6 +235,7 @@ const TestnetOracle: Oracle = {
   oracle1AppId: 81298955,
   oracle2AppId: 67734391,
   oracleAdapterAppId: 81315545,
+  tinymanValidatorAppId: 62368684,
   decimals: 14,
 }
 

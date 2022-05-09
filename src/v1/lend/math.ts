@@ -4,6 +4,14 @@ import { ConversionRate } from "./types";
 const DECIMALS = BigInt(1e14);
 const SECONDS_IN_YEAR = 365 * 24 * 60 * 60;
 
+function maximum(n1: bigint, n2: bigint): bigint {
+  return n1 > n2 ? n1 : n2;
+}
+
+function minimum(n1: bigint, n2: bigint): bigint {
+  return n1 < n2 ? n1 : n2;
+}
+
 function mul14(n1: bigint, n2: bigint): bigint {
   return (n1 * n2) / BigInt(1e14);
 }
@@ -112,4 +120,45 @@ function calcConversionRate(collateralPrice: bigint, borrowPrice: bigint): Conve
   return { rate, decimals };
 }
 
-export { calcUtilizationRatio, calcInterestIndex, calcHealthFactor, calcConversionRate }
+/**
+ * Calculate the sqrt of a bigint (rounded down to nearest integer)
+ * @param value value to be square-rooted
+ * @return bigint sqrt
+ */
+function sqrt(value: bigint): bigint {
+  if (value < BigInt(0)) throw Error("square root of negative numbers is not supported");
+
+  if (value < BigInt(2)) return value;
+
+  function newtonIteration(n: bigint, x0: bigint): bigint {
+    const x1 = (n / x0 + x0) >> BigInt(1);
+    if (x0 === x1 || x0 === x1 - BigInt(1)) return x0;
+    return newtonIteration(n, x1);
+  }
+
+  return newtonIteration(value, BigInt(1));
+}
+
+/**
+ * Calculates the LP price
+ * @param r0 pool supply of asset 0
+ * @param r1 pool supply of asset 1
+ * @param p0 price of asset 0
+ * @param p1 price of asset 1
+ * @param lts circulating supply of liquidity token
+ * @return bigint LP price
+ */
+function calcLPPrice(r0: bigint, r1: bigint, p0: bigint, p1: bigint, lts: bigint): bigint {
+  return BigInt(2) * (sqrt(r0 * p0 * r1 * p1) / lts);
+}
+
+export {
+  maximum,
+  minimum,
+  calcUtilizationRatio,
+  calcInterestIndex,
+  calcHealthFactor,
+  calcConversionRate,
+  sqrt,
+  calcLPPrice,
+}

@@ -205,6 +205,7 @@ const MainnetOracle: Oracle = {
   oracle1AppId: 687039379,
   oracle2AppId: 689183513,
   oracleAdapterAppId: 689185988,
+  tinymanValidatorAppId: 552635992,
   decimals: 14,
 };
 
