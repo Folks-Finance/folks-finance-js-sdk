@@ -30,19 +30,16 @@ async function getTokenPairInfo(indexerClient: Indexer, tokenPair: TokenPair): P
   const s1 = BigInt(getParsedValueFromState(state, 'S1') || 0);
   const s2 = BigInt(getParsedValueFromState(state, 'S2') || 0);
   const s3 = BigInt(getParsedValueFromState(state, 'S3') || 0);
-
-  const tb = getParsedValueFromState(state, 'total_borrowed');
-  const totalBorrowed = tb !== undefined ? BigInt(tb) : undefined;
-  const tbl = getParsedValueFromState(state, 'total_borrowed_limit');
-  const totalBorrowedLimit = tbl !== undefined ? BigInt(tbl) : undefined;
+  const tb = BigInt(getParsedValueFromState(state, 'total_borrowed') || 0);
+  const tbl = BigInt(getParsedValueFromState(state, 'total_borrowed_limit') || 18446744073709551615);
 
   return {
     currentRound: res['current-round'],
     loanToValueRatio: s1,
     liquidationThreshold: s2,
     safetyThreshold: s3,
-    totalBorrowed,
-    totalBorrowedLimit,
+    totalBorrowed: tb,
+    totalBorrowedLimit: tbl,
   }
 }
 
