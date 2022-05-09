@@ -104,6 +104,8 @@ interface TokenPairInfo {
   loanToValueRatio: bigint; // 14 d.p.
   liquidationThreshold: bigint; // 14 d.p.
   safetyThreshold: bigint; // 14 d.p.
+  totalBorrowed?: bigint;
+  totalBorrowedLimit?: bigint;
 }
 
 interface LoanInfo {
