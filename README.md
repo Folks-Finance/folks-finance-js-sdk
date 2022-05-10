@@ -4,9 +4,7 @@ The official JavaScript SDK for the Folks Finance Protocol
 ## Installation
 Using [Node.js](https://nodejs.org/en/download/):
 ```
-git clone git@github.com:Folks-Finance/folks-finance-js-sdk.git
-cd folks-finance-js-sdk
-npm install && npm run build
+npm install folks-finance-js-sdk
 ```
 
 ## Documentation
