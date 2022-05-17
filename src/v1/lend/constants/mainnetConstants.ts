@@ -1,6 +1,6 @@
 import { Oracle, Pool, ReserveAddress, TokenPair } from "../types";
 
-type MainnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "gALGO3";
+type MainnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "gALGO3" | "AlgoGAlgo3TMP" | "AlgoGAlgo3PLP";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 686498781,
@@ -44,10 +44,26 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     frAssetId: 694474016,
     assetDecimals: 6,
   },
+  AlgoGAlgo3TMP: {
+    appId: 743679535,
+    assetId: 694683000,
+    fAssetId: 743689704,
+    frAssetId: 743689705,
+    assetDecimals: 6,
+    poolAppAddress: "WNA4H7Y3UGEVNEVVFU2TUDLMOMLWSV72UF6SYYRBOQ7IGDW4ZIOKYWNIWU",
+  },
+  AlgoGAlgo3PLP: {
+    appId: 743685742,
+    assetId: 701364134,
+    fAssetId: 743689819,
+    frAssetId: 743689820,
+    assetDecimals: 6,
+    poolAppId: 701363946,
+  },
 };
 
 // CollateralPool-BorrowPool
-type MainnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "gALGO3-ALGO" | "gALGO3-USDC"| "gALGO3-USDt"| "gALGO3-goBTC"| "gALGO3-goETH";
+type MainnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "gALGO3-ALGO" | "gALGO3-USDC"| "gALGO3-USDt"| "gALGO3-goBTC"| "gALGO3-goETH" | "ALGO/gALGO3TMP1.1-ALGO" | "ALGO/gALGO3TMP1.1-USDC" | "ALGO/gALGO3TMP1.1-USDt" | "ALGO/gALGO3PLP-ALGO" | "ALGO/gALGO3PLP-USDC" | "ALGO/gALGO3PLP-USDt";
 const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 686541542,
@@ -198,6 +214,42 @@ const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
     collateralPool: MainnetPools.gALGO3,
     borrowPool: MainnetPools.goETH,
     linkAddr: "2BHUQR72HSDUSUHHNZ4HSW52XG6TFI6GTOOMLCJIYRWG4DCD45OMMDK454",
+  },
+  "ALGO/gALGO3TMP1.1-ALGO": {
+    appId: 743705087,
+    collateralPool: MainnetPools.AlgoGAlgo3TMP,
+    borrowPool: MainnetPools.ALGO,
+    linkAddr: "TBXOH44M3PQ32Y7OXR26LJVNAMGDGKH5HKYIWLL3GGXE2POIRAY7PYMIT4",
+  },
+  "ALGO/gALGO3TMP1.1-USDC": {
+    appId: 743710958,
+    collateralPool: MainnetPools.AlgoGAlgo3TMP,
+    borrowPool: MainnetPools.USDC,
+    linkAddr: "FPUTNTOOJQY4V4XDEPYQEMMDKFW3RNLYELVJQIGDUQQXJXEBPB6CXKMMCY",
+  },
+  "ALGO/gALGO3TMP1.1-USDt": {
+    appId: 743712504,
+    collateralPool: MainnetPools.AlgoGAlgo3TMP,
+    borrowPool: MainnetPools.USDt,
+    linkAddr: "NPPUWS7IBRKY46HKN6VVISBQKDTUO5UUOIAU7LBYQTWW3SUXXVCPTQVR6I",
+  },
+  "ALGO/gALGO3PLP-ALGO": {
+    appId: 743708357,
+    collateralPool: MainnetPools.AlgoGAlgo3PLP,
+    borrowPool: MainnetPools.ALGO,
+    linkAddr: "P3VIDBKNCOQPZBRD4LJ4MTOUXVDDVXAUPECEYZX4M6Q6A3AK6WW7R4NYH4",
+  },
+  "ALGO/gALGO3PLP-USDC": {
+    appId: 743709872,
+    collateralPool: MainnetPools.AlgoGAlgo3PLP,
+    borrowPool: MainnetPools.USDC,
+    linkAddr: "SKGZLWCBIGN2LA7JDSATTARDXIDTDYUAXJBLCP3JXUDJVNP4UZXX4OSPC4",
+  },
+  "ALGO/gALGO3PLP-USDt": {
+    appId: 743713705,
+    collateralPool: MainnetPools.AlgoGAlgo3PLP,
+    borrowPool: MainnetPools.USDt,
+    linkAddr: "OUEZFEA2JOMAH4KGO35W7HOW4IWNSVBEUCYVDJZPNIWRTJQ3VFEXZR24YI",
   },
 };
 
