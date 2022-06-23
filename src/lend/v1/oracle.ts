@@ -1,5 +1,5 @@
 import { encodeAddress, Indexer } from "algosdk";
-import { fromIntToBytes8Hex, getParsedValueFromState } from "../utils";
+import { fromIntToBytes8Hex, getParsedValueFromState } from "../../utils";
 import { calcConversionRate, calcLPPrice, minimum } from "./math";
 import { ConversionRate, LPToken, Oracle, OraclePrice, OraclePrices } from "./types";
 

@@ -1,4 +1,4 @@
-import { unixTime } from "../utils";
+import { unixTime } from "../../utils";
 import { ConversionRate } from "./types";
 
 const DECIMALS = BigInt(1e14);

@@ -1,5 +1,5 @@
 import { encodeAddress, Indexer } from "algosdk";
-import { getParsedValueFromState } from "../utils";
+import { getParsedValueFromState } from "../../utils";
 import { calcBorrowBalance, calcHealthFactor, calcThreshold } from "./math";
 import {
   ConversionRate,

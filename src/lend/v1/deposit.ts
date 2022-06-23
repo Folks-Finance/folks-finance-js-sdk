@@ -6,7 +6,7 @@ import {
   SuggestedParams,
   Transaction
 } from "algosdk";
-import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
+import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../../utils";
 import { calcInterestIndex, calcUtilizationRatio } from "./math";
 import { Pool, PoolInfo } from "./types";
 

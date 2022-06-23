@@ -7,7 +7,7 @@ import {
   SuggestedParams,
   Transaction
 } from "algosdk";
-import { enc, transferAlgoOrAsset } from "../utils";
+import { enc, transferAlgoOrAsset } from "../../utils";
 import { getTokenPairInfo } from "./borrow";
 import { getPoolInfo } from "./deposit";
 import { getConversionRate, getOraclePrices } from "./oracle";

@@ -52,5 +52,15 @@ function getParsedValueFromState(
   return;
 }
 
+function parseUint64s(base64Value: string): bigint[] {
+  const value = Buffer.from(base64Value, 'base64').toString('hex');
 
-export { enc, transferAlgoOrAsset, unixTime, fromIntToBytes8Hex, getParsedValueFromState };
+  // uint64s are 8 bytes each
+  const uint64s: bigint[] = [];
+  for (let i = 0; i < value.length; i += 16) {
+    uint64s.push(BigInt("0x" + value.slice(i, i + 16)))
+  }
+  return uint64s
+}
+
+export { enc, transferAlgoOrAsset, unixTime, fromIntToBytes8Hex, getParsedValueFromState, parseUint64s };
