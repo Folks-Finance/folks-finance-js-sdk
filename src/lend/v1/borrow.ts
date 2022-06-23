@@ -10,7 +10,7 @@ import {
   SuggestedParams,
   Transaction
 } from "algosdk";
-import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../utils";
+import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../../utils";
 import { Oracle, ReserveAddress, TokenPair, TokenPairInfo } from "./types";
 import { getOracleAdapterForeignAccounts, getOracleAdapterForeignApps } from "./utils";
 
