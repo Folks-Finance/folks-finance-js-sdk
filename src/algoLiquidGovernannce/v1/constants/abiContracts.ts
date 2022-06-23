@@ -1,7 +1,7 @@
 import { ABIContract } from "algosdk";
 
 const abiDistributor = new ABIContract({
-  "name": "algo-liquid-governance-dispenser",
+  "name": "algo-liquid-governance-distributor",
   "desc": "Mints gALGO when called by verified distributor applications",
   "methods": [
     {
