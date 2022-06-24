@@ -4,6 +4,7 @@ import {
   getApplicationAddress,
   getMethodByName,
   Indexer,
+  makeApplicationOptInTxn,
   SuggestedParams,
   Transaction
 } from "algosdk";
@@ -116,6 +117,7 @@ async function getUserLiquidGovernanceInfo(
  * @param distributor - distributor that calls dispenser and to send ALGO to
  * @param senderAddr - account address for the sender
  * @param amount - amount of ALGO to send and gALGO to mint
+ * @param includeOptIn - whether to include an opt in transaction (must be opted in if minting in commitment period)
  * @param params - suggested params for the transactions with the fees overwritten
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] mint transactions
@@ -125,6 +127,7 @@ function prepareMintTransactions(
   distributor: Distributor,
   senderAddr: string,
   amount: number | bigint,
+  includeOptIn: boolean,
   params: SuggestedParams,
   note?: string,
 ): Transaction[] {
@@ -144,6 +147,7 @@ function prepareMintTransactions(
   });
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  if (includeOptIn) txns.unshift(makeApplicationOptInTxn(senderAddr, { ...params, fee: 1000, flatFee: true }, distributor.appId));
   return assignGroupID(txns);
 }
 
