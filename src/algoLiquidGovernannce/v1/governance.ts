@@ -9,7 +9,7 @@ import {
 } from "algosdk";
 import { enc, getParsedValueFromState, parseUint64s, transferAlgoOrAsset } from "../../utils";
 import { abiDistributor } from "./constants/abiContracts";
-import { Dispenser, DispenserInfo, Distributor, DistributorInfo } from "./types";
+import { Dispenser, DispenserInfo, Distributor, DistributorInfo, UserCommitmentInfo } from "./types";
 
 const signer = async () => [];
 
@@ -72,6 +72,40 @@ async function getDistributorInfo(indexerClient: Indexer, distributor: Distribut
     isBurningPaused,
   }
 }
+
+/**
+ *
+ * Returns information regarding a user's liquid governance commitment.
+ *
+ * @param indexerClient - Algorand indexer client to query
+ * @param distributor - distributor to query about
+ * @param userAddr - user address to get governance info about
+ * @returns UserCommitmentInfo[] user commitment info
+ */
+async function getUserLiquidGovernanceInfo(
+  indexerClient: Indexer,
+  distributor: Distributor,
+  userAddr: string,
+): Promise<UserCommitmentInfo> {
+  const { appId } = distributor;
+
+  // get user account local state
+  const req = indexerClient.lookupAccountAppLocalStates(userAddr).applicationID(appId);
+  const res = await req.do();
+
+  // user local state
+  const state = res['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
+  if (state === undefined) throw new Error("Unable to find commitment for: " + userAddr + ".");
+  const commitment = BigInt(getParsedValueFromState(state, 'commitment') || 0);
+  const commitmentClaimed = BigInt(getParsedValueFromState(state, 'commitment_claimed') || 0);
+
+  return {
+    currentRound: res['current-round'],
+    commitment,
+    commitmentClaimed,
+  }
+}
+
 
 /**
  *
@@ -255,6 +289,7 @@ function prepareClaimGovernanceRewardsTransaction(
 export {
   getDispenserInfo,
   getDistributorInfo,
+  getUserLiquidGovernanceInfo,
   prepareMintTransactions,
   prepareUnmintTransactions,
   prepareBurnTransactions,
