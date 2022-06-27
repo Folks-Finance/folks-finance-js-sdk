@@ -147,6 +147,9 @@ function prepareMintTransactions(
   });
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  // for ledger compatibility (max 2 app args), remove index references which are not strictly needed
+  txns[1].appArgs = txns[1].appArgs?.slice(0, -2);
+  // user must be opted in before they can mint in the commitment period
   if (includeOptIn) txns.unshift(makeApplicationOptInTxn(senderAddr, { ...params, fee: 1000, flatFee: true }, distributor.appId));
   return assignGroupID(txns);
 }
@@ -259,6 +262,8 @@ function prepareEarlyClaimGovernanceRewardsTransaction(
   });
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  // for ledger compatibility (max 2 app args), remove index references which are not strictly needed
+  txns[0].appArgs = txns[0].appArgs?.slice(0, -2);
   return txns[0];
 }
 
