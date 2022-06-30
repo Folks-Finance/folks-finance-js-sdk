@@ -129,7 +129,7 @@ function prepareMintTransactions(
   amount: number | bigint,
   includeOptIn: boolean,
   params: SuggestedParams,
-  note?: string,
+  note?: Uint8Array,
 ): Transaction[] {
   const atc = new AtomicTransactionComposer();
   const payment = {
@@ -143,7 +143,7 @@ function prepareMintTransactions(
     method: getMethodByName(abiDistributor.methods, "mint"),
     methodArgs: [payment, dispenser.gAlgoId, dispenser.appId],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
-    note: enc.encode(note),
+    note,
   });
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
@@ -173,7 +173,7 @@ function prepareUnmintTransactions(
   senderAddr: string,
   amount: number | bigint,
   params: SuggestedParams,
-  note?: string,
+  note?: Uint8Array,
 ): Transaction[] {
   const atc = new AtomicTransactionComposer();
   const assetTransfer = {
@@ -187,7 +187,7 @@ function prepareUnmintTransactions(
     method: getMethodByName(abiDistributor.methods, "unmint"),
     methodArgs: [assetTransfer, dispenser.appId],
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
-    note: enc.encode(note),
+    note,
   });
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
