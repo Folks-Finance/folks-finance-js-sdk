@@ -1,12 +1,19 @@
 import { Oracle, Pool, ReserveAddress, TokenPair } from "../types";
 
-type MainnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "gALGO3" | "Planet" | "ALGOUSDCTMP" | "ALGOUSDCPLP" |"ALGOgALGO3TMP" | "ALGOgALGO3PLP" | "USDCUSDtTMP" | "USDCUSDtPLP";
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "gALGO3" | "Planet" | "ALGOUSDCTMP" | "ALGOUSDCPLP" |"ALGOgALGO3TMP" | "ALGOgALGO3PLP" | "USDCUSDtTMP" | "USDCUSDtPLP";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 686498781,
     assetId: 0,
     fAssetId: 686505742,
     frAssetId: 686505743,
+    assetDecimals: 6,
+  },
+  gALGO: {
+    appId: 794055220,
+    assetId: 793124631,
+    fAssetId: 794060802,
+    frAssetId: 794060803,
     assetDecimals: 6,
   },
   USDC: {
@@ -102,7 +109,7 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
 };
 
 // CollateralPool-BorrowPool
-type MainnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-Planet" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-Planet" |"USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-Planet" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "gALGO3-ALGO" | "gALGO3-USDC"| "gALGO3-USDt"| "gALGO3-goBTC"| "gALGO3-goETH" | "Planet-ALGO" | "Planet-USDC"| "Planet-USDt"| "ALGO/USDCTMP1.1-ALGO" | "ALGO/USDCTMP1.1-USDC" | "ALGO/USDCTMP1.1-USDt" | "ALGO/USDCPLP-ALGO" | "ALGO/USDCPLP-USDC" | "ALGO/USDCPLP-USDt" | "USDC/USDtTMP1.1-ALGO" | "USDC/USDtTMP1.1-USDC" | "USDC/USDtTMP1.1-USDt" | "ALGO/gALGO3PLP-ALGO" | "ALGO/gALGO3PLP-USDC" | "ALGO/gALGO3PLP-USDt" | "ALGO/gALGO3TMP1.1-ALGO" | "ALGO/gALGO3TMP1.1-USDC" | "ALGO/gALGO3TMP1.1-USDt" | "USDC/USDtPLP-ALGO" | "USDC/USDtPLP-USDC" | "USDC/USDtPLP-USDt";
+type MainnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-Planet" | "gALGO-ALGO" | "gALGO-USDC" | "gALGO-USDt" | "gALGO-goBTC" | "gALGO-goETH" | "gALGO-Planet" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-Planet" |"USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-Planet" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "gALGO3-ALGO" | "gALGO3-USDC"| "gALGO3-USDt"| "gALGO3-goBTC"| "gALGO3-goETH" | "Planet-ALGO" | "Planet-USDC"| "Planet-USDt"| "ALGO/USDCTMP1.1-ALGO" | "ALGO/USDCTMP1.1-USDC" | "ALGO/USDCTMP1.1-USDt" | "ALGO/USDCPLP-ALGO" | "ALGO/USDCPLP-USDC" | "ALGO/USDCPLP-USDt" | "USDC/USDtTMP1.1-ALGO" | "USDC/USDtTMP1.1-USDC" | "USDC/USDtTMP1.1-USDt" | "ALGO/gALGO3PLP-ALGO" | "ALGO/gALGO3PLP-USDC" | "ALGO/gALGO3PLP-USDt" | "ALGO/gALGO3TMP1.1-ALGO" | "ALGO/gALGO3TMP1.1-USDC" | "ALGO/gALGO3TMP1.1-USDt" | "USDC/USDtPLP-ALGO" | "USDC/USDtPLP-USDC" | "USDC/USDtPLP-USDt";
 const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 686541542,
@@ -133,6 +140,42 @@ const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
     collateralPool: MainnetPools.ALGO,
     borrowPool: MainnetPools.Planet,
     linkAddr: "ZVLQM6UCBPA22HAQ4K3P5CSM5WHU6ADRERXEQBCPQF2VLSDB7O7PIDD6SM",
+  },
+  "gALGO-ALGO": {
+    appId: 794069724,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.ALGO,
+    linkAddr: "QBYE6JFDZHZFNMC2PEPBVSW36XASEBNVSNVZ65YFPFFHIKJFUFSGBQ5BM4",
+  },
+  "gALGO-USDC": {
+    appId: 794073216,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.USDC,
+    linkAddr: "OVQYFHG7P5ZCVO5E65VJWIZ3CAPXP2C6JEMN4YBQVJV2W2BSKIOAXJPI64",
+  },
+  "gALGO-USDt": {
+    appId: 794075692,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.USDt,
+    linkAddr: "OQJ7WB5DKEB75PSSCWTHKG5PWWA34FXKHB2JSS6QMORJ5MDUGBZOBAMXJ4",
+  },
+  "gALGO-goBTC": {
+    appId: 794078346,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.goBTC,
+    linkAddr: "KZGZPQPC5IMJLW2SEZFQNV6XD3KYVTDBA7JBU3H5OZZ7SYLDDJLZCPJKWU",
+  },
+  "gALGO-goETH": {
+    appId: 794079547,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.goETH,
+    linkAddr: "F247PBG5FMJKU4SVX5YRDK7L42C3TP27XD5YMQ5OIAJCUFAWUR2LERROY4",
+  },
+  "gALGO-Planet": {
+    appId: 794083828,
+    collateralPool: MainnetPools.gALGO,
+    borrowPool: MainnetPools.Planet,
+    linkAddr: "LJBD5SXBTVPR2CJ57QADDCTQOPENUSYYTMTFSNBIQETNEHX4H654AONDVA",
   },
   "USDC-ALGO": {
     appId: 686544126,
