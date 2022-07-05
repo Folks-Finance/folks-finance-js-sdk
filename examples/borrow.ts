@@ -23,7 +23,7 @@ async function main() {
   const addEscrowTxns = prepareAddEscrowTransactions(tokenPair, sender.addr, params);
   const escrow = addEscrowTxns.escrow;
   txns = addEscrowTxns.txns;
-  signedTxns = [txns[0].signTxn(sender.sk), txns[1].signTxn(escrow.sk), txns[2].signTxn(escrow.sk)];
+  signedTxns = [txns[0].signTxn(sender.sk), txns[1].signTxn(escrow.sk), txns[2].signTxn(sender.sk)];
   txId = (await algodClient.sendRawTransaction(signedTxns).do()).txId;
   await waitForConfirmation(algodClient, txId, 1000);
 
