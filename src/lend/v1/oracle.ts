@@ -77,15 +77,17 @@ async function getOraclePrices(
   assets: number[],
 ): Promise<OraclePrices> {
   const { oracle1AppId, oracleAdapterAppId, tinymanValidatorAppId } = oracle;
-  const oracleRes = await indexerClient.lookupApplications(oracle1AppId).do();
-  const oracleAdapterRes = await indexerClient.lookupApplications(oracleAdapterAppId).do();
+  const [oracleRes, oracleAdapterRes] = await Promise.all([
+    indexerClient.lookupApplications(oracle1AppId).do(),
+    indexerClient.lookupApplications(oracleAdapterAppId).do(),
+  ]);
   const oracleState = oracleRes.application.params["global-state"];
   const oracleAdapterState = oracleAdapterRes.application.params["global-state"];
 
   const prices: Record<number, OraclePrice> = {};
   let price: OraclePrice;
 
-  for (const assetId of assets) {
+  const promises = assets.map(async (assetId) => {
     const base64Value = getParsedValueFromState(oracleAdapterState, fromIntToBytes8Hex(assetId), "hex");
 
     // check if liquidity token
@@ -110,7 +112,9 @@ async function getOraclePrices(
     }
 
     prices[assetId] = price;
-  }
+  });
+
+  await Promise.all(promises);
 
   return { currentRound: oracleRes["current-round"], prices };
 }
