@@ -85,7 +85,7 @@ async function getOraclePrices(
   const prices: Record<number, OraclePrice> = {};
   let price: OraclePrice;
 
-  for (const assetId of assets) {
+  const promises = assets.map(async (assetId) => {
     const base64Value = getParsedValueFromState(oracleAdapterState, fromIntToBytes8Hex(assetId), "hex");
 
     // check if liquidity token
@@ -110,7 +110,9 @@ async function getOraclePrices(
     }
 
     prices[assetId] = price;
-  }
+  });
+
+  await Promise.all(promises);
 
   return { currentRound: oracleRes["current-round"], prices };
 }
