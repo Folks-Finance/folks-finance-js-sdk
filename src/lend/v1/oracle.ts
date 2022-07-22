@@ -77,8 +77,10 @@ async function getOraclePrices(
   assets: number[],
 ): Promise<OraclePrices> {
   const { oracle1AppId, oracleAdapterAppId, tinymanValidatorAppId } = oracle;
-  const oracleRes = await indexerClient.lookupApplications(oracle1AppId).do();
-  const oracleAdapterRes = await indexerClient.lookupApplications(oracleAdapterAppId).do();
+  const [oracleRes, oracleAdapterRes] = await Promise.all([
+    indexerClient.lookupApplications(oracle1AppId).do(),
+    indexerClient.lookupApplications(oracleAdapterAppId).do(),
+  ]);
   const oracleState = oracleRes.application.params["global-state"];
   const oracleAdapterState = oracleAdapterRes.application.params["global-state"];
 
