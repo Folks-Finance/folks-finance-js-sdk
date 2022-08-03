@@ -103,6 +103,7 @@ function loanInfo(
     borrowBalance,
     borrowBalanceLiquidationThreshold: threshold,
     healthFactor,
+    latestBorrowInterestIndex: lbii,
   }
 }
 

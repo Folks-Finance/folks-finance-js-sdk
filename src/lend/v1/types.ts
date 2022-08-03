@@ -117,6 +117,7 @@ interface LoanInfo {
   borrowBalance: bigint;
   borrowBalanceLiquidationThreshold: bigint;
   healthFactor: bigint; // 14 d.p.
+  latestBorrowInterestIndex: bigint; // 14 d.p.
 }
 
 interface Oracle {
