@@ -24,12 +24,14 @@ interface DistributorInfo {
   rewardsPerAlgo: bigint; // reward amount per ALGO committed (16 d.p.)
   totalRewardsClaimed: bigint; // total amount of rewards claimed
   isBurningPaused: boolean; // flag to indicate if users can burn their ALGO for gALGO
+  premintEnd?: bigint; // unix timestamp for the end of the pre-mint period (if present)
 }
 
 interface UserCommitmentInfo {
   currentRound: number;
   commitment: bigint; // amount of ALGOs the user has committed
   commitmentClaimed: bigint; // amount of ALGOs the user has committed whose rewards have already been claimed
+  premint?: bigint; // amount of ALGOs the user has pre-minted and not yet claimed
 }
 
 export {
