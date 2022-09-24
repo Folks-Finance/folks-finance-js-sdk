@@ -15,10 +15,29 @@ const abiDistributor = new ABIContract({
       "returns": { "type": "void" }
     },
     {
+      "name": "unmint_premint",
+      "desc": "Unmint in the commitment period pre-minted gALGO for equivalent amount of ALGO",
+      "args": [
+        { "type": "uint64", "name": "unmint_amount", "desc": "The amount of pre-minted gALGO to unmint" },
+        { "type": "application", "name": "dispenser", "desc": "The dispenser application that mints gALGO" }
+      ],
+      "returns": { "type": "void" }
+    },
+    {
       "name": "unmint",
       "desc": "Unmint in the commitment period gALGO for equivalent amount of ALGO as gALGO sent",
       "args": [
         { "type": "axfer", "name": "g_algo_sent", "desc": "Send gALGO to the distributor application account" },
+        { "type": "application", "name": "dispenser", "desc": "The dispenser application that mints gALGO" }
+      ],
+      "returns": { "type": "void" }
+    },
+    {
+      "name": "claim_premint",
+      "desc": "Claim pre-minted gALGO on behalf of yourself or another account",
+      "args": [
+        { "type": "account", "name": "receiver", "desc": "The user that pre-minted gALGO" },
+        { "type": "asset", "name": "g_algo", "desc": "The gALGO asset" },
         { "type": "application", "name": "dispenser", "desc": "The dispenser application that mints gALGO" }
       ],
       "returns": { "type": "void" }

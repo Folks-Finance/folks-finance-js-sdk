@@ -60,9 +60,14 @@ async function getDistributorInfo(indexerClient: Indexer, distributor: Distribut
   const totalRewardsClaimed = BigInt(getParsedValueFromState(state, 'total_rewards_claimed') || 0);
   const isBurningPaused = Boolean(getParsedValueFromState(state, 'is_burning_paused') || 0);
 
+  // optional
+  const premintEndState = getParsedValueFromState(state, 'premint_end');
+  const premintEnd = premintEndState !== undefined ? BigInt(premintEndState) : undefined;
+
   return {
     currentRound: res['current-round'],
     dispenserAppId,
+    premintEnd,
     commitEnd,
     periodEnd,
     totalCommitment,
@@ -100,8 +105,13 @@ async function getUserLiquidGovernanceInfo(
   const commitment = BigInt(getParsedValueFromState(state, 'commitment') || 0);
   const commitmentClaimed = BigInt(getParsedValueFromState(state, 'commitment_claimed') || 0);
 
+  // optional
+  const premintState = getParsedValueFromState(state, 'premint');
+  const premint = premintState !== undefined ? BigInt(premintState) : undefined;
+
   return {
     currentRound: res['current-round'],
+    premint,
     commitment,
     commitmentClaimed,
   }
@@ -156,6 +166,41 @@ function prepareMintTransactions(
 
 /**
  *
+ * Returns a transaction to unmint pre-minted gALGO for ALGO at a one-to-one rate.
+ * Must be in commitment period. By unminting, you will lose your governance rewards.
+ *
+ * @param dispenser - dispenser to send gALGO to
+ * @param distributor - distributor to receive ALGO from
+ * @param senderAddr - account address for the sender
+ * @param amount - amount of gALGO to unmint and ALGO to receive
+ * @param params - suggested params for the transactions with the fees overwritten
+ * @param note - optional note to distinguish who is the unminter (must pass to be eligible for revenue share)
+ * @returns Transaction unmint pre-mint transaction
+ */
+function prepareUnmintPremintTransaction(
+  dispenser: Dispenser,
+  distributor: Distributor,
+  senderAddr: string,
+  amount: number | bigint,
+  params: SuggestedParams,
+  note?: Uint8Array,
+): Transaction {
+  const atc = new AtomicTransactionComposer();
+  atc.addMethodCall({
+    sender: senderAddr,
+    signer,
+    appID: distributor.appId,
+    method: getMethodByName(abiDistributor.methods, "unmint_premint"),
+    methodArgs: [amount, dispenser.appId],
+    suggestedParams: { ...params, flatFee: true, fee: 2000 },
+    note,
+  });
+  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return txns[0];
+}
+
+/**
+ *
  * Returns a group transaction to unmint gALGO for ALGO at a one-to-one rate.
  * Must be in commitment period. By unminting, you will lose your governance rewards.
  *
@@ -192,6 +237,38 @@ function prepareUnmintTransactions(
 
   const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
   return assignGroupID(txns);
+}
+
+/**
+ *
+ * Returns a transaction to claim pre-minted gALGO.
+ * Can be called on behalf of yourself or another user.
+ *
+ * @param dispenser - dispenser to send gALGO to
+ * @param distributor - distributor to receive ALGO from
+ * @param senderAddr - account address for the sender
+ * @param receiverAddr - account address for the pre-minter that will receiver the gALGO
+ * @param params - suggested params for the transactions with the fees overwritten
+ * @returns Transaction claim pre-mint transaction
+ */
+function prepareClaimPremintTransaction(
+  dispenser: Dispenser,
+  distributor: Distributor,
+  senderAddr: string,
+  receiverAddr: string,
+  params: SuggestedParams,
+): Transaction {
+  const atc = new AtomicTransactionComposer();
+  atc.addMethodCall({
+    sender: senderAddr,
+    signer,
+    appID: distributor.appId,
+    method: getMethodByName(abiDistributor.methods, "claim_premint"),
+    methodArgs: [receiverAddr, dispenser.gAlgoId, dispenser.appId],
+    suggestedParams: { ...params, flatFee: true, fee: 3000 },
+  });
+  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return txns[0];
 }
 
 /**
