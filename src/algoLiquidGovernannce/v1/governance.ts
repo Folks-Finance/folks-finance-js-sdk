@@ -381,4 +381,6 @@ export {
   prepareBurnTransactions,
   prepareEarlyClaimGovernanceRewardsTransaction,
   prepareClaimGovernanceRewardsTransaction,
+  prepareUnmintPremintTransaction,
+  prepareClaimPremintTransaction
 };
