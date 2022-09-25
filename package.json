@@ -1,6 +1,6 @@
 {
   "name": "folks-finance-js-sdk",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "The official JavaScript SDK for the Folks Finance Protocol",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
