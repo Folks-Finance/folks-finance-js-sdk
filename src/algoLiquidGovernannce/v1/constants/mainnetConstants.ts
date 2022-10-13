@@ -9,8 +9,12 @@ const govDistributor4: Distributor = {
   appId: 793119270,
 }
 
-const govDistributor5: Distributor = {
+const govDistributor5a: Distributor = {
   appId: 887391617,
 }
 
-export { govDispenser, govDistributor4, govDistributor5 };
+const govDistributor5b: Distributor = {
+  appId: 902731930,
+}
+
+export { govDispenser, govDistributor4, govDistributor5a, govDistributor5b };
