@@ -1,0 +1,149 @@
+{
+  "name": "pool",
+  "desc": "Responsible for managing the deposits and withdrawals of an asset and exposes functionality to facilitate borrowing.",
+  "methods": [
+    {
+      "name": "deposit",
+      "desc": "Deposit the asset into the pool.",
+      "args": [
+        {
+          "type": "txn",
+          "name": "send_asset_txn",
+          "desc": "The transaction to send the asset to the pool."
+        },
+        {
+          "type": "account",
+          "name": "receiver",
+          "desc": "The account to receive the f asset from the pool."
+        },
+        {
+          "type": "asset",
+          "name": "asset",
+          "desc": "The asset of the pool."
+        },
+        {
+          "type": "asset",
+          "name": "f_asset",
+          "desc": "The f asset of the pool."
+        },
+        {
+          "type": "application",
+          "name": "pool_manager",
+          "desc": "The pool manager application of the pool."
+        }
+      ],
+      "returns": {
+        "type": "uint64",
+        "desc": "The amount of f asset sent by pool to receiver."
+      }
+    },
+    {
+      "name": "withdraw",
+      "desc": "Withdraw the asset from the pool.",
+      "args": [
+        {
+          "type": "axfer",
+          "name": "send_f_asset_txn",
+          "desc": "The transaction to send the f asset to the pool."
+        },
+        {
+          "type": "uint64",
+          "name": "received_amount",
+          "desc": "The amount of asset to receive. Any excess f asset sent will be returned to the sender. If zero then variable."
+        },
+        {
+          "type": "account",
+          "name": "receiver",
+          "desc": "The account to receive the asset from the pool."
+        },
+        {
+          "type": "asset",
+          "name": "asset",
+          "desc": "The asset of the pool."
+        },
+        {
+          "type": "asset",
+          "name": "f_asset",
+          "desc": "The f asset of the pool."
+        },
+        {
+          "type": "application",
+          "name": "pool_manager",
+          "desc": "The pool manager application of the pool."
+        }
+      ],
+      "returns": {
+        "type": "uint64",
+        "desc": "The amount of asset sent by the pool to the receiver."
+      }
+    },
+    {
+      "name": "update_pool_interest_indexes",
+      "desc": "Update the pool interest indexes.",
+      "args": [
+        {
+          "type": "application",
+          "name": "pool_manager",
+          "desc": "The pool manager application of the pool."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "flash_loan_begin",
+      "desc": "Request a flash loan of the asset. Must be grouped together with flash_loan_end method call.",
+      "args": [
+        {
+          "type": "uint64",
+          "name": "amount",
+          "desc": "The amount of the asset to borrow."
+        },
+        {
+          "type": "uint64",
+          "name": "txn_index",
+          "desc": "The transaction index in the group transaction for the flash_loan_end method call."
+        },
+        {
+          "type": "account",
+          "name": "receiver",
+          "desc": "The account to receive the asset from the pool."
+        },
+        {
+          "type": "asset",
+          "name": "asset",
+          "desc": "The asset of the pool."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "flash_loan_end",
+      "desc": "Repay a requested flash loan. Must be grouped together with flash_loan_begin method call.",
+      "args": [
+        {
+          "type": "txn",
+          "name": "send_asset_txn",
+          "desc": "The transaction to the asset to the pool."
+        },
+        {
+          "type": "account",
+          "name": "pool_admin",
+          "desc": "The pool admin address that will receive the flash loan fee."
+        },
+        {
+          "type": "asset",
+          "name": "asset",
+          "desc": "The asset of the pool."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "networks": {}
+}

@@ -1,0 +1,21 @@
+{
+  "name": "LP Token Oracle",
+  "desc": "Contains the information necessary to calculate the price of an LP token.",
+  "methods": [
+    {
+      "name": "update_lp_tokens",
+      "desc": "Update the given LP tokens supplies such that they are valid to calculate the corresponding LP asset price. The pools are excluded from method signature but must still be passed.",
+      "args": [
+        {
+          "type": "uint64[]",
+          "name": "assets",
+          "desc": "The asset ids to update."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "networks": {}
+}

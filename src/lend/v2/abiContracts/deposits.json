@@ -1,0 +1,153 @@
+{
+  "name": "deposits",
+  "desc": "Allows users to create an escrow which will hold their deposits for them.",
+  "methods": [
+    {
+      "name": "add_deposit_escrow",
+      "desc": "Add a deposit escrow for a user. The escrow opts in and rekeys itself to the deposit application.",
+      "args": [
+        {
+          "type": "pay",
+          "name": "user_call",
+          "desc": "The transaction from the user to approve the deposit escrow."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "opt_escrow_into_asset",
+      "desc": "Add support for a deposit escrow to hold a pool's f asset.",
+      "args": [
+        {
+          "type": "account",
+          "name": "escrow",
+          "desc": "The user's deposit escrow."
+        },
+        {
+          "type": "application",
+          "name": "pool_manager",
+          "desc": "The pool manager application of the deposits application."
+        },
+        {
+          "type": "application",
+          "name": "pool",
+          "desc": "The pool application to support."
+        },
+        {
+          "type": "asset",
+          "name": "f_asset",
+          "desc": "The f asset of the pool."
+        },
+        {
+          "type": "uint8",
+          "name": "index",
+          "desc": "The index of the pool in the pool manager array."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "withdraw",
+      "desc": "Withdraw an asset from deposit escrow.",
+      "args": [
+        {
+          "type": "account",
+          "name": "escrow",
+          "desc": "The user's deposit escrow."
+        },
+        {
+          "type": "account",
+          "name": "receiver",
+          "desc": "The account to receive the asset from the pool."
+        },
+        {
+          "type": "application",
+          "name": "pool_manager",
+          "desc": "The pool manager application of the pool."
+        },
+        {
+          "type": "application",
+          "name": "pool",
+          "desc": "The pool to withdraw from."
+        },
+        {
+          "type": "asset",
+          "name": "asset",
+          "desc": "The asset of the pool."
+        },
+        {
+          "type": "asset",
+          "name": "f_asset",
+          "desc": "The f asset of the pool."
+        },
+
+        {
+          "type": "uint64",
+          "name": "amount",
+          "desc": "The amount of asset / f asset to send to withdraw from escrow."
+        },
+        {
+          "type": "bool",
+          "name": "is_f_asset_amount",
+          "desc": "Whether the amount to withdraw is expressed in terms of f asset or asset."
+        },
+        {
+          "type": "bool",
+          "name": "remain_deposited",
+          "desc": "Whether receiver should get f asset or asset. Cannot remain deposited and use asset amount."
+        },
+        {
+          "type": "uint8",
+          "name": "index",
+          "desc": "The index of the pool in the pool manager array."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "close_out_escrow_from_asset",
+      "desc": "Remove support for a deposit escrow to hold a pool's f asset.",
+      "args": [
+        {
+          "type": "account",
+          "name": "escrow",
+          "desc": "The user user's deposit escrow."
+        },
+        {
+          "type": "account",
+          "name": "f_asset_creator",
+          "desc": "The f asset creator account, also known as the pool account."
+        },
+        {
+          "type": "asset",
+          "name": "f_asset",
+          "desc": "The f asset of the pool."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "remove_deposit_escrow",
+      "desc": "Remove a deposit escrow for a user and return its minimum balance.",
+      "args": [
+        {
+          "type": "account",
+          "name": "escrow",
+          "desc": "The user's deposit escrow."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "networks": {}
+}

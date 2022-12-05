@@ -1,0 +1,41 @@
+{
+  "name": "Oracle Adapter",
+  "desc": "Calculates and exposes given asset prices.",
+  "methods": [
+    {
+      "name": "refresh_prices",
+      "desc": "Refresh the prices of the given assets.",
+      "args": [
+        {
+          "type": "uint64[]",
+          "name": "lp_assets",
+          "desc": "The list of LP assets to refresh the prices of."
+        },
+        {
+          "type": "uint64[]",
+          "name": "non_lp_assets",
+          "desc": "The list of non-LP assets to refresh the prices of."
+        },
+        {
+          "type": "application",
+          "name": "oracle_0",
+          "desc": "The first oracle price source of the oracle adapter."
+        },
+        {
+          "type": "application",
+          "name": "oracle_1",
+          "desc": "The second price source of the oracle adapter."
+        },
+        {
+          "type": "application",
+          "name": "lp_token_oracle",
+          "desc": "The LP Token Oracle of the oracle adapter."
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "networks": {}
+}
