@@ -5,7 +5,7 @@ import {
   Indexer,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { TealKeyValue } from "algosdk/dist/types/src/client/v2/algod/models/types";
 import { enc, getParsedValueFromState, parseUint64s } from "../../utils";
@@ -17,7 +17,7 @@ import {
   calcCollateralAssetLoanValue,
   calcLiquidationMargin,
   calcLTVRatio,
-  calcWithdrawReturn
+  calcWithdrawReturn,
 } from "./formulae";
 import { expBySquaring, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
 import {
@@ -27,15 +27,26 @@ import {
   PoolManagerInfo,
   UserLoanInfo,
   UserLoanInfoBorrow,
-  UserLoanInfoCollateral
+  UserLoanInfoCollateral,
 } from "./types";
 
-export function addEscrowNoteTransaction(userAddr: string, escrowAddr: string, appId: number, notePrefix: string, params: SuggestedParams): Transaction {
+export function addEscrowNoteTransaction(
+  userAddr: string,
+  escrowAddr: string,
+  appId: number,
+  notePrefix: string,
+  params: SuggestedParams,
+): Transaction {
   const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
   return makePaymentTxnWithSuggestedParams(userAddr, getApplicationAddress(appId), 0, undefined, note, params);
 }
 
-export function removeEscrowNoteTransaction(escrowAddr: string, userAddr: string, notePrefix: string, params: SuggestedParams): Transaction {
+export function removeEscrowNoteTransaction(
+  escrowAddr: string,
+  userAddr: string,
+  notePrefix: string,
+  params: SuggestedParams,
+): Transaction {
   const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
   return makePaymentTxnWithSuggestedParams(escrowAddr, userAddr, 0, userAddr, note, params);
 }
@@ -53,30 +64,30 @@ export async function getEscrows(
   const addedReq = indexerClient
     .searchForTransactions()
     .address(userAddr)
-    .addressRole('sender')
-    .txType('pay')
+    .addressRole("sender")
+    .txType("pay")
     .notePrefix(enc.encode(addNotePrefix))
     .do();
   const removedReq = indexerClient
     .searchForTransactions()
     .address(userAddr)
-    .addressRole('receiver')
-    .txType('pay')
+    .addressRole("receiver")
+    .txType("pay")
     .notePrefix(enc.encode(removeNotePrefix))
     .do();
 
   const [added, removed] = await Promise.all([addedReq, removedReq]);
 
-  for (const txn of added['transactions']) {
-    const receiver: string = txn['payment-transaction']['receiver'];
+  for (const txn of added["transactions"]) {
+    const receiver: string = txn["payment-transaction"]["receiver"];
     if (receiver === appAddress) {
-      const note: Uint8Array = Buffer.from(txn['note'], "base64");
-      const address = encodeAddress(note.slice(addNotePrefix.length))
+      const note: Uint8Array = Buffer.from(txn["note"], "base64");
+      const address = encodeAddress(note.slice(addNotePrefix.length));
       escrows.add(address);
     }
   }
-  for (const txn of removed['transactions']) {
-    const sender: string = txn['sender'];
+  for (const txn of removed["transactions"]) {
+    const sender: string = txn["sender"];
     escrows.delete(sender);
   }
 
@@ -168,11 +179,12 @@ export function userLoanInfo(
 
     const poolInfo = poolManagerPools[poolAppId];
     const poolLoanInfo = loanPools[poolAppId];
-    if (poolInfo === undefined || poolLoanInfo === undefined) throw Error("Could not find collateral pool " + poolAppId);
+    if (poolInfo === undefined || poolLoanInfo === undefined)
+      throw Error("Could not find collateral pool " + poolAppId);
 
     const { depositInterestIndex, depositInterestRate, depositInterestYield } = poolInfo;
     const { assetId, collateralFactor } = poolLoanInfo;
-    const oraclePrice = prices[assetId]
+    const oraclePrice = prices[assetId];
     if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
 
     const { price: assetPrice } = oraclePrice;
@@ -206,60 +218,64 @@ export function userLoanInfo(
   let totalBorrowBalanceValue = BigInt(0);
   let totalEffectiveBorrowBalanceValue = BigInt(0);
 
-  localState.borrows.forEach(({
-    poolAppId,
-    borrowedAmount,
-    borrowBalance: oldBorrowBalance,
-    latestBorrowInterestIndex,
-    stableBorrowInterestRate,
-    latestStableChange,
-  }) => {
-    const isBorPresent = oldBorrowBalance > BigInt(0);
-    if (!isBorPresent) return;
-
-    const poolInfo = poolManagerPools[poolAppId];
-    const poolLoanInfo = loanPools[poolAppId];
-    if (poolInfo === undefined || poolLoanInfo === undefined) throw Error("Could not find borrow pool " + poolAppId);
-
-    const { assetId, borrowFactor } = poolLoanInfo;
-    const oraclePrice = prices[assetId]
-    if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
-
-    const { price: assetPrice } = oraclePrice;
-    const isStable = latestStableChange > BigInt(0);
-    const bii = isStable ?
-      calcBorrowInterestIndex(stableBorrowInterestRate, latestBorrowInterestIndex, latestStableChange) :
-      poolInfo.variableBorrowInterestIndex;
-    const borrowedAmountValue = calcCollateralAssetLoanValue(borrowedAmount, oraclePrice.price, ONE_4_DP); // no rounding
-    const borrowBalance = calcBorrowBalance(oldBorrowBalance, bii, latestBorrowInterestIndex);
-    const borrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, ONE_4_DP);
-    const effectiveBorrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, borrowFactor);
-    const interestRate = isStable ? stableBorrowInterestRate : poolInfo.variableBorrowInterestRate;
-    const interestYield = isStable ? expBySquaring(ONE_16_DP + stableBorrowInterestRate / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP : poolInfo.variableBorrowInterestYield;
-
-    totalBorrowedAmountValue += borrowedAmount;
-    totalBorrowBalanceValue += borrowBalanceValue;
-    totalEffectiveBorrowBalanceValue += effectiveBorrowBalanceValue;
-    netRate -= borrowBalanceValue * interestRate;
-    netYield -= borrowBalanceValue * interestYield;
-
-    borrows.push({
+  localState.borrows.forEach(
+    ({
       poolAppId,
-      assetId,
-      assetPrice,
-      isStable,
-      borrowFactor,
       borrowedAmount,
-      borrowedAmountValue,
-      borrowBalance,
-      borrowBalanceValue,
-      effectiveBorrowBalanceValue,
-      accruedInterest: borrowBalance - borrowedAmount,
-      accruedInterestValue: borrowBalanceValue - borrowedAmountValue,
-      interestRate,
-      interestYield,
-    });
-  });
+      borrowBalance: oldBorrowBalance,
+      latestBorrowInterestIndex,
+      stableBorrowInterestRate,
+      latestStableChange,
+    }) => {
+      const isBorPresent = oldBorrowBalance > BigInt(0);
+      if (!isBorPresent) return;
+
+      const poolInfo = poolManagerPools[poolAppId];
+      const poolLoanInfo = loanPools[poolAppId];
+      if (poolInfo === undefined || poolLoanInfo === undefined) throw Error("Could not find borrow pool " + poolAppId);
+
+      const { assetId, borrowFactor } = poolLoanInfo;
+      const oraclePrice = prices[assetId];
+      if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
+
+      const { price: assetPrice } = oraclePrice;
+      const isStable = latestStableChange > BigInt(0);
+      const bii = isStable
+        ? calcBorrowInterestIndex(stableBorrowInterestRate, latestBorrowInterestIndex, latestStableChange)
+        : poolInfo.variableBorrowInterestIndex;
+      const borrowedAmountValue = calcCollateralAssetLoanValue(borrowedAmount, oraclePrice.price, ONE_4_DP); // no rounding
+      const borrowBalance = calcBorrowBalance(oldBorrowBalance, bii, latestBorrowInterestIndex);
+      const borrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, ONE_4_DP);
+      const effectiveBorrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, borrowFactor);
+      const interestRate = isStable ? stableBorrowInterestRate : poolInfo.variableBorrowInterestRate;
+      const interestYield = isStable
+        ? expBySquaring(ONE_16_DP + stableBorrowInterestRate / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP
+        : poolInfo.variableBorrowInterestYield;
+
+      totalBorrowedAmountValue += borrowedAmount;
+      totalBorrowBalanceValue += borrowBalanceValue;
+      totalEffectiveBorrowBalanceValue += effectiveBorrowBalanceValue;
+      netRate -= borrowBalanceValue * interestRate;
+      netYield -= borrowBalanceValue * interestYield;
+
+      borrows.push({
+        poolAppId,
+        assetId,
+        assetPrice,
+        isStable,
+        borrowFactor,
+        borrowedAmount,
+        borrowedAmountValue,
+        borrowBalance,
+        borrowBalanceValue,
+        effectiveBorrowBalanceValue,
+        accruedInterest: borrowBalance - borrowedAmount,
+        accruedInterestValue: borrowBalanceValue - borrowedAmountValue,
+        interestRate,
+        interestYield,
+      });
+    },
+  );
 
   const amount = totalCollateralBalanceValue + totalBorrowBalanceValue;
   if (amount > BigInt(0)) {
@@ -282,7 +298,10 @@ export function userLoanInfo(
     totalEffectiveCollateralBalanceValue,
     totalEffectiveBorrowBalanceValue,
     loanToValueRatio: calcLTVRatio(totalBorrowBalanceValue, totalCollateralBalanceValue),
-    borrowUtilisationRatio: calcBorrowUtilisationRatio(totalEffectiveBorrowBalanceValue, totalEffectiveCollateralBalanceValue),
+    borrowUtilisationRatio: calcBorrowUtilisationRatio(
+      totalEffectiveBorrowBalanceValue,
+      totalEffectiveCollateralBalanceValue,
+    ),
     liquidationMargin: calcLiquidationMargin(totalEffectiveBorrowBalanceValue, totalEffectiveCollateralBalanceValue),
   };
 }

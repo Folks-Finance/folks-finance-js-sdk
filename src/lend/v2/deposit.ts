@@ -9,7 +9,7 @@ import {
   makeApplicationCloseOutTxn,
   OnApplicationComplete,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import {
   fromIntToByteHex,
@@ -19,14 +19,14 @@ import {
   parseBitsAsBooleans,
   parseUint64s,
   signer,
-  transferAlgoOrAsset
+  transferAlgoOrAsset,
 } from "../../utils";
 import { depositsABIContract, poolABIContract } from "./abiContracts";
 import { calcBorrowInterestIndex, calcDepositInterestIndex } from "./formulae";
 import { expBySquaring, HOURS_IN_YEAR, ONE_16_DP, SECONDS_IN_YEAR, UINT64 } from "./mathLib";
 import { prepareRefreshPricesInOracleAdapter } from "./oracle";
 import { Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
-import { addEscrowNoteTransaction, getEscrows, removeEscrowNoteTransaction}  from "./utils";
+import { addEscrowNoteTransaction, getEscrows, removeEscrowNoteTransaction } from "./utils";
 
 /**
  *
@@ -43,7 +43,7 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
   const pools: Record<number, any> = {};
   for (let i = 0; i < 63; i++) {
     const poolBase64Value = String(getParsedValueFromState(state, fromIntToByteHex(i), "hex"));
-    const poolValue = Buffer.from(poolBase64Value, 'base64').toString('hex');
+    const poolValue = Buffer.from(poolBase64Value, "base64").toString("hex");
     for (let j = 0; j < 3; j++) {
       const basePos = j * 84;
       const poolAppId = Number("0x" + poolValue.slice(basePos, basePos + 12));
@@ -61,7 +61,8 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
 
         pools[poolAppId] = {
           variableBorrowInterestRate: vbir,
-          variableBorrowInterestYield: expBySquaring(ONE_16_DP + vbir / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+          variableBorrowInterestYield:
+            expBySquaring(ONE_16_DP + vbir / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
           variableBorrowInterestIndex: vbii,
           depositInterestRate: dir,
           depositInterestYield: expBySquaring(ONE_16_DP + dir / HOURS_IN_YEAR, HOURS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
@@ -71,7 +72,7 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
             oldDepositInterestIndex: diit1,
             oldTimestamp: lu,
           },
-        }
+        };
       }
     }
   }
@@ -106,7 +107,8 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       vr2: varBor[2],
       totalVariableBorrowAmount: varBor[3],
       variableBorrowInterestRate: varBor[4],
-      variableBorrowInterestYield: expBySquaring(ONE_16_DP + varBor[4] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      variableBorrowInterestYield:
+        expBySquaring(ONE_16_DP + varBor[4] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
       variableBorrowInterestIndex: calcBorrowInterestIndex(varBor[4], varBor[5], interest[6]),
     },
     stableBorrow: {
@@ -120,7 +122,8 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       rebalanceDownDelta: stblBor[7],
       totalStableBorrowAmount: stblBor[8],
       stableBorrowInterestRate: stblBor[9],
-      stableBorrowInterestYield: expBySquaring(ONE_16_DP + stblBor[9] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      stableBorrowInterestYield:
+        expBySquaring(ONE_16_DP + stblBor[9] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
       overallStableBorrowInterestAmount: stblBor[10] * UINT64 + stblBor[11],
     },
     interest: {
@@ -129,7 +132,8 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       optimalUtilisationRatio: interest[2],
       totalDeposits: interest[3],
       depositInterestRate: interest[4],
-      depositInterestYield: expBySquaring(ONE_16_DP + interest[4] / HOURS_IN_YEAR, HOURS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      depositInterestYield:
+        expBySquaring(ONE_16_DP + interest[4] / HOURS_IN_YEAR, HOURS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
       depositInterestIndex: calcDepositInterestIndex(interest[4], interest[5], interest[6]),
       latestUpdate: interest[6],
     },
@@ -168,8 +172,8 @@ async function retrieveUserDepositsInfo(
   // get all remaining escrows' holdings
   for (const escrowAddr of escrows) {
     const { currentRound, holdings: assetHoldings } = await getAccountAssets(indexerClient, escrowAddr);
-    const holdings = assetHoldings.map(({ assetId, balance }) => ({ fAssetId: assetId, fAssetBalance: balance }))
-    userDepositsInfo.push({ currentRound, escrowAddress: escrowAddr, holdings })
+    const holdings = assetHoldings.map(({ assetId, balance }) => ({ fAssetId: assetId, fAssetBalance: balance }));
+    userDepositsInfo.push({ currentRound, escrowAddress: escrowAddr, holdings });
   }
 
   return userDepositsInfo;
@@ -190,7 +194,7 @@ async function retrieveUserDepositInfo(
   escrowAddr: string,
 ): Promise<UserDepositInfo> {
   const { currentRound, holdings: assetHoldings } = await getAccountAssets(client, escrowAddr);
-  const holdings = assetHoldings.map(({ assetId, balance }) => ({ fAssetId: assetId, fAssetBalance: balance }))
+  const holdings = assetHoldings.map(({ assetId, balance }) => ({ fAssetId: assetId, fAssetBalance: balance }));
   return { currentRound, escrowAddress: escrowAddr, holdings };
 }
 
@@ -207,10 +211,14 @@ function prepareAddDepositEscrowToDeposits(
   depositsAppId: number,
   userAddr: string,
   params: SuggestedParams,
-): ({ txns: Transaction[], escrow: Account }) {
+): { txns: Transaction[]; escrow: Account } {
   const escrow = generateAccount();
 
-  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, depositsAppId, "da ", { ...params, flatFee: true, fee: 2000 });
+  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, depositsAppId, "da ", {
+    ...params,
+    flatFee: true,
+    fee: 2000,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -223,7 +231,10 @@ function prepareAddDepositEscrowToDeposits(
     rekeyTo: getApplicationAddress(depositsAppId),
     suggestedParams: { ...params, flatFee: true, fee: 0 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return { txns, escrow };
 }
 
@@ -258,7 +269,10 @@ function prepareOptDepositEscrowIntoAssetInDeposits(
     methodArgs: [escrowAddr, poolManagerAppId, poolAppId, fAssetId, poolManagerIndex],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -280,11 +294,15 @@ function prepareDepositIntoPool(
   userAddr: string,
   receiverAddr: string,
   assetAmount: number | bigint,
-  params: SuggestedParams
+  params: SuggestedParams,
 ): Transaction[] {
   const { appId, assetId, fAssetId } = pool;
 
-  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(appId), assetAmount, { ...params, flatFee: true, fee: 0 });
+  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(appId), assetAmount, {
+    ...params,
+    flatFee: true,
+    fee: 0,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -292,16 +310,13 @@ function prepareDepositIntoPool(
     signer,
     appID: appId,
     method: getMethodByName(poolABIContract.methods, "deposit"),
-    methodArgs: [
-      { txn: sendAsset, signer },
-      receiverAddr,
-      assetId,
-      fAssetId,
-      poolManagerAppId,
-    ],
+    methodArgs: [{ txn: sendAsset, signer }, receiverAddr, assetId, fAssetId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 /**
@@ -354,7 +369,10 @@ function prepareWithdrawFromDepositEscrowInDeposits(
     ],
     suggestedParams: { ...params, flatFee: true, fee: remainDeposited ? 2000 : 6000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -378,11 +396,15 @@ function prepareWithdrawFromPool(
   receiverAddr: string,
   fAssetAmount: number | bigint,
   receivedAssetAmount: number | bigint,
-  params: SuggestedParams
+  params: SuggestedParams,
 ): Transaction[] {
   const { appId: poolAppId, assetId, fAssetId } = pool;
 
-  const sendfAsset = transferAlgoOrAsset(fAssetId, userAddr, getApplicationAddress(poolAppId), fAssetAmount, { ...params, flatFee: true, fee: 0 });
+  const sendfAsset = transferAlgoOrAsset(fAssetId, userAddr, getApplicationAddress(poolAppId), fAssetAmount, {
+    ...params,
+    flatFee: true,
+    fee: 0,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -390,17 +412,13 @@ function prepareWithdrawFromPool(
     signer,
     appID: poolAppId,
     method: getMethodByName(poolABIContract.methods, "withdraw"),
-    methodArgs: [
-      { txn: sendfAsset, signer },
-      receivedAssetAmount,
-      receiverAddr,
-      assetId,
-      fAssetId,
-      poolManagerAppId,
-    ],
+    methodArgs: [{ txn: sendfAsset, signer }, receivedAssetAmount, receiverAddr, assetId, fAssetId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 5000 },
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 /**
@@ -430,7 +448,10 @@ function prepareUpdatePoolInterestIndexes(
     methodArgs: [poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -463,7 +484,10 @@ function prepareOptOutDepositEscrowFromAssetInDeposits(
     methodArgs: [escrowAddr, getApplicationAddress(poolAppId), fAssetId],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -492,7 +516,10 @@ function prepareRemoveDepositEscrowFromDeposits(
     methodArgs: [escrowAddr],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   const optOutTx = makeApplicationCloseOutTxn(escrowAddr, { ...params, flatFee: true, fee: 0 }, depositsAppId);
   const closeToTx = removeEscrowNoteTransaction(escrowAddr, userAddr, "dr ", { ...params, flatFee: true, fee: 0 });
   return [txns[0], optOutTx, closeToTx];

@@ -121,8 +121,8 @@ interface LoanInfo {
 }
 
 interface Oracle {
-  oracle1AppId: number,
-  oracle2AppId?: number,
+  oracle1AppId: number;
+  oracle2AppId?: number;
   oracleAdapterAppId: number;
   tinymanValidatorAppId: number;
   decimals: number;
@@ -135,7 +135,7 @@ interface OraclePrice {
 
 interface OraclePrices {
   currentRound: number;
-  prices: Record<number, OraclePrice>,
+  prices: Record<number, OraclePrice>;
 }
 
 interface ConversionRate {

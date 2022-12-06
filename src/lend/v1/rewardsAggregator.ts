@@ -9,7 +9,7 @@ import {
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { enc, fromIntToBytes8Hex, getParsedValueFromState, parseUint64s, transferAlgoOrAsset } from "../../utils";
 import { AssetRewardsInfo, RewardsAggregator, RewardsAggregatorInfo, StakedRewardsInfo } from "./types";
@@ -24,26 +24,26 @@ import { AssetRewardsInfo, RewardsAggregator, RewardsAggregatorInfo, StakedRewar
  */
 async function getRewardsAggregatorInfo(indexerClient: Indexer, appId: number): Promise<RewardsAggregatorInfo> {
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
   const vestingPeriodLengths = parseUint64s(String(getParsedValueFromState(state, "periods")));
   const assetIds = parseUint64s(String(getParsedValueFromState(state, "assets")));
 
-  const assetsRewards: AssetRewardsInfo[] = assetIds.map(assetId => {
-    const asset = parseUint64s(String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), 'hex')));
-    const periodRewards = []
+  const assetsRewards: AssetRewardsInfo[] = assetIds.map((assetId) => {
+    const asset = parseUint64s(String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), "hex")));
+    const periodRewards = [];
     for (let i = 0; i < asset.length; i += 3) {
       periodRewards.push({
         limit: asset[i],
         claimed: asset[i + 1],
         conversionRate: asset[i + 2],
-      })
+      });
     }
     return { assetId: Number(assetId), periodRewards };
   });
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     vestingPeriodLengths,
     assetsRewards,
   };
@@ -71,8 +71,22 @@ function prepareRewardImmediateExchangeTransactions(
 
   const fee = 2000 + rewardAssetIds.length * 1000;
 
-  const appCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee, flatFee: true }, appId, [enc.encode("ie"), encodeUint64(0)], undefined, undefined, rewardAssetIds);
-  const assetTransfer = transferAlgoOrAsset(pool.frAssetId, senderAddr, getApplicationAddress(pool.appId), frAssetAmount, { ...params, fee: 0, flatFee: true });
+  const appCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee, flatFee: true },
+    appId,
+    [enc.encode("ie"), encodeUint64(0)],
+    undefined,
+    undefined,
+    rewardAssetIds,
+  );
+  const assetTransfer = transferAlgoOrAsset(
+    pool.frAssetId,
+    senderAddr,
+    getApplicationAddress(pool.appId),
+    frAssetAmount,
+    { ...params, fee: 0, flatFee: true },
+  );
   return assignGroupID([appCall, assetTransfer]);
 }
 
@@ -93,17 +107,40 @@ function prepareRewardStakedExchangeTransactions(
   period: number,
   frAssetAmount: number | bigint,
   params: SuggestedParams,
-): ({ txns: Transaction[], escrow: Account }) {
+): { txns: Transaction[]; escrow: Account } {
   const { appId, pool } = rewardsAggregator;
 
   if (period < 1 || 4 < period) throw new Error("Invalid period specified.");
 
   const escrow = generateAccount();
 
-  const algoTransfer = transferAlgoOrAsset(0, senderAddr, escrow.addr, 0.5e6,  { ...params, fee: 0, flatFee: true });
-  const optInCall = makeApplicationOptInTxn(escrow.addr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("e"), encodeUint64(period)], undefined, undefined, undefined, undefined, undefined, getApplicationAddress(appId));
-  const appCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("e")], [escrow.addr]);
-  const assetTransfer = transferAlgoOrAsset(pool.frAssetId, senderAddr, getApplicationAddress(pool.appId), frAssetAmount, { ...params, fee: 4000, flatFee: true });
+  const algoTransfer = transferAlgoOrAsset(0, senderAddr, escrow.addr, 0.5e6, { ...params, fee: 0, flatFee: true });
+  const optInCall = makeApplicationOptInTxn(
+    escrow.addr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("e"), encodeUint64(period)],
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    getApplicationAddress(appId),
+  );
+  const appCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("e")],
+    [escrow.addr],
+  );
+  const assetTransfer = transferAlgoOrAsset(
+    pool.frAssetId,
+    senderAddr,
+    getApplicationAddress(pool.appId),
+    frAssetAmount,
+    { ...params, fee: 4000, flatFee: true },
+  );
   return {
     txns: assignGroupID([algoTransfer, optInCall, appCall, assetTransfer]),
     escrow,
@@ -134,31 +171,32 @@ async function getStakedRewardsInfo(
   const res = await req.do();
 
   // escrow local state
-  const state = res['account']['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
-  if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for rewards aggregator " + appId + ".");
-  const ua = String(getParsedValueFromState(state, 'user_address'));
+  const state = res["account"]["apps-local-state"]?.find((app: any) => app.id === appId)?.["key-value"];
+  if (state === undefined)
+    throw new Error("Unable to find escrow: " + escrowAddr + " for rewards aggregator " + appId + ".");
+  const ua = String(getParsedValueFromState(state, "user_address"));
 
-  const times = parseUint64s(String(getParsedValueFromState(state, 'time')));
+  const times = parseUint64s(String(getParsedValueFromState(state, "time")));
 
   const assetIds = parseUint64s(String(getParsedValueFromState(state, "reward_assets")));
-  const rewards = assetIds.map(assetId => {
-    const asset = parseUint64s(String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), 'hex')));
+  const rewards = assetIds.map((assetId) => {
+    const asset = parseUint64s(String(getParsedValueFromState(state, fromIntToBytes8Hex(assetId), "hex")));
     return {
       assetId: Number(assetId),
       claimed: asset[0],
       total: asset[1],
-    }
+    };
   });
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua, "base64")),
     start: times[0],
     latest: times[1],
     end: times[2],
     rewards,
-  }
+  };
 }
 
 /**
@@ -183,7 +221,15 @@ function prepareClaimRewardsTransaction(
 
   const fee = 1000 + rewardAssetIds.length * 1000;
 
-  return makeApplicationNoOpTxn(senderAddr, { ...params, fee, flatFee: true }, appId, [enc.encode("c")], [escrowAddr], undefined, rewardAssetIds);
+  return makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee, flatFee: true },
+    appId,
+    [enc.encode("c")],
+    [escrowAddr],
+    undefined,
+    rewardAssetIds,
+  );
 }
 
 export {
@@ -192,4 +238,4 @@ export {
   prepareRewardStakedExchangeTransactions,
   getStakedRewardsInfo,
   prepareClaimRewardsTransaction,
-}
+};

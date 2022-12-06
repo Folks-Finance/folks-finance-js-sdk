@@ -24,20 +24,26 @@ type LPToken = TinymanLPToken | PactLPToken;
 
 type PoolManagerInfo = {
   currentRound?: number;
-  pools: Partial<Record<number, { // poolAppId -> ...
-    variableBorrowInterestRate: bigint; // 16 d.p.
-    variableBorrowInterestYield: bigint; // approximation 16 d.p.
-    variableBorrowInterestIndex: bigint; // 14 d.p.
-    depositInterestRate: bigint; // 16 d.p.
-    depositInterestYield: bigint; // approximation 16 d.p.
-    depositInterestIndex: bigint; // 14 d.p.
-    metadata: {
-      oldVariableBorrowInterestIndex: bigint; // 14 d.p.
-      oldDepositInterestIndex: bigint; // 14 d.p.
-      oldTimestamp: bigint;
-    };
-  }>>
-}
+  pools: Partial<
+    Record<
+      number,
+      {
+        // poolAppId -> ...
+        variableBorrowInterestRate: bigint; // 16 d.p.
+        variableBorrowInterestYield: bigint; // approximation 16 d.p.
+        variableBorrowInterestIndex: bigint; // 14 d.p.
+        depositInterestRate: bigint; // 16 d.p.
+        depositInterestYield: bigint; // approximation 16 d.p.
+        depositInterestIndex: bigint; // 14 d.p.
+        metadata: {
+          oldVariableBorrowInterestIndex: bigint; // 14 d.p.
+          oldDepositInterestIndex: bigint; // 14 d.p.
+          oldTimestamp: bigint;
+        };
+      }
+    >
+  >;
+};
 
 interface BasePool {
   appId: number;
@@ -202,12 +208,12 @@ interface UserLoanInfo {
 }
 
 interface Oracle {
-  oracle0AppId: number,
-  oracle1AppId?: number,
+  oracle0AppId: number;
+  oracle1AppId?: number;
   lpTokenOracle?: {
     appId: number;
     tinymanValidatorAppId: number;
-  },
+  };
   oracleAdapterAppId: number;
   decimals: number;
 }
@@ -219,12 +225,12 @@ interface OraclePrice {
 
 interface OraclePrices {
   currentRound?: number;
-  prices: Partial<Record<number, OraclePrice>>, // assetId -> OraclePrice
+  prices: Partial<Record<number, OraclePrice>>; // assetId -> OraclePrice
 }
 
 interface OpUp {
-  callerAppId: number,
-  baseAppId: number,
+  callerAppId: number;
+  baseAppId: number;
 }
 
 type ReserveAddress = string;

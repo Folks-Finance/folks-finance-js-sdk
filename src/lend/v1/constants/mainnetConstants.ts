@@ -1,6 +1,24 @@
 import { Oracle, Pool, ReserveAddress, TokenPair } from "../types";
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "gALGO3" | "Planet" | "ALGOgALGOPLP" | "ALGOUSDCTMP" | "ALGOUSDCPLP" |"ALGOgALGO3TMP" | "ALGOgALGO3PLP" | "USDCgALGOTMP" | "USDCUSDtTMP" | "USDCUSDtPLP" | "goBTCgALGOPLP" | "goETHgALGOPLP";
+type MainnetPoolKey =
+  | "ALGO"
+  | "gALGO"
+  | "USDC"
+  | "USDt"
+  | "goBTC"
+  | "goETH"
+  | "gALGO3"
+  | "Planet"
+  | "ALGOgALGOPLP"
+  | "ALGOUSDCTMP"
+  | "ALGOUSDCPLP"
+  | "ALGOgALGO3TMP"
+  | "ALGOgALGO3PLP"
+  | "USDCgALGOTMP"
+  | "USDCUSDtTMP"
+  | "USDCUSDtPLP"
+  | "goBTCgALGOPLP"
+  | "goETHgALGOPLP";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 686498781,
@@ -141,7 +159,78 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
 };
 
 // CollateralPool-BorrowPool
-type MainnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-Planet" | "gALGO-ALGO" | "gALGO-USDC" | "gALGO-USDt" | "gALGO-goBTC" | "gALGO-goETH" | "gALGO-Planet" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-Planet" |"USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-Planet" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "gALGO3-ALGO" | "gALGO3-USDC"| "gALGO3-USDt"| "gALGO3-goBTC"| "gALGO3-goETH" | "Planet-ALGO" | "Planet-USDC"| "Planet-USDt" | "ALGO/gALGOPLP-ALGO" | "ALGO/gALGOPLP-USDC" | "ALGO/gALGOPLP-USDt" | "ALGO/USDCTMP1.1-ALGO" | "ALGO/USDCTMP1.1-USDC" | "ALGO/USDCTMP1.1-USDt" | "ALGO/USDCPLP-ALGO" | "ALGO/USDCPLP-USDC" | "ALGO/USDCPLP-USDt" | "USDC/USDtTMP1.1-ALGO" | "USDC/USDtTMP1.1-USDC" | "USDC/USDtTMP1.1-USDt" | "ALGO/gALGO3PLP-ALGO" | "ALGO/gALGO3PLP-USDC" | "ALGO/gALGO3PLP-USDt" | "ALGO/gALGO3TMP1.1-ALGO" | "ALGO/gALGO3TMP1.1-USDC" | "ALGO/gALGO3TMP1.1-USDt" | "USDC/gALGOTMP1.1-ALGO" | "USDC/gALGOTMP1.1-USDC" | "USDC/gALGOTMP1.1-USDt" | "USDC/USDtPLP-ALGO" | "USDC/USDtPLP-USDC" | "USDC/USDtPLP-USDt" | "goBTC/gALGOPLP-ALGO" | "goBTC/gALGOPLP-USDC" | "goBTC/gALGOPLP-USDt" | "goBTC/gALGOPLP-goBTC" | "goBTC/gALGOPLP-goETH" | "goETH/gALGOPLP-ALGO" | "goETH/gALGOPLP-USDC" | "goETH/gALGOPLP-USDt" | "goETH/gALGOPLP-goBTC" | "goETH/gALGOPLP-goETH";
+type MainnetTokenPairKey =
+  | "ALGO-USDC"
+  | "ALGO-USDt"
+  | "ALGO-goBTC"
+  | "ALGO-goETH"
+  | "ALGO-Planet"
+  | "gALGO-ALGO"
+  | "gALGO-USDC"
+  | "gALGO-USDt"
+  | "gALGO-goBTC"
+  | "gALGO-goETH"
+  | "gALGO-Planet"
+  | "USDC-ALGO"
+  | "USDC-USDt"
+  | "USDC-goBTC"
+  | "USDC-goETH"
+  | "USDC-Planet"
+  | "USDt-ALGO"
+  | "USDt-USDC"
+  | "USDt-goBTC"
+  | "USDt-goETH"
+  | "USDt-Planet"
+  | "goBTC-ALGO"
+  | "goBTC-USDC"
+  | "goBTC-USDt"
+  | "goBTC-goETH"
+  | "goETH-ALGO"
+  | "goETH-USDC"
+  | "goETH-USDt"
+  | "goETH-goBTC"
+  | "gALGO3-ALGO"
+  | "gALGO3-USDC"
+  | "gALGO3-USDt"
+  | "gALGO3-goBTC"
+  | "gALGO3-goETH"
+  | "Planet-ALGO"
+  | "Planet-USDC"
+  | "Planet-USDt"
+  | "ALGO/gALGOPLP-ALGO"
+  | "ALGO/gALGOPLP-USDC"
+  | "ALGO/gALGOPLP-USDt"
+  | "ALGO/USDCTMP1.1-ALGO"
+  | "ALGO/USDCTMP1.1-USDC"
+  | "ALGO/USDCTMP1.1-USDt"
+  | "ALGO/USDCPLP-ALGO"
+  | "ALGO/USDCPLP-USDC"
+  | "ALGO/USDCPLP-USDt"
+  | "USDC/USDtTMP1.1-ALGO"
+  | "USDC/USDtTMP1.1-USDC"
+  | "USDC/USDtTMP1.1-USDt"
+  | "ALGO/gALGO3PLP-ALGO"
+  | "ALGO/gALGO3PLP-USDC"
+  | "ALGO/gALGO3PLP-USDt"
+  | "ALGO/gALGO3TMP1.1-ALGO"
+  | "ALGO/gALGO3TMP1.1-USDC"
+  | "ALGO/gALGO3TMP1.1-USDt"
+  | "USDC/gALGOTMP1.1-ALGO"
+  | "USDC/gALGOTMP1.1-USDC"
+  | "USDC/gALGOTMP1.1-USDt"
+  | "USDC/USDtPLP-ALGO"
+  | "USDC/USDtPLP-USDC"
+  | "USDC/USDtPLP-USDt"
+  | "goBTC/gALGOPLP-ALGO"
+  | "goBTC/gALGOPLP-USDC"
+  | "goBTC/gALGOPLP-USDt"
+  | "goBTC/gALGOPLP-goBTC"
+  | "goBTC/gALGOPLP-goETH"
+  | "goETH/gALGOPLP-ALGO"
+  | "goETH/gALGOPLP-USDC"
+  | "goETH/gALGOPLP-USDt"
+  | "goETH/gALGOPLP-goBTC"
+  | "goETH/gALGOPLP-goETH";
 const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 686541542,
@@ -581,11 +670,4 @@ const MainnetOracle: Oracle = {
 
 const MainnetReserveAddress: ReserveAddress = "XQEOICBG6FMMBBWTBOWCMVJX5IQEDUSBF6L4MTSIALWRWODSOV2THX6GTU";
 
-export {
-  MainnetPoolKey,
-  MainnetPools,
-  MainnetTokenPairKey,
-  MainnetTokenPairs,
-  MainnetOracle,
-  MainnetReserveAddress,
-};
+export { MainnetPoolKey, MainnetPools, MainnetTokenPairKey, MainnetTokenPairs, MainnetOracle, MainnetReserveAddress };

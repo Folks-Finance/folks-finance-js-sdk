@@ -7,23 +7,23 @@ import {
   getMethodByName,
   Indexer,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import {
   fromIntToBytes8Hex,
   getAccountApplicationLocalState,
   getApplicationGlobalState,
   getParsedValueFromState,
-  signer
+  signer,
 } from "../../utils";
 import { lpTokenOracleABIContract, oracleAdapterABIContract } from "./abiContracts";
 import { calcLPPrice } from "./formulae";
 import { minimum } from "./mathLib";
 import { LPToken, LPTokenProvider, Oracle, OraclePrice, OraclePrices, PactLPToken, TinymanLPToken } from "./types";
-import {TealKeyValue} from "algosdk/dist/types/src/client/v2/algod/models/types";
+import { TealKeyValue } from "algosdk/dist/types/src/client/v2/algod/models/types";
 
 function parseOracleValue(base64Value: string) {
-  const value = Buffer.from(base64Value, 'base64').toString('hex');
+  const value = Buffer.from(base64Value, "base64").toString("hex");
 
   // [price (uint64), latest_update (uint64), ...]
   const price = BigInt("0x" + value.slice(0, 16));
@@ -59,7 +59,8 @@ async function getTinymanLPPrice(
   p1: bigint,
 ): Promise<bigint> {
   const { localState: state } = await getAccountApplicationLocalState(client, validatorAppId, poolAddress);
-  if (state === undefined) throw new Error(`Unable to find Tinyman Pool: ${poolAddress} for validator app ${validatorAppId}.`);
+  if (state === undefined)
+    throw new Error(`Unable to find Tinyman Pool: ${poolAddress} for validator app ${validatorAppId}.`);
 
   const r0 = BigInt(getParsedValueFromState(state, "s1") || 0);
   const r1 = BigInt(getParsedValueFromState(state, "s2") || 0);
@@ -104,22 +105,25 @@ async function getOraclePrices(client: Algodv2 | Indexer, oracle: Oracle, assetI
   const prices: Record<number, OraclePrice> = {};
 
   // get the assets for which we need to retrieve their prices
-  const allAssetIds: number[] = oracleState.concat(lpTokenOracleState || []).filter(({ key }: TealKeyValue) => {
-    // remove non asset ids global state
-    key = Buffer.from(key, "base64").toString('utf8');
-    return key !== "updater_addr" && key !== "admin" && key !== "tinyman_validator_app_id"
-  }).map(({ key }: TealKeyValue)=> {
-    // convert key to asset id
-    return decodeUint64(Buffer.from(key, "base64"), "safe");
-  })
-  const assets = assetIds ? assetIds: allAssetIds;
+  const allAssetIds: number[] = oracleState
+    .concat(lpTokenOracleState || [])
+    .filter(({ key }: TealKeyValue) => {
+      // remove non asset ids global state
+      key = Buffer.from(key, "base64").toString("utf8");
+      return key !== "updater_addr" && key !== "admin" && key !== "tinyman_validator_app_id";
+    })
+    .map(({ key }: TealKeyValue) => {
+      // convert key to asset id
+      return decodeUint64(Buffer.from(key, "base64"), "safe");
+    });
+  const assets = assetIds ? assetIds : allAssetIds;
 
   // retrieve asset prices
   const retrievePrices = assets.map(async (assetId) => {
     let assetPrice: OraclePrice;
-    const lpTokenBase64Value = lpTokenOracle ?
-      getParsedValueFromState(lpTokenOracleState!, fromIntToBytes8Hex(assetId), "hex") :
-      undefined;
+    const lpTokenBase64Value = lpTokenOracle
+      ? getParsedValueFromState(lpTokenOracleState!, fromIntToBytes8Hex(assetId), "hex")
+      : undefined;
 
     // lpTokenBase64Value defined iff asset is lp token in given lpTokenOracle
     if (lpTokenBase64Value !== undefined) {
@@ -134,7 +138,13 @@ async function getOraclePrices(client: Algodv2 | Indexer, oracle: Oracle, assetI
       let price: bigint;
       switch (lpTokenOracleValue.provider) {
         case LPTokenProvider.TINYMAN:
-          price = await getTinymanLPPrice(client, lpTokenOracle!.tinymanValidatorAppId, lpTokenOracleValue.lpPoolAddress, p0, p1);
+          price = await getTinymanLPPrice(
+            client,
+            lpTokenOracle!.tinymanValidatorAppId,
+            lpTokenOracleValue.lpPoolAddress,
+            p0,
+            p1,
+          );
           break;
         case LPTokenProvider.PACT:
           price = await getPactLPPrice(client, lpTokenOracleValue.lpPoolAppId, p0, p1);
@@ -170,20 +180,21 @@ function prepareRefreshPricesInOracleAdapter(
   userAddr: string,
   lpAssets: LPToken[],
   baseAssetIds: number[],
-  params: SuggestedParams
+  params: SuggestedParams,
 ): Transaction[] {
   const { oracleAdapterAppId, lpTokenOracle, oracle0AppId } = oracle;
 
-  if (lpTokenOracle === undefined && lpAssets.length > 0) throw Error("Cannot refresh LP assets without LP Token Oracle");
+  if (lpTokenOracle === undefined && lpAssets.length > 0)
+    throw Error("Cannot refresh LP assets without LP Token Oracle");
 
   const atc = new AtomicTransactionComposer();
 
   // divide lp tokens into Tinyman and Pact
   const tinymanLPAssets: TinymanLPToken[] = lpAssets.filter(
-    ({ provider }) => provider === LPTokenProvider.TINYMAN
+    ({ provider }) => provider === LPTokenProvider.TINYMAN,
   ) as TinymanLPToken[];
   const pactLPAssets: PactLPToken[] = lpAssets.filter(
-    ({ provider }) => provider === LPTokenProvider.PACT
+    ({ provider }) => provider === LPTokenProvider.PACT,
   ) as PactLPToken[];
 
   // update lp tokens
@@ -199,7 +210,8 @@ function prepareRefreshPricesInOracleAdapter(
   while (tinymanIndex < tinymanLPAssets.length && pactIndex < pactLPAssets.length) {
     // retrieve which lp assets to update
     const tinymanLPUpdates = tinymanLPAssets.slice(tinymanIndex, tinymanIndex + MAX_TINYMAN_UPDATE);
-    const maxPactUpdates = tinymanLPUpdates.length === 0 ? MAX_PACT_UPDATE : MAX_COMBINATION_UPDATE - tinymanLPUpdates.length;
+    const maxPactUpdates =
+      tinymanLPUpdates.length === 0 ? MAX_PACT_UPDATE : MAX_COMBINATION_UPDATE - tinymanLPUpdates.length;
     const pactLPUpdates = pactLPAssets.slice(pactIndex, pactIndex + maxPactUpdates);
 
     // prepare update lp tokens arguments
@@ -248,7 +260,7 @@ function prepareRefreshPricesInOracleAdapter(
   // build
   return atc.buildGroup().map(({ txn }, index) => {
     if (index < foreignAccounts.length && index < foreignApps.length) {
-      txn.appAccounts = foreignAccounts[index].map(address => decodeAddress(address));
+      txn.appAccounts = foreignAccounts[index].map((address) => decodeAddress(address));
       txn.appForeignApps = foreignApps[index];
     }
     txn.group = undefined;

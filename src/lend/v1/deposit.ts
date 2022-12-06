@@ -4,7 +4,7 @@ import {
   Indexer,
   makeApplicationNoOpTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../../utils";
 import { calcInterestIndex, calcUtilizationRatio } from "./math";
@@ -21,27 +21,27 @@ import { Pool, PoolInfo } from "./types";
 async function getPoolInfo(indexerClient: Indexer, pool: Pool): Promise<PoolInfo> {
   const { appId } = pool;
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
-  const dir = BigInt(getParsedValueFromState(state, 'deposit_interest_rate') || 0);
-  const dii = BigInt(getParsedValueFromState(state, 'deposit_interest_index') || 0);
-  const bir = BigInt(getParsedValueFromState(state, 'borrow_interest_rate') || 0);
-  const bii = BigInt(getParsedValueFromState(state, 'borrow_interest_index') || 0);
-  const lu = BigInt(getParsedValueFromState(state, 'latest_update') || 0);
-  const r0 = BigInt(getParsedValueFromState(state, 'R0') || 0);
-  const r1 = BigInt(getParsedValueFromState(state, 'R1') || 0);
-  const r2 = BigInt(getParsedValueFromState(state, 'R2') || 0);
-  const eps = BigInt(getParsedValueFromState(state, 'EPS') || 0);
-  const rf = BigInt(getParsedValueFromState(state, 'RF') || 0);
-  const srr = BigInt(getParsedValueFromState(state, 'SRR') || 0);
-  const td = BigInt(getParsedValueFromState(state, 'total_deposits') || 0);
-  const tb = BigInt(getParsedValueFromState(state, 'total_borrows') || 0);
-  const uopt = BigInt(getParsedValueFromState(state, 'U_OPT') || 0);
-  const isPaused = Boolean(getParsedValueFromState(state, 'is_paused') || 0);
-  const isRewardsPaused = Boolean(getParsedValueFromState(state, 'is_rewards_paused') || 0);
+  const dir = BigInt(getParsedValueFromState(state, "deposit_interest_rate") || 0);
+  const dii = BigInt(getParsedValueFromState(state, "deposit_interest_index") || 0);
+  const bir = BigInt(getParsedValueFromState(state, "borrow_interest_rate") || 0);
+  const bii = BigInt(getParsedValueFromState(state, "borrow_interest_index") || 0);
+  const lu = BigInt(getParsedValueFromState(state, "latest_update") || 0);
+  const r0 = BigInt(getParsedValueFromState(state, "R0") || 0);
+  const r1 = BigInt(getParsedValueFromState(state, "R1") || 0);
+  const r2 = BigInt(getParsedValueFromState(state, "R2") || 0);
+  const eps = BigInt(getParsedValueFromState(state, "EPS") || 0);
+  const rf = BigInt(getParsedValueFromState(state, "RF") || 0);
+  const srr = BigInt(getParsedValueFromState(state, "SRR") || 0);
+  const td = BigInt(getParsedValueFromState(state, "total_deposits") || 0);
+  const tb = BigInt(getParsedValueFromState(state, "total_borrows") || 0);
+  const uopt = BigInt(getParsedValueFromState(state, "U_OPT") || 0);
+  const isPaused = Boolean(getParsedValueFromState(state, "is_paused") || 0);
+  const isRewardsPaused = Boolean(getParsedValueFromState(state, "is_rewards_paused") || 0);
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     depositInterestRate: dir,
     depositInterestIndex: calcInterestIndex(dii, dir, lu),
     borrowInterestRate: bir,
@@ -58,7 +58,7 @@ async function getPoolInfo(indexerClient: Indexer, pool: Pool): Promise<PoolInfo
     latestUpdate: lu,
     isPaused,
     isRewardsPaused,
-  }
+  };
 }
 
 /**
@@ -78,8 +78,20 @@ function prepareDepositTransactions(
   params: SuggestedParams,
 ): Transaction[] {
   const { appId, assetId, fAssetId } = pool;
-  const appCallTx = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 3000, flatFee: true }, appId, [enc.encode("d")], undefined, undefined, [fAssetId]);
-  const depositTx = transferAlgoOrAsset(assetId, senderAddr, getApplicationAddress(appId), depositAmount, { ...params, fee: 0, flatFee: true });
+  const appCallTx = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 3000, flatFee: true },
+    appId,
+    [enc.encode("d")],
+    undefined,
+    undefined,
+    [fAssetId],
+  );
+  const depositTx = transferAlgoOrAsset(assetId, senderAddr, getApplicationAddress(appId), depositAmount, {
+    ...params,
+    fee: 0,
+    flatFee: true,
+  });
   return assignGroupID([appCallTx, depositTx]);
 }
 
@@ -100,8 +112,20 @@ function prepareWithdrawTransactions(
   params: SuggestedParams,
 ): Transaction[] {
   const { appId, assetId, fAssetId } = pool;
-  const appCallTx = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 3000, flatFee: true }, appId, [enc.encode("r")], undefined, undefined, assetId ? [assetId] : undefined);
-  const redeemTx = transferAlgoOrAsset(fAssetId, senderAddr, getApplicationAddress(appId), withdrawAmount, { ...params, fee: 0, flatFee: true });
+  const appCallTx = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 3000, flatFee: true },
+    appId,
+    [enc.encode("r")],
+    undefined,
+    undefined,
+    assetId ? [assetId] : undefined,
+  );
+  const redeemTx = transferAlgoOrAsset(fAssetId, senderAddr, getApplicationAddress(appId), withdrawAmount, {
+    ...params,
+    fee: 0,
+    flatFee: true,
+  });
   return assignGroupID([appCallTx, redeemTx]);
 }
 

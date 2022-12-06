@@ -1,4 +1,4 @@
-import {LoanType, OpUp, Oracle, Pool, ReserveAddress} from "../types";
+import { LoanType, OpUp, Oracle, Pool, ReserveAddress } from "../types";
 
 const TestnetPoolManagerAppId = 147157634;
 
@@ -6,7 +6,7 @@ const TestnetDepositsAppId = 147157692;
 
 type TestnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH";
 const TestnetPools: Record<TestnetPoolKey, Pool> = {
-  "ALGO": {
+  ALGO: {
     appId: 147169673,
     assetId: 0,
     fAssetId: 147171698,
@@ -17,7 +17,7 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
       147173131: BigInt(0),
     },
   },
-  "USDC": {
+  USDC: {
     appId: 147170678,
     assetId: 67395862,
     fAssetId: 147171826,
@@ -29,7 +29,7 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
       147173190: BigInt(0),
     },
   },
-  "USDt": {
+  USDt: {
     appId: 147171033,
     assetId: 67396430,
     fAssetId: 147172417,
@@ -41,7 +41,7 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
       147173190: BigInt(1),
     },
   },
-  "goBTC": {
+  goBTC: {
     appId: 147171314,
     assetId: 67396528,
     fAssetId: 147172646,
@@ -52,7 +52,7 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
       147173131: BigInt(3),
     },
   },
-  "goETH": {
+  goETH: {
     appId: 147171345,
     assetId: 76598897,
     fAssetId: 147172881,
@@ -76,12 +76,12 @@ const TestnetOracle: Oracle = {
   oracle0AppId: 124087437,
   oracleAdapterAppId: 147153711,
   decimals: 14,
-}
+};
 
 const TestnetOpUp: OpUp = {
   callerAppId: 118186228,
   baseAppId: 118186203,
-}
+};
 
 export {
   TestnetPoolManagerAppId,

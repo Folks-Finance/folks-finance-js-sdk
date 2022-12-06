@@ -4,7 +4,7 @@ import { calcConversionRate, calcLPPrice, minimum } from "./math";
 import { ConversionRate, LPToken, Oracle, OraclePrice, OraclePrices } from "./types";
 
 function parseOracleValue(base64Value: string) {
-  const value = Buffer.from(base64Value, 'base64').toString('hex');
+  const value = Buffer.from(base64Value, "base64").toString("hex");
   // first 8 bytes are the price
   const price = BigInt("0x" + value.slice(0, 16));
   // next 8 bytes are the timestamp
@@ -43,7 +43,8 @@ async function getTinymanLPPrice(
   const { account } = res;
 
   const state = account["apps-local-state"]?.find((app: any) => app.id === validatorAppId)?.["key-value"];
-  if (state === undefined) throw new Error(`Unable to find Tinyman Pool: ${poolAddress} for validator app ${validatorAppId}.`);
+  if (state === undefined)
+    throw new Error(`Unable to find Tinyman Pool: ${poolAddress} for validator app ${validatorAppId}.`);
   const r0 = BigInt(getParsedValueFromState(state, "s1") || 0);
   const r1 = BigInt(getParsedValueFromState(state, "s2") || 0);
   const lts = BigInt(getParsedValueFromState(state, "ilt") || 0);
@@ -71,11 +72,7 @@ async function getPactLPPrice(indexerClient: Indexer, poolAppId: number, p0: big
  * @param assets - assets to get prices for
  * @returns OraclePrices oracle prices
  */
-async function getOraclePrices(
-  indexerClient: Indexer,
-  oracle: Oracle,
-  assets: number[],
-): Promise<OraclePrices> {
+async function getOraclePrices(indexerClient: Indexer, oracle: Oracle, assets: number[]): Promise<OraclePrices> {
   const { oracle1AppId, oracleAdapterAppId, tinymanValidatorAppId } = oracle;
   const [oracleRes, oracleAdapterRes] = await Promise.all([
     indexerClient.lookupApplications(oracle1AppId).do(),
@@ -102,7 +99,8 @@ async function getOraclePrices(
       );
 
       price = {
-        price: oracleAdapterValue.provider === "Tinyman"
+        price:
+          oracleAdapterValue.provider === "Tinyman"
             ? await getTinymanLPPrice(indexerClient, tinymanValidatorAppId, oracleAdapterValue.poolAddress, p0, p1)
             : await getPactLPPrice(indexerClient, oracleAdapterValue.poolAppId, p0, p1),
         timestamp: minimum(t0, t1),
