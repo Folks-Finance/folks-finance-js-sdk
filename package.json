@@ -33,7 +33,7 @@
     "build:esm": "tsc -p tsconfig.esm.json && mv dist/esm/index.js dist/esm/index.mjs",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "prepack": "npm run build",
-    "docs": "typedoc src/index.ts --options typedoc.config.json",
+    "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.cjs.json",
     "example": "ts-node"
   },
   "dependencies": {
