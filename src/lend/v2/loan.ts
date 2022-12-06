@@ -9,7 +9,7 @@ import {
   makeApplicationCloseOutTxn,
   OnApplicationComplete,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import {
   fromIntToByteHex,
@@ -17,7 +17,7 @@ import {
   getApplicationGlobalState,
   getParsedValueFromState,
   signer,
-  transferAlgoOrAsset
+  transferAlgoOrAsset,
 } from "../../utils";
 import { loanABIContract, poolABIContract } from "./abiContracts";
 import { retrievePoolManagerInfo } from "./deposit";
@@ -34,14 +34,14 @@ import {
   PoolLoanInfo,
   PoolManagerInfo,
   ReserveAddress,
-  UserLoanInfo
+  UserLoanInfo,
 } from "./types";
 import {
   addEscrowNoteTransaction,
   getEscrows,
   loanLocalState,
   removeEscrowNoteTransaction,
-  userLoanInfo
+  userLoanInfo,
 } from "./utils";
 
 /**
@@ -57,13 +57,13 @@ async function retrieveLoanInfo(client: Algodv2 | Indexer, loanAppId: number): P
   if (state === undefined) throw Error("Could not find Loan");
 
   const paramsBase64Value = String(getParsedValueFromState(state, "pa"));
-  const paramsValue = Buffer.from(paramsBase64Value, 'base64').toString('hex');
+  const paramsValue = Buffer.from(paramsBase64Value, "base64").toString("hex");
   const canSwapCollateral = Boolean(BigInt("0x" + paramsValue.slice(96, 98)));
 
   const pools: Record<number, PoolLoanInfo> = {};
   for (let i = 0; i < 63; i++) {
     const poolBase64Value = String(getParsedValueFromState(state, fromIntToByteHex(i), "hex"));
-    const poolValue = Buffer.from(poolBase64Value, 'base64').toString('hex');
+    const poolValue = Buffer.from(poolBase64Value, "base64").toString("hex");
 
     for (let j = 0; j < 3; j++) {
       const basePos = j * 84;
@@ -110,8 +110,12 @@ async function retrieveLoansLocalState(
 
   // get all remaining loans' local state
   for (const escrowAddr of escrows) {
-    const { currentRound, localState: state } = await getAccountApplicationLocalState(indexerClient, loanAppId, escrowAddr);
-    if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`)
+    const { currentRound, localState: state } = await getAccountApplicationLocalState(
+      indexerClient,
+      loanAppId,
+      escrowAddr,
+    );
+    if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`);
     loansLocalState.push({ currentRound, ...loanLocalState(state, loanAppId, escrowAddr) });
   }
 
@@ -134,7 +138,7 @@ async function retrieveLoanLocalState(
   escrowAddr: string,
 ): Promise<LoanLocalState> {
   const { currentRound, localState: state } = await getAccountApplicationLocalState(client, loanAppId, escrowAddr);
-  if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`)
+  if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`);
   return { currentRound, ...loanLocalState(state, loanAppId, escrowAddr) };
 }
 
@@ -163,14 +167,21 @@ async function retrieveUserLoansInfo(
   const loanInfoReq = retrieveLoanInfo(indexerClient, loanAppId);
   const poolManagerInfoReq = retrievePoolManagerInfo(indexerClient, poolManagerAppId);
   const oraclePricesReq = getOraclePrices(indexerClient, oracle);
-  const [escrows, poolInfo, loanInfo, oraclePrices] = await Promise.all(
-    [escrowsReq, poolManagerInfoReq, loanInfoReq, oraclePricesReq]
-  );
+  const [escrows, poolInfo, loanInfo, oraclePrices] = await Promise.all([
+    escrowsReq,
+    poolManagerInfoReq,
+    loanInfoReq,
+    oraclePricesReq,
+  ]);
 
   // get all remaining loans' info
   for (const escrowAddr of escrows) {
-    const { currentRound, localState: state } = await getAccountApplicationLocalState(indexerClient, loanAppId, escrowAddr);
-    if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`)
+    const { currentRound, localState: state } = await getAccountApplicationLocalState(
+      indexerClient,
+      loanAppId,
+      escrowAddr,
+    );
+    if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`);
     const localState = loanLocalState(state, loanAppId, escrowAddr);
     userLoanInfos.push({ ...userLoanInfo(localState, poolInfo, loanInfo, oraclePrices), currentRound });
   }
@@ -200,13 +211,11 @@ async function retrieveUserLoanInfo(
   const loanInfoReq = retrieveLoanInfo(client, loanAppId);
   const poolManagerInfoReq = retrievePoolManagerInfo(client, poolManagerAppId);
   const oraclePricesReq = getOraclePrices(client, oracle);
-  const [poolInfo, loanInfo, oraclePrices] = await Promise.all(
-    [poolManagerInfoReq, loanInfoReq, oraclePricesReq]
-  );
+  const [poolInfo, loanInfo, oraclePrices] = await Promise.all([poolManagerInfoReq, loanInfoReq, oraclePricesReq]);
 
   // get loan info
   const { currentRound, localState: state } = await getAccountApplicationLocalState(client, loanAppId, escrowAddr);
-  if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`)
+  if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`);
   const localState = loanLocalState(state, loanAppId, escrowAddr);
   return { ...userLoanInfo(localState, poolInfo, loanInfo, oraclePrices), currentRound };
 }
@@ -236,21 +245,22 @@ async function retrieveLiquidatableLoans(
     const req = await indexerClient
       .searchAccounts()
       .applicationID(loanAppId)
-      .exclude("assets,created-assets,created-apps")
+      .exclude("assets,created-assets,created-apps");
     if (nextToken !== undefined) req.nextToken(nextToken);
     const res = await req.do();
 
     // metadata
-    const currentRound = res['current-round'];
-    nextToken = res['next-token'];
+    const currentRound = res["current-round"];
+    nextToken = res["next-token"];
 
     // convert to user loan info and add if liquidatable
-    for (const acc of res['accounts']) {
-      const escrowAddr = acc['address'];
-      const state = acc['apps-local-state']?.find(({ id }: any) => id === loanAppId)?.['key-value'];
+    for (const acc of res["accounts"]) {
+      const escrowAddr = acc["address"];
+      const state = acc["apps-local-state"]?.find(({ id }: any) => id === loanAppId)?.["key-value"];
       const localState = loanLocalState(state, loanAppId, escrowAddr);
       const loan = userLoanInfo(localState, poolInfo, loanInfo, oraclePrices);
-      if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue) loans.push({ ...loan, currentRound });
+      if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue)
+        loans.push({ ...loan, currentRound });
     }
   } while (nextToken !== undefined);
 
@@ -271,7 +281,7 @@ async function retrieveLiquidatableLoans(
 function getMaxReduceCollateralForBorrowUtilisationRatio(
   loan: UserLoanInfo,
   colPoolAppId: number,
-  targetBorrowUtilisationRatio: bigint
+  targetBorrowUtilisationRatio: bigint,
 ): bigint {
   const collateral = loan.collaterals.find(({ poolAppId }) => poolAppId === colPoolAppId);
 
@@ -280,14 +290,22 @@ function getMaxReduceCollateralForBorrowUtilisationRatio(
 
   // check if can reduce all collateral (special case as lack required precision otherwise)
   const newEffectiveBalanceValue = loan.totalEffectiveCollateralBalanceValue - collateral.effectiveBalanceValue;
-  const newBorrowUtilisationRatio = calcBorrowUtilisationRatio(loan.totalEffectiveBorrowBalanceValue, newEffectiveBalanceValue);
+  const newBorrowUtilisationRatio = calcBorrowUtilisationRatio(
+    loan.totalEffectiveBorrowBalanceValue,
+    newEffectiveBalanceValue,
+  );
   if (
     !(newEffectiveBalanceValue === BigInt(0) && loan.totalEffectiveBorrowBalanceValue > BigInt(0)) &&
     newBorrowUtilisationRatio <= targetBorrowUtilisationRatio
-  ) return collateral.fAssetBalance;
+  )
+    return collateral.fAssetBalance;
 
   // calculate max
-  const targetEffectiveCollateralBalanceValue = divScale(loan.totalEffectiveBorrowBalanceValue, targetBorrowUtilisationRatio, ONE_4_DP); // 4 d.p.
+  const targetEffectiveCollateralBalanceValue = divScale(
+    loan.totalEffectiveBorrowBalanceValue,
+    targetBorrowUtilisationRatio,
+    ONE_4_DP,
+  ); // 4 d.p.
   const deltaEffectiveBalanceValue = loan.totalEffectiveCollateralBalanceValue - targetEffectiveCollateralBalanceValue; // 4 d.p.
   const deltaBalanceValue = divScale(deltaEffectiveBalanceValue, collateral.collateralFactor, ONE_4_DP); // 4 d.p.
   const deltaAssetBalance = divScale(deltaBalanceValue, collateral.assetPrice, ONE_10_DP); // 0 d.p.
@@ -310,13 +328,17 @@ function getMaxBorrowForBorrowUtilisationRatio(
   loan: UserLoanInfo,
   assetPrice: bigint,
   borrowFactor: bigint,
-  targetBorrowUtilisationRatio: bigint
+  targetBorrowUtilisationRatio: bigint,
 ): bigint {
   // if target is below actual, return 0
   if (targetBorrowUtilisationRatio <= loan.borrowUtilisationRatio) return BigInt(0);
 
   // calculate max
-  const targetEffectiveBorrowBalanceValue = mulScale(loan.totalEffectiveCollateralBalanceValue, targetBorrowUtilisationRatio, ONE_4_DP); // 4 d.p.
+  const targetEffectiveBorrowBalanceValue = mulScale(
+    loan.totalEffectiveCollateralBalanceValue,
+    targetBorrowUtilisationRatio,
+    ONE_4_DP,
+  ); // 4 d.p.
   const deltaEffectiveBalanceValue = targetEffectiveBorrowBalanceValue - loan.totalEffectiveBorrowBalanceValue; // 4 d.p.
   const deltaBalanceValue = divScale(deltaEffectiveBalanceValue, borrowFactor, ONE_4_DP); // 4 d.p.
   const deltaAssetBalance = divScale(deltaBalanceValue, assetPrice, ONE_10_DP); // 0 d.p.
@@ -335,11 +357,15 @@ function getMaxBorrowForBorrowUtilisationRatio(
 function prepareCreateUserLoan(
   loanAppId: number,
   userAddr: string,
-  params: SuggestedParams
-): ({ txns: Transaction[], escrow: Account }) {
+  params: SuggestedParams,
+): { txns: Transaction[]; escrow: Account } {
   const escrow = generateAccount();
 
-  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, loanAppId, "la ", { ...params, flatFee: true, fee: 2000 });
+  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, loanAppId, "la ", {
+    ...params,
+    flatFee: true,
+    fee: 2000,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -352,7 +378,10 @@ function prepareCreateUserLoan(
     rekeyTo: getApplicationAddress(loanAppId),
     suggestedParams: { ...params, flatFee: true, fee: 0 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return { txns, escrow };
 }
 
@@ -387,17 +416,13 @@ function prepareAddCollateralToLoan(
     signer,
     appID: loanAppId,
     method: getMethodByName(loanABIContract.methods, "add_collateral"),
-    methodArgs: [
-      escrowAddr,
-      fAssetId,
-      poolAppId,
-      poolManagerIndex,
-      poolLoanIndex,
-      poolManagerAppId,
-    ],
+    methodArgs: [escrowAddr, fAssetId, poolAppId, poolManagerIndex, poolLoanIndex, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -447,7 +472,10 @@ function prepareSyncCollateralInLoan(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 1000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return [...refreshPrices.slice(0, -1), ...txns];
 }
 
@@ -508,7 +536,10 @@ function prepareReduceCollateralFromLoan(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 6000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return [...refreshPrices.slice(0, -1), ...txns];
 }
 
@@ -562,7 +593,10 @@ function prepareSwapCollateralInLoanBegin(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 6000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -609,7 +643,10 @@ function prepareSwapCollateralInLoanEnd(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 1000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return [...refreshPrices.slice(0, -1), ...txns];
 }
 
@@ -642,7 +679,10 @@ function prepareRemoveCollateralFromLoan(
     methodArgs: [escrowAddr, fAssetId, poolAppId],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -707,7 +747,10 @@ function prepareBorrowFromLoan(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 8000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return [...refreshPrices.slice(0, -1), ...txns];
 }
 
@@ -744,7 +787,10 @@ function prepareSwitchBorrowTypeInLoan(
     methodArgs: [escrowAddr, assetId, maxStableRate, poolAppId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 6000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -778,7 +824,11 @@ function prepareRepayLoanWithTxn(
 ): Transaction[] {
   const { appId: poolAppId, assetId, frAssetId } = pool;
 
-  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(poolAppId), repayAmount, { ...params, flatFee: true, fee: 0 })
+  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(poolAppId), repayAmount, {
+    ...params,
+    flatFee: true,
+    fee: 0,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -799,7 +849,10 @@ function prepareRepayLoanWithTxn(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 10000 },
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 /**
@@ -846,10 +899,16 @@ function prepareRepayLoanWithCollateral(
       fAssetId,
       frAssetId,
       repayAmount,
-      isStable, poolAppId, poolManagerAppId],
+      isStable,
+      poolAppId,
+      poolManagerAppId,
+    ],
     suggestedParams: { ...params, flatFee: true, fee: 14000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -895,7 +954,11 @@ function prepareLiquidateLoan(
 
   const refreshPrices = prepareRefreshPricesInOracleAdapter(oracle, liquidatorAddr, lpAssets, baseAssetIds, params);
 
-  const sendAsset = transferAlgoOrAsset(assetId, liquidatorAddr, getApplicationAddress(borPoolAppId), repayAmount, { ...params, flatFee: true, fee: 0 });
+  const sendAsset = transferAlgoOrAsset(assetId, liquidatorAddr, getApplicationAddress(borPoolAppId), repayAmount, {
+    ...params,
+    flatFee: true,
+    fee: 0,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -919,7 +982,10 @@ function prepareLiquidateLoan(
     ],
     suggestedParams: { ...params, flatFee: true, fee: 10000 },
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 /**
@@ -953,7 +1019,10 @@ function prepareRebalanceUpLoan(
     methodArgs: [escrowAddr, assetId, poolAppId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 5000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -988,7 +1057,10 @@ function prepareRebalanceDownLoan(
     methodArgs: [escrowAddr, assetId, poolAppId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 5000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -1006,9 +1078,8 @@ function prepareRemoveUserLoan(
   loanAppId: number,
   userAddr: string,
   escrowAddr: string,
-  params: SuggestedParams
+  params: SuggestedParams,
 ): Transaction[] {
-
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
     sender: userAddr,
@@ -1018,7 +1089,10 @@ function prepareRemoveUserLoan(
     methodArgs: [escrowAddr],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   const optOutTx = makeApplicationCloseOutTxn(escrowAddr, { ...params, flatFee: true, fee: 0 }, loanAppId);
   const closeToTx = removeEscrowNoteTransaction(escrowAddr, userAddr, "lr ", { ...params, flatFee: true, fee: 0 });
   return [txns[0], optOutTx, closeToTx];
@@ -1056,7 +1130,10 @@ function prepareFlashLoanBegin(
     methodArgs: [borrowAmount, txnIndexForFlashLoanEnd, receiverAddr, assetId],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -1081,7 +1158,11 @@ function prepareFlashLoanEnd(
 ): Transaction[] {
   const { appId, assetId } = pool;
 
-  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(appId), repaymentAmount, { ...params, flatFee: true, fee: 0 })
+  const sendAsset = transferAlgoOrAsset(assetId, userAddr, getApplicationAddress(appId), repaymentAmount, {
+    ...params,
+    flatFee: true,
+    fee: 0,
+  });
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -1092,7 +1173,10 @@ function prepareFlashLoanEnd(
     methodArgs: [{ txn: sendAsset, signer }, reserveAddr, assetId],
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 export {

@@ -2,42 +2,42 @@ import { Oracle, Pool, ReserveAddress, TokenPair } from "../types";
 
 type TestnetPoolKey = "ALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "xUSD";
 const TestnetPools: Record<TestnetPoolKey, Pool> = {
-  "ALGO": {
+  ALGO: {
     appId: 79413571,
     assetId: 0,
     fAssetId: 79413584,
     frAssetId: 79413585,
     assetDecimals: 6,
   },
-  "USDC": {
+  USDC: {
     appId: 79414655,
     assetId: 67395862,
     fAssetId: 79414673,
     frAssetId: 79414674,
     assetDecimals: 6,
   },
-  "USDt": {
+  USDt: {
     appId: 79414803,
     assetId: 67396430,
     fAssetId: 79414816,
     frAssetId: 79414817,
     assetDecimals: 6,
   },
-  "goBTC": {
+  goBTC: {
     appId: 79414213,
     assetId: 67396528,
     fAssetId: 79414227,
     frAssetId: 79414228,
     assetDecimals: 8,
   },
-  "goETH": {
+  goETH: {
     appId: 79414429,
     assetId: 76598897,
     fAssetId: 79414445,
     frAssetId: 79414446,
     assetDecimals: 8,
   },
-  "xUSD": {
+  xUSD: {
     appId: 79414940,
     assetId: 62281549,
     fAssetId: 79414986,
@@ -47,7 +47,37 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
 };
 
 // CollateralPool-BorrowPool
-type TestnetTokenPairKey = "ALGO-USDC" | "ALGO-USDt" | "ALGO-goBTC" | "ALGO-goETH" | "ALGO-xUSD" | "USDC-ALGO" | "USDC-USDt" | "USDC-goBTC" | "USDC-goETH" | "USDC-xUSD" | "USDt-ALGO" | "USDt-USDC" | "USDt-goBTC" | "USDt-goETH" | "USDt-xUSD" | "goBTC-ALGO" | "goBTC-USDC" | "goBTC-USDt" | "goBTC-goETH" | "goBTC-xUSD" | "goETH-ALGO"| "goETH-USDC"| "goETH-USDt"| "goETH-goBTC" | "goETH-xUSD" | "xUSD-ALGO" | "xUSD-USDC"| "xUSD-USDt"| "xUSD-goBTC"| "xUSD-goETH";
+type TestnetTokenPairKey =
+  | "ALGO-USDC"
+  | "ALGO-USDt"
+  | "ALGO-goBTC"
+  | "ALGO-goETH"
+  | "ALGO-xUSD"
+  | "USDC-ALGO"
+  | "USDC-USDt"
+  | "USDC-goBTC"
+  | "USDC-goETH"
+  | "USDC-xUSD"
+  | "USDt-ALGO"
+  | "USDt-USDC"
+  | "USDt-goBTC"
+  | "USDt-goETH"
+  | "USDt-xUSD"
+  | "goBTC-ALGO"
+  | "goBTC-USDC"
+  | "goBTC-USDt"
+  | "goBTC-goETH"
+  | "goBTC-xUSD"
+  | "goETH-ALGO"
+  | "goETH-USDC"
+  | "goETH-USDt"
+  | "goETH-goBTC"
+  | "goETH-xUSD"
+  | "xUSD-ALGO"
+  | "xUSD-USDC"
+  | "xUSD-USDt"
+  | "xUSD-goBTC"
+  | "xUSD-goETH";
 const TestnetTokenPairs: Record<TestnetTokenPairKey, TokenPair> = {
   "ALGO-USDC": {
     appId: 79423184,
@@ -237,15 +267,8 @@ const TestnetOracle: Oracle = {
   oracleAdapterAppId: 138252228,
   tinymanValidatorAppId: 62368684,
   decimals: 14,
-}
+};
 
 const TestnetReserveAddress: ReserveAddress = "5ISPVI3JMQ4MP5XWWK4ILLKJAYU34U4TGZGXNC5BKR5AK3JBVAMJYBRYEI";
 
-export {
-  TestnetPoolKey,
-  TestnetPools,
-  TestnetTokenPairKey,
-  TestnetTokenPairs,
-  TestnetOracle,
-  TestnetReserveAddress,
-};
+export { TestnetPoolKey, TestnetPools, TestnetTokenPairKey, TestnetTokenPairs, TestnetOracle, TestnetReserveAddress };

@@ -10,7 +10,7 @@ import {
   ONE_16_DP,
   ONE_4_DP,
   SECONDS_IN_YEAR,
-  sqrt
+  sqrt,
 } from "./mathLib";
 
 /**
@@ -95,9 +95,9 @@ function calcStableDebtToTotalDebtRatio(totalStblDebt: bigint, totalDebt: bigint
  * @return variableBorrowInterestRate (16dp)
  */
 function calcVariableBorrowInterestRate(vr0: bigint, vr1: bigint, vr2: bigint, ut: bigint, uopt: bigint): bigint {
-  return ut < uopt ?
-    vr0 + divScale(mulScale(ut, vr1, ONE_16_DP), uopt, ONE_16_DP) :
-    vr0 + vr1 + divScale(mulScale(ut - uopt, vr2, ONE_16_DP), ONE_16_DP - uopt, ONE_16_DP);
+  return ut < uopt
+    ? vr0 + divScale(mulScale(ut, vr1, ONE_16_DP), uopt, ONE_16_DP)
+    : vr0 + vr1 + divScale(mulScale(ut - uopt, vr2, ONE_16_DP), ONE_16_DP - uopt, ONE_16_DP);
 }
 
 /**
@@ -124,12 +124,14 @@ function calcStableBorrowInterestRate(
   ratiot: bigint,
   ratioopt: bigint,
 ): bigint {
-  const base = ut <= uopt ?
-    vr1 + sr0 + divScale(mulScale(ut, sr1, ONE_16_DP), uopt, ONE_16_DP) :
-    vr1 + sr0 + sr1 + divScale(mulScale(ut - uopt, sr2, ONE_16_DP), ONE_16_DP - uopt, ONE_16_DP);
-  const extra = ratiot <= ratioopt ?
-    BigInt(0) :
-    divScale(mulScale(sr3, ratiot - ratioopt, ONE_16_DP), ONE_16_DP - ratioopt, ONE_16_DP);
+  const base =
+    ut <= uopt
+      ? vr1 + sr0 + divScale(mulScale(ut, sr1, ONE_16_DP), uopt, ONE_16_DP)
+      : vr1 + sr0 + sr1 + divScale(mulScale(ut - uopt, sr2, ONE_16_DP), ONE_16_DP - uopt, ONE_16_DP);
+  const extra =
+    ratiot <= ratioopt
+      ? BigInt(0)
+      : divScale(mulScale(sr3, ratiot - ratioopt, ONE_16_DP), ONE_16_DP - ratioopt, ONE_16_DP);
   return base + extra;
 }
 
@@ -141,12 +143,7 @@ function calcStableBorrowInterestRate(
  * @param osbiat (16dp)
  * @return overallBorrowInterestRate (16dp)
  */
-function calcOverallBorrowInterestRate(
-  totalVarDebt: bigint,
-  totalDebt: bigint,
-  vbirt: bigint,
-  osbiat: bigint,
-): bigint {
+function calcOverallBorrowInterestRate(totalVarDebt: bigint, totalDebt: bigint, vbirt: bigint, osbiat: bigint): bigint {
   if (totalDebt === BigInt(0)) return BigInt(0);
   return (totalVarDebt * vbirt + osbiat) / totalDebt;
 }
@@ -171,7 +168,7 @@ function calcDepositInterestRate(obirt: bigint, rr: bigint, ut: bigint): bigint 
  */
 function calcBorrowInterestIndex(birt1: bigint, biit1: bigint, latestUpdate: bigint): bigint {
   const dt = BigInt(unixTime()) - latestUpdate;
-  return mulScale(biit1, expBySquaring(ONE_16_DP + (birt1 / SECONDS_IN_YEAR), dt, ONE_16_DP), ONE_16_DP);
+  return mulScale(biit1, expBySquaring(ONE_16_DP + birt1 / SECONDS_IN_YEAR, dt, ONE_16_DP), ONE_16_DP);
 }
 
 /**
@@ -183,7 +180,7 @@ function calcBorrowInterestIndex(birt1: bigint, biit1: bigint, latestUpdate: big
  */
 function calcDepositInterestIndex(dirt1: bigint, diit1: bigint, latestUpdate: bigint): bigint {
   const dt = BigInt(unixTime()) - latestUpdate;
-  return mulScale(diit1, ONE_16_DP + ((dirt1 * dt) / SECONDS_IN_YEAR), ONE_16_DP);
+  return mulScale(diit1, ONE_16_DP + (dirt1 * dt) / SECONDS_IN_YEAR, ONE_16_DP);
 }
 
 /**
@@ -217,7 +214,6 @@ function calcCollateralAssetLoanValue(amount: bigint, price: bigint, factor: big
   return mulScale(mulScale(amount, price, ONE_10_DP), factor, ONE_4_DP);
 }
 
-
 /**
  * Calculates the borrow asset loan value
  * @param amount (0dp)
@@ -246,7 +242,10 @@ function calcLTVRatio(totalBorrowBalanceValue: bigint, totalCollateralBalanceVal
  * @param totalEffectiveCollateralBalanceValue (4dp)
  * @return borrowUtilisationRatio (4dp)
  */
-function calcBorrowUtilisationRatio(totalEffectiveBorrowBalanceValue: bigint, totalEffectiveCollateralBalanceValue: bigint): bigint {
+function calcBorrowUtilisationRatio(
+  totalEffectiveBorrowBalanceValue: bigint,
+  totalEffectiveCollateralBalanceValue: bigint,
+): bigint {
   if (totalEffectiveCollateralBalanceValue === BigInt(0)) return BigInt(0);
   return divScale(totalEffectiveBorrowBalanceValue, totalEffectiveCollateralBalanceValue, ONE_4_DP);
 }
@@ -257,11 +256,17 @@ function calcBorrowUtilisationRatio(totalEffectiveBorrowBalanceValue: bigint, to
  * @param totalEffectiveCollateralBalanceValue (4dp)
  * @return liquidationMargin (4dp)
  */
-function calcLiquidationMargin(totalEffectiveBorrowBalanceValue: bigint, totalEffectiveCollateralBalanceValue: bigint): bigint {
+function calcLiquidationMargin(
+  totalEffectiveBorrowBalanceValue: bigint,
+  totalEffectiveCollateralBalanceValue: bigint,
+): bigint {
   if (totalEffectiveCollateralBalanceValue === BigInt(0)) return BigInt(0);
-  return divScale(totalEffectiveCollateralBalanceValue - totalEffectiveBorrowBalanceValue, totalEffectiveCollateralBalanceValue, ONE_4_DP);
+  return divScale(
+    totalEffectiveCollateralBalanceValue - totalEffectiveBorrowBalanceValue,
+    totalEffectiveCollateralBalanceValue,
+    ONE_4_DP,
+  );
 }
-
 
 /**
  * Calculates the borrow balance of the loan at time t
@@ -359,4 +364,4 @@ export {
   calcRebalanceDownThreshold,
   calcFlashLoanRepayment,
   calcLPPrice,
-}
+};

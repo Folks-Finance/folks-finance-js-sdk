@@ -1,9 +1,4 @@
-import {
-  encodeUint64,
-  makeApplicationNoOpTxn,
-  SuggestedParams,
-  Transaction
-} from "algosdk";
+import { encodeUint64, makeApplicationNoOpTxn, SuggestedParams, Transaction } from "algosdk";
 import { OpUp } from "./types";
 
 /**
@@ -33,9 +28,19 @@ function prefixWithOpUp(
   const { callerAppId, baseAppId } = opup;
   const fee = (numInnerTransactions + 1) * 1000;
   const budget = numInnerTransactions === 0 ? 0 : 686 * numInnerTransactions - 3;
-  const prefix = makeApplicationNoOpTxn(userAddr, { ...params, flatFee: true, fee }, callerAppId, [encodeUint64(budget)], undefined, [baseAppId]);
+  const prefix = makeApplicationNoOpTxn(
+    userAddr,
+    { ...params, flatFee: true, fee },
+    callerAppId,
+    [encodeUint64(budget)],
+    undefined,
+    [baseAppId],
+  );
   const txns = Array.isArray(transactions) ? transactions : [transactions];
-  return [prefix, ...txns].map(txn => { txn.group = undefined; return txn; });
+  return [prefix, ...txns].map((txn) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 export { prefixWithOpUp };

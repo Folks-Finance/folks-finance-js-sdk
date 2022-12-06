@@ -6,7 +6,7 @@ import {
   Indexer,
   makeApplicationOptInTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { enc, getParsedValueFromState, parseUint64s, transferAlgoOrAsset } from "../../utils";
 import { abiDistributor } from "./constants/abiContracts";
@@ -25,16 +25,18 @@ const signer = async () => [];
 async function getDispenserInfo(indexerClient: Indexer, dispenser: Dispenser): Promise<DispenserInfo> {
   const { appId } = dispenser;
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
-  const distributorAppIds = parseUint64s(String(getParsedValueFromState(state, 'distribs'))).map(appId => Number(appId));
-  const isMintingPaused = Boolean(getParsedValueFromState(state, 'is_minting_paused') || 0);
+  const distributorAppIds = parseUint64s(String(getParsedValueFromState(state, "distribs"))).map((appId) =>
+    Number(appId),
+  );
+  const isMintingPaused = Boolean(getParsedValueFromState(state, "is_minting_paused") || 0);
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     distributorAppIds,
     isMintingPaused,
-  }
+  };
 }
 
 /**
@@ -48,24 +50,24 @@ async function getDispenserInfo(indexerClient: Indexer, dispenser: Dispenser): P
 async function getDistributorInfo(indexerClient: Indexer, distributor: Distributor): Promise<DistributorInfo> {
   const { appId } = distributor;
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
-  const dispenserAppId = Number(getParsedValueFromState(state, 'dispenser_app_id') || 0);
-  const commitEnd = BigInt(getParsedValueFromState(state, 'commit_end') || 0);
-  const periodEnd = BigInt(getParsedValueFromState(state, 'period_end') || 0);
-  const totalCommitment = BigInt(getParsedValueFromState(state, 'total_commitment') || 0);
-  const totalCommitmentClaimed = BigInt(getParsedValueFromState(state, 'total_commitment_claimed') || 0);
-  const canClaimAlgoRewards = Boolean(getParsedValueFromState(state, 'can_claim_algo_rewards') || 0);
-  const rewardsPerAlgo = BigInt(getParsedValueFromState(state, 'rewards_per_algo') || 0);
-  const totalRewardsClaimed = BigInt(getParsedValueFromState(state, 'total_rewards_claimed') || 0);
-  const isBurningPaused = Boolean(getParsedValueFromState(state, 'is_burning_paused') || 0);
+  const dispenserAppId = Number(getParsedValueFromState(state, "dispenser_app_id") || 0);
+  const commitEnd = BigInt(getParsedValueFromState(state, "commit_end") || 0);
+  const periodEnd = BigInt(getParsedValueFromState(state, "period_end") || 0);
+  const totalCommitment = BigInt(getParsedValueFromState(state, "total_commitment") || 0);
+  const totalCommitmentClaimed = BigInt(getParsedValueFromState(state, "total_commitment_claimed") || 0);
+  const canClaimAlgoRewards = Boolean(getParsedValueFromState(state, "can_claim_algo_rewards") || 0);
+  const rewardsPerAlgo = BigInt(getParsedValueFromState(state, "rewards_per_algo") || 0);
+  const totalRewardsClaimed = BigInt(getParsedValueFromState(state, "total_rewards_claimed") || 0);
+  const isBurningPaused = Boolean(getParsedValueFromState(state, "is_burning_paused") || 0);
 
   // optional
-  const premintEndState = getParsedValueFromState(state, 'premint_end');
+  const premintEndState = getParsedValueFromState(state, "premint_end");
   const premintEnd = premintEndState !== undefined ? BigInt(premintEndState) : undefined;
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     dispenserAppId,
     premintEnd,
     commitEnd,
@@ -76,7 +78,7 @@ async function getDistributorInfo(indexerClient: Indexer, distributor: Distribut
     rewardsPerAlgo,
     totalRewardsClaimed,
     isBurningPaused,
-  }
+  };
 }
 
 /**
@@ -100,23 +102,22 @@ async function getUserLiquidGovernanceInfo(
   const res = await req.do();
 
   // user local state
-  const state = res['apps-local-states']?.find((app: any) => app.id === appId)?.['key-value'];
+  const state = res["apps-local-states"]?.find((app: any) => app.id === appId)?.["key-value"];
   if (state === undefined) throw new Error("Unable to find commitment for: " + userAddr + ".");
-  const commitment = BigInt(getParsedValueFromState(state, 'commitment') || 0);
-  const commitmentClaimed = BigInt(getParsedValueFromState(state, 'commitment_claimed') || 0);
+  const commitment = BigInt(getParsedValueFromState(state, "commitment") || 0);
+  const commitmentClaimed = BigInt(getParsedValueFromState(state, "commitment_claimed") || 0);
 
   // optional
-  const premintState = getParsedValueFromState(state, 'premint');
+  const premintState = getParsedValueFromState(state, "premint");
   const premint = premintState !== undefined ? BigInt(premintState) : undefined;
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     premint,
     commitment,
     commitmentClaimed,
-  }
+  };
 }
-
 
 /**
  *
@@ -143,9 +144,13 @@ function prepareMintTransactions(
 ): Transaction[] {
   const atc = new AtomicTransactionComposer();
   const payment = {
-    txn: transferAlgoOrAsset(0, senderAddr, getApplicationAddress(distributor.appId), amount, { ...params, fee: 0, flatFee: true }),
+    txn: transferAlgoOrAsset(0, senderAddr, getApplicationAddress(distributor.appId), amount, {
+      ...params,
+      fee: 0,
+      flatFee: true,
+    }),
     signer,
-  }
+  };
   atc.addMethodCall({
     sender: senderAddr,
     signer,
@@ -156,11 +161,15 @@ function prepareMintTransactions(
     note,
   });
 
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   // for ledger compatibility (max 2 app args), remove index references which are not strictly needed
   txns[1].appArgs = txns[1].appArgs?.slice(0, -2);
   // user must be opted in before they can mint in the commitment period
-  if (includeOptIn) txns.unshift(makeApplicationOptInTxn(senderAddr, { ...params, fee: 1000, flatFee: true }, distributor.appId));
+  if (includeOptIn)
+    txns.unshift(makeApplicationOptInTxn(senderAddr, { ...params, fee: 1000, flatFee: true }, distributor.appId));
   return assignGroupID(txns);
 }
 
@@ -195,7 +204,10 @@ function prepareUnmintPremintTransaction(
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
     note,
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -222,9 +234,13 @@ function prepareUnmintTransactions(
 ): Transaction[] {
   const atc = new AtomicTransactionComposer();
   const assetTransfer = {
-    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, { ...params, fee: 0, flatFee: true }),
+    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, {
+      ...params,
+      fee: 0,
+      flatFee: true,
+    }),
     signer,
-  }
+  };
   atc.addMethodCall({
     sender: senderAddr,
     signer,
@@ -235,7 +251,10 @@ function prepareUnmintTransactions(
     note,
   });
 
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return assignGroupID(txns);
 }
 
@@ -267,7 +286,10 @@ function prepareClaimPremintTransaction(
     methodArgs: [receiverAddr, dispenser.gAlgoId, dispenser.appId],
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 
@@ -292,9 +314,13 @@ function prepareBurnTransactions(
 ): Transaction[] {
   const atc = new AtomicTransactionComposer();
   const assetTransfer = {
-    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, { ...params, fee: 0, flatFee: true }),
+    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, {
+      ...params,
+      fee: 0,
+      flatFee: true,
+    }),
     signer,
-  }
+  };
   atc.addMethodCall({
     sender: senderAddr,
     signer,
@@ -304,7 +330,10 @@ function prepareBurnTransactions(
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
 
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return assignGroupID(txns);
 }
 
@@ -338,7 +367,10 @@ function prepareEarlyClaimGovernanceRewardsTransaction(
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
 
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   // for ledger compatibility (max 2 app args), remove index references which are not strictly needed
   txns[0].appArgs = txns[0].appArgs?.slice(0, -2);
   return txns[0];
@@ -368,7 +400,10 @@ function prepareClaimGovernanceRewardsTransaction(
     method: getMethodByName(abiDistributor.methods, "claim_rewards"),
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
-  const txns = atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  const txns = atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
   return txns[0];
 }
 

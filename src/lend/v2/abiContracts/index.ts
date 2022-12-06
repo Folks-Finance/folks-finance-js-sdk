@@ -1,10 +1,10 @@
 import { ABIContract } from "algosdk";
 
-import depositsABI from "./deposits.json"
-import loanABI from "./loan.json"
-import lpTokenOracleABI from "./lpTokenOracle.json"
-import oracleAdapterABI from "./oracleAdapter.json"
-import poolABI from "./pool.json"
+import depositsABI from "./deposits.json";
+import loanABI from "./loan.json";
+import lpTokenOracleABI from "./lpTokenOracle.json";
+import oracleAdapterABI from "./oracleAdapter.json";
+import poolABI from "./pool.json";
 
 export const depositsABIContract = new ABIContract(depositsABI);
 export const loanABIContract = new ABIContract(loanABI);

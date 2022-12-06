@@ -10,7 +10,7 @@ import {
   PoolInfo,
   TinymanLPTokenPool,
   TokenPair,
-  TokenPairInfo
+  TokenPairInfo,
 } from "./types";
 
 function isTinymanLPTokenPool(pool: Pool): boolean {
@@ -28,7 +28,7 @@ function getOracleAdapterForeignApps(oracle: Oracle, tokenPair: TokenPair): numb
 
   const oracleAdapterForeignApps = [oracle1AppId];
   if (oracle2AppId) oracleAdapterForeignApps.push(oracle2AppId);
-  if (pools.some(pool => isTinymanLPTokenPool(pool))) oracleAdapterForeignApps.push(tinymanValidatorAppId);
+  if (pools.some((pool) => isTinymanLPTokenPool(pool))) oracleAdapterForeignApps.push(tinymanValidatorAppId);
   for (const pool of pools) {
     if (isPactLPTokenPool(pool)) oracleAdapterForeignApps.push((pool as PactLPTokenPool).poolAppId);
   }
@@ -76,21 +76,30 @@ function loanInfo(
   const { rate, decimals } = conversionRate;
 
   // escrow balance
-  const collateralBalance = escrow['assets']?.find((asset: any) => asset['asset-id'] === collateralPool.fAssetId)?.['amount'];
+  const collateralBalance = escrow["assets"]?.find((asset: any) => asset["asset-id"] === collateralPool.fAssetId)?.[
+    "amount"
+  ];
   if (collateralBalance === undefined) throw new Error("Unable to get escrow: " + escrowAddr + " collateral balance.");
 
   // escrow local state
-  const state = escrow['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
+  const state = escrow["apps-local-state"]?.find((app: any) => app.id === appId)?.["key-value"];
   if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for token pair " + appId + ".");
-  if (getParsedValueFromState(state, 'borrowed') === undefined) throw new Error("No loan for escrow: " + escrowAddr + " for token pair " + appId + ".");
+  if (getParsedValueFromState(state, "borrowed") === undefined)
+    throw new Error("No loan for escrow: " + escrowAddr + " for token pair " + appId + ".");
 
-  const ua = String(getParsedValueFromState(state, 'user_address'));
-  const borrowed = BigInt(getParsedValueFromState(state, 'borrowed') || 0);
-  const bb = BigInt(getParsedValueFromState(state, 'borrow_balance') || 0);
-  const lbii = BigInt(getParsedValueFromState(state, 'latest_borrow_interest_index') || 0);
+  const ua = String(getParsedValueFromState(state, "user_address"));
+  const borrowed = BigInt(getParsedValueFromState(state, "borrowed") || 0);
+  const bb = BigInt(getParsedValueFromState(state, "borrow_balance") || 0);
+  const lbii = BigInt(getParsedValueFromState(state, "latest_borrow_interest_index") || 0);
 
   // calculate health factor
-  const threshold = calcThreshold(BigInt(collateralBalance), depositInterestIndex, liquidationThreshold, rate, decimals);
+  const threshold = calcThreshold(
+    BigInt(collateralBalance),
+    depositInterestIndex,
+    liquidationThreshold,
+    rate,
+    decimals,
+  );
   const borrowBalance = calcBorrowBalance(bb, borrowInterestIndex, lbii);
   const healthFactor = calcHealthFactor(threshold, borrowBalance);
 
@@ -104,7 +113,7 @@ function loanInfo(
     borrowBalanceLiquidationThreshold: threshold,
     healthFactor,
     latestBorrowInterestIndex: lbii,
-  }
+  };
 }
 
 /**

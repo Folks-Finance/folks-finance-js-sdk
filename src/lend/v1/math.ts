@@ -89,7 +89,9 @@ export function calcBorrowBalance(
   borrowInterestIndex: bigint,
   borrowInterestIndexAtLastOperation: bigint,
 ): bigint {
-  return mul14(borrowBalanceAtLastOperation, div14(borrowInterestIndex, borrowInterestIndexAtLastOperation)) + BigInt(1);
+  return (
+    mul14(borrowBalanceAtLastOperation, div14(borrowInterestIndex, borrowInterestIndexAtLastOperation)) + BigInt(1)
+  );
 }
 
 /**
@@ -161,4 +163,4 @@ export {
   calcConversionRate,
   sqrt,
   calcLPPrice,
-}
+};

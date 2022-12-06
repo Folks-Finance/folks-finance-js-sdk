@@ -10,7 +10,7 @@ import {
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 
 /**
@@ -27,13 +27,14 @@ async function getLockAndEarns(indexerClient: Indexer, pool: Pool): Promise<Lock
 
   // build array of lock and earns
   const lockAndEarns: LockAndEarn[] = [];
-  res['accounts'].forEach((account: any) => {
-      const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
-      const liquidityAppId = getParsedValueFromState(state, 'liquidity_app_id');
-      if (liquidityAppId !== undefined) lockAndEarns.push({
+  res["accounts"].forEach((account: any) => {
+    const state = account["apps-local-state"]?.find((app: any) => app.id === appId)?.["key-value"];
+    const liquidityAppId = getParsedValueFromState(state, "liquidity_app_id");
+    if (liquidityAppId !== undefined)
+      lockAndEarns.push({
         appId: Number(liquidityAppId),
         pool,
-        linkAddr: account['address'],
+        linkAddr: account["address"],
       });
   });
   return lockAndEarns;
@@ -49,15 +50,15 @@ async function getLockAndEarns(indexerClient: Indexer, pool: Pool): Promise<Lock
  */
 async function getLockAndEarnInfo(indexerClient: Indexer, appId: number): Promise<LockAndEarnInfo> {
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
-  const rewardsRatio = BigInt(getParsedValueFromState(state, 'rewards_ratio') || 0);
-  const timeLocked = BigInt(getParsedValueFromState(state, 'time_locked') || 0);
-  const deposits = BigInt(getParsedValueFromState(state, 'deposits') || 0);
-  const limit = BigInt(getParsedValueFromState(state, 'limit') || 0);
+  const rewardsRatio = BigInt(getParsedValueFromState(state, "rewards_ratio") || 0);
+  const timeLocked = BigInt(getParsedValueFromState(state, "time_locked") || 0);
+  const deposits = BigInt(getParsedValueFromState(state, "deposits") || 0);
+  const limit = BigInt(getParsedValueFromState(state, "limit") || 0);
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     rewardsRatio,
     timeLocked,
     deposits,
@@ -80,17 +81,48 @@ function prepareProvideLiquidityTransactions(
   senderAddr: string,
   depositAmount: number | bigint,
   params: SuggestedParams,
-): ({ txns: Transaction[], escrow: Account }) {
+): { txns: Transaction[]; escrow: Account } {
   const { linkAddr, pool } = lockAndEarn;
   const { assetId, fAssetId, frAssetId } = pool;
 
   const escrow = generateAccount();
 
   const fundEscrow = transferAlgoOrAsset(0, senderAddr, escrow.addr, 0.407e6, { ...params, flatFee: true, fee: 8000 });
-  const optInCall = makeApplicationOptInTxn(escrow.addr, { ...params, flatFee: true, fee: 0 }, lockAndEarn.appId, undefined, undefined, undefined, undefined, undefined, undefined, getApplicationAddress(lockAndEarn.appId));
-  const liquidityCall = makeApplicationNoOpTxn(senderAddr, { ...params, flatFee: true, fee: 0 }, lockAndEarn.appId, [enc.encode("pl")], [escrow.addr], undefined, [fAssetId]);
-  const dispenserCall = makeApplicationNoOpTxn(senderAddr, { ...params, flatFee: true, fee: 0 }, pool.appId, [enc.encode("pl")], [linkAddr, escrow.addr], [lockAndEarn.appId], [fAssetId, frAssetId]);
-  const depositTx = transferAlgoOrAsset(assetId, senderAddr, getApplicationAddress(pool.appId), depositAmount, {...params, fee: 0, flatFee: true});
+  const optInCall = makeApplicationOptInTxn(
+    escrow.addr,
+    { ...params, flatFee: true, fee: 0 },
+    lockAndEarn.appId,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    getApplicationAddress(lockAndEarn.appId),
+  );
+  const liquidityCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, flatFee: true, fee: 0 },
+    lockAndEarn.appId,
+    [enc.encode("pl")],
+    [escrow.addr],
+    undefined,
+    [fAssetId],
+  );
+  const dispenserCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, flatFee: true, fee: 0 },
+    pool.appId,
+    [enc.encode("pl")],
+    [linkAddr, escrow.addr],
+    [lockAndEarn.appId],
+    [fAssetId, frAssetId],
+  );
+  const depositTx = transferAlgoOrAsset(assetId, senderAddr, getApplicationAddress(pool.appId), depositAmount, {
+    ...params,
+    fee: 0,
+    flatFee: true,
+  });
 
   return {
     txns: assignGroupID([fundEscrow, optInCall, liquidityCall, dispenserCall, depositTx]),
@@ -120,25 +152,26 @@ async function getLockedDepositInfo(
   const req = indexerClient.lookupAccountByID(escrowAddr);
   if (round) req.round(round);
   const res = await req.do();
-  const account = res['account'];
+  const account = res["account"];
 
   // escrow balance
-  const lockedBalance = account['assets']?.find((asset: any) => asset['asset-id'] === pool.fAssetId)?.['amount'];
+  const lockedBalance = account["assets"]?.find((asset: any) => asset["asset-id"] === pool.fAssetId)?.["amount"];
   if (lockedBalance === undefined) throw new Error("Unable to get escrow: " + escrowAddr + " locked balance.");
 
   // escrow local state
-  const state = account['apps-local-state']?.find((app: any) => app.id === appId)?.['key-value'];
-  if (state === undefined) throw new Error("Unable to find escrow: " + escrowAddr + " for lock and earn " + appId + ".");
-  const ua = String(getParsedValueFromState(state, 'user_address'));
-  const release = BigInt(getParsedValueFromState(state, 'release') || 0);
+  const state = account["apps-local-state"]?.find((app: any) => app.id === appId)?.["key-value"];
+  if (state === undefined)
+    throw new Error("Unable to find escrow: " + escrowAddr + " for lock and earn " + appId + ".");
+  const ua = String(getParsedValueFromState(state, "user_address"));
+  const release = BigInt(getParsedValueFromState(state, "release") || 0);
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     escrowAddress: escrowAddr,
     userAddress: encodeAddress(Buffer.from(ua, "base64")),
     lockedBalance: BigInt(lockedBalance),
     release,
-  }
+  };
 }
 
 /**
@@ -158,7 +191,15 @@ function prepareClaimLockedDepositTransactions(
   params: SuggestedParams,
 ) {
   const { appId, pool } = lockAndEarn;
-  return makeApplicationNoOpTxn(senderAddr, { ...params, flatFee: true, fee: 2000 }, appId, [enc.encode("c")], [escrowAddr], undefined, [pool.fAssetId]);
+  return makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, flatFee: true, fee: 2000 },
+    appId,
+    [enc.encode("c")],
+    [escrowAddr],
+    undefined,
+    [pool.fAssetId],
+  );
 }
 
 export {
@@ -167,4 +208,4 @@ export {
   prepareProvideLiquidityTransactions,
   getLockedDepositInfo,
   prepareClaimLockedDepositTransactions,
-}
+};

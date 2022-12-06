@@ -5,7 +5,7 @@ import {
   Indexer,
   makeApplicationNoOpTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { enc, transferAlgoOrAsset } from "../../utils";
 import { getTokenPairInfo } from "./borrow";
@@ -50,13 +50,13 @@ async function getLoanInfo(
 
   // derive loan info
   return loanInfo(
-    res['account'],
+    res["account"],
     tokenPair,
     tokenPairInfo,
     collateralPoolInfo,
     borrowPoolInfo,
     conversionRate,
-    res['current-round'],
+    res["current-round"],
   );
 }
 
@@ -84,13 +84,13 @@ async function getLoansInfo(
   conversionRate: ConversionRate,
   nextToken?: string,
   round?: number,
-): Promise<{ loans: LoanInfo[], nextToken?: string }> {
+): Promise<{ loans: LoanInfo[]; nextToken?: string }> {
   // retrieve loans
   const res = await getEscrows(indexerClient, tokenPair, nextToken, round);
 
   // derive loans info
   let loans: LoanInfo[] = [];
-  res['accounts'].forEach((account: any) => {
+  res["accounts"].forEach((account: any) => {
     try {
       const loan = loanInfo(
         account,
@@ -99,7 +99,7 @@ async function getLoansInfo(
         collateralPoolInfo,
         borrowPoolInfo,
         conversionRate,
-        res['current-round'],
+        res["current-round"],
       );
       loans.push(loan);
     } catch (e) {}
@@ -107,7 +107,7 @@ async function getLoansInfo(
 
   return {
     loans,
-    nextToken: res['next-token'],
+    nextToken: res["next-token"],
   };
 }
 
@@ -136,12 +136,55 @@ function prepareLiquidateTransactions(
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
   const { oracleAdapterAppId } = oracle;
 
-  const oracleAdapterAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], getOracleAdapterForeignAccounts(oracle, tokenPair), getOracleAdapterForeignApps(oracle, tokenPair));
-  const collateralDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 8000, flatFee: true }, collateralPool.appId, [enc.encode("l")], [linkAddr, escrowAddr], [appId], [collateralPool.fAssetId]);
-  const borrowDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, borrowPool.appId, [enc.encode("l")], [linkAddr, escrowAddr, reserveAddr], [appId], borrowPool.assetId ? [borrowPool.assetId] : undefined);
-  const tokenPairAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("l")], [escrowAddr], [borrowPool.appId], [collateralPool.fAssetId]);
-  const repayTx = transferAlgoOrAsset(borrowPool.assetId, senderAddr, getApplicationAddress(borrowPool.appId), liquidationAmount, {...params, fee: 0, flatFee: true});
-  return assignGroupID([oracleAdapterAppCall, collateralDispenserAppCall, borrowDispenserAppCall, tokenPairAppCall, repayTx]);
+  const oracleAdapterAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    oracleAdapterAppId,
+    [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)],
+    getOracleAdapterForeignAccounts(oracle, tokenPair),
+    getOracleAdapterForeignApps(oracle, tokenPair),
+  );
+  const collateralDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 8000, flatFee: true },
+    collateralPool.appId,
+    [enc.encode("l")],
+    [linkAddr, escrowAddr],
+    [appId],
+    [collateralPool.fAssetId],
+  );
+  const borrowDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    borrowPool.appId,
+    [enc.encode("l")],
+    [linkAddr, escrowAddr, reserveAddr],
+    [appId],
+    borrowPool.assetId ? [borrowPool.assetId] : undefined,
+  );
+  const tokenPairAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("l")],
+    [escrowAddr],
+    [borrowPool.appId],
+    [collateralPool.fAssetId],
+  );
+  const repayTx = transferAlgoOrAsset(
+    borrowPool.assetId,
+    senderAddr,
+    getApplicationAddress(borrowPool.appId),
+    liquidationAmount,
+    { ...params, fee: 0, flatFee: true },
+  );
+  return assignGroupID([
+    oracleAdapterAppCall,
+    collateralDispenserAppCall,
+    borrowDispenserAppCall,
+    tokenPairAppCall,
+    repayTx,
+  ]);
 }
 
 export { getLoanInfo, getLoansInfo, prepareLiquidateTransactions };

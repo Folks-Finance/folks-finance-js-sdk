@@ -8,7 +8,7 @@ import {
   makeApplicationNoOpTxn,
   makeApplicationOptInTxn,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { enc, getParsedValueFromState, transferAlgoOrAsset } from "../../utils";
 import { Oracle, ReserveAddress, TokenPair, TokenPairInfo } from "./types";
@@ -25,25 +25,25 @@ import { getOracleAdapterForeignAccounts, getOracleAdapterForeignApps } from "./
 async function getTokenPairInfo(indexerClient: Indexer, tokenPair: TokenPair): Promise<TokenPairInfo> {
   const { appId } = tokenPair;
   const res = await indexerClient.lookupApplications(appId).do();
-  const state = res['application']['params']['global-state'];
+  const state = res["application"]["params"]["global-state"];
 
-  const s1 = BigInt(getParsedValueFromState(state, 'S1') || 0);
-  const s2 = BigInt(getParsedValueFromState(state, 'S2') || 0);
-  const s3 = BigInt(getParsedValueFromState(state, 'S3') || 0);
+  const s1 = BigInt(getParsedValueFromState(state, "S1") || 0);
+  const s2 = BigInt(getParsedValueFromState(state, "S2") || 0);
+  const s3 = BigInt(getParsedValueFromState(state, "S3") || 0);
 
-  const tb = getParsedValueFromState(state, 'total_borrowed');
+  const tb = getParsedValueFromState(state, "total_borrowed");
   const totalBorrowed = tb !== undefined ? BigInt(tb) : undefined;
-  const tbl = getParsedValueFromState(state, 'total_borrowed_limit');
+  const tbl = getParsedValueFromState(state, "total_borrowed_limit");
   const totalBorrowedLimit = tbl !== undefined ? BigInt(tbl) : undefined;
 
   return {
-    currentRound: res['current-round'],
+    currentRound: res["current-round"],
     loanToValueRatio: s1,
     liquidationThreshold: s2,
     safetyThreshold: s3,
     totalBorrowed,
     totalBorrowedLimit,
-  }
+  };
 }
 
 /**
@@ -59,14 +59,33 @@ function prepareAddEscrowTransactions(
   tokenPair: TokenPair,
   senderAddr: string,
   params: SuggestedParams,
-): ({ txns: Transaction[], escrow: Account }) {
+): { txns: Transaction[]; escrow: Account } {
   const { appId, collateralPool } = tokenPair;
 
   const escrow = generateAccount();
 
   const paymentTx = transferAlgoOrAsset(0, senderAddr, escrow.addr, 0.4355e6, { ...params, fee: 0, flatFee: true });
-  const optInAppCallTx = makeApplicationOptInTxn(escrow.addr, { ...params, fee: 0, flatFee: true }, appId, undefined, undefined, undefined, undefined, undefined, undefined, getApplicationAddress(appId));
-  const appCallTx = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 4000, flatFee: true }, appId, [enc.encode("ae")], [escrow.addr], undefined, [collateralPool.fAssetId]);
+  const optInAppCallTx = makeApplicationOptInTxn(
+    escrow.addr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    getApplicationAddress(appId),
+  );
+  const appCallTx = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 4000, flatFee: true },
+    appId,
+    [enc.encode("ae")],
+    [escrow.addr],
+    undefined,
+    [collateralPool.fAssetId],
+  );
 
   return {
     txns: assignGroupID([paymentTx, optInAppCallTx, appCallTx]),
@@ -99,12 +118,51 @@ function prepareBorrowTransactions(
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
   const { oracleAdapterAppId } = oracle;
 
-  const oracleAdapterAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], getOracleAdapterForeignAccounts(oracle, tokenPair), getOracleAdapterForeignApps(oracle, tokenPair));
-  const collateralDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 6000, flatFee: true }, collateralPool.appId, [enc.encode("b")], [linkAddr], [appId]);
-  const borrowDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, borrowPool.appId, borrowAmount ? [enc.encode("b"), encodeUint64(borrowAmount)] : [enc.encode("b")], [linkAddr], undefined, borrowPool.assetId ? [borrowPool.assetId] : undefined);
-  const tokenPairAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("b")], [escrowAddr], [borrowPool.appId]);
-  const collateralTx = transferAlgoOrAsset(collateralPool.fAssetId, senderAddr, escrowAddr, collateralAmount, {...params, fee: 0, flatFee: true });
-  return assignGroupID([oracleAdapterAppCall, collateralDispenserAppCall, borrowDispenserAppCall, tokenPairAppCall, collateralTx]);
+  const oracleAdapterAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    oracleAdapterAppId,
+    [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)],
+    getOracleAdapterForeignAccounts(oracle, tokenPair),
+    getOracleAdapterForeignApps(oracle, tokenPair),
+  );
+  const collateralDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 6000, flatFee: true },
+    collateralPool.appId,
+    [enc.encode("b")],
+    [linkAddr],
+    [appId],
+  );
+  const borrowDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    borrowPool.appId,
+    borrowAmount ? [enc.encode("b"), encodeUint64(borrowAmount)] : [enc.encode("b")],
+    [linkAddr],
+    undefined,
+    borrowPool.assetId ? [borrowPool.assetId] : undefined,
+  );
+  const tokenPairAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("b")],
+    [escrowAddr],
+    [borrowPool.appId],
+  );
+  const collateralTx = transferAlgoOrAsset(collateralPool.fAssetId, senderAddr, escrowAddr, collateralAmount, {
+    ...params,
+    fee: 0,
+    flatFee: true,
+  });
+  return assignGroupID([
+    oracleAdapterAppCall,
+    collateralDispenserAppCall,
+    borrowDispenserAppCall,
+    tokenPairAppCall,
+    collateralTx,
+  ]);
 }
 
 /**
@@ -126,7 +184,11 @@ function prepareIncreaseCollateralTransaction(
   params: SuggestedParams,
 ): Transaction {
   const { fAssetId } = tokenPair.collateralPool;
-  return transferAlgoOrAsset(fAssetId, senderAddr, escrowAddr, collateralAmount, {...params, fee: 1000, flatFee: true});
+  return transferAlgoOrAsset(fAssetId, senderAddr, escrowAddr, collateralAmount, {
+    ...params,
+    fee: 1000,
+    flatFee: true,
+  });
 }
 
 /**
@@ -152,10 +214,41 @@ function prepareReduceCollateralTransactions(
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
   const { oracleAdapterAppId } = oracle;
 
-  const oracleAdapterAppCall = makeApplicationNoOpTxn(sender, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], getOracleAdapterForeignAccounts(oracle, tokenPair), getOracleAdapterForeignApps(oracle, tokenPair));
-  const collateralDispenserAppCall = makeApplicationNoOpTxn(sender, { ...params, fee: 5000, flatFee: true }, collateralPool.appId, [enc.encode("rc")], [linkAddr, escrow], [appId], [collateralPool.fAssetId]);
-  const borrowDispenserAppCall = makeApplicationNoOpTxn(sender, { ...params, fee: 0, flatFee: true }, borrowPool.appId, reduceAmount ? [enc.encode("rc"), encodeUint64(reduceAmount)] : [enc.encode("rc")], [linkAddr, escrow], [appId], borrowPool.assetId ? [borrowPool.assetId] : undefined);
-  const tokenPairAppCall = makeApplicationNoOpTxn(sender, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("rc")], [escrow], [borrowPool.appId], [collateralPool.fAssetId]);
+  const oracleAdapterAppCall = makeApplicationNoOpTxn(
+    sender,
+    { ...params, fee: 0, flatFee: true },
+    oracleAdapterAppId,
+    [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)],
+    getOracleAdapterForeignAccounts(oracle, tokenPair),
+    getOracleAdapterForeignApps(oracle, tokenPair),
+  );
+  const collateralDispenserAppCall = makeApplicationNoOpTxn(
+    sender,
+    { ...params, fee: 5000, flatFee: true },
+    collateralPool.appId,
+    [enc.encode("rc")],
+    [linkAddr, escrow],
+    [appId],
+    [collateralPool.fAssetId],
+  );
+  const borrowDispenserAppCall = makeApplicationNoOpTxn(
+    sender,
+    { ...params, fee: 0, flatFee: true },
+    borrowPool.appId,
+    reduceAmount ? [enc.encode("rc"), encodeUint64(reduceAmount)] : [enc.encode("rc")],
+    [linkAddr, escrow],
+    [appId],
+    borrowPool.assetId ? [borrowPool.assetId] : undefined,
+  );
+  const tokenPairAppCall = makeApplicationNoOpTxn(
+    sender,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("rc")],
+    [escrow],
+    [borrowPool.appId],
+    [collateralPool.fAssetId],
+  );
   return assignGroupID([oracleAdapterAppCall, collateralDispenserAppCall, borrowDispenserAppCall, tokenPairAppCall]);
 }
 
@@ -182,10 +275,40 @@ function prepareIncreaseBorrowTransactions(
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
   const { oracleAdapterAppId } = oracle;
 
-  const oracleAdapterAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, oracleAdapterAppId, [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)], getOracleAdapterForeignAccounts(oracle, tokenPair), getOracleAdapterForeignApps(oracle, tokenPair));
-  const collateralDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 5000, flatFee: true }, collateralPool.appId, [enc.encode("ib")], [linkAddr, escrow], [appId], [collateralPool.fAssetId]);
-  const borrowDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, borrowPool.appId, increaseAmount ? [enc.encode("ib"), encodeUint64(increaseAmount)] : [enc.encode("ib")], [linkAddr, escrow], [appId], borrowPool.assetId ? [borrowPool.assetId] : undefined);
-  const tokenPairAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("ib")], [escrow], [borrowPool.appId]);
+  const oracleAdapterAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    oracleAdapterAppId,
+    [encodeUint64(collateralPool.assetId), encodeUint64(borrowPool.assetId)],
+    getOracleAdapterForeignAccounts(oracle, tokenPair),
+    getOracleAdapterForeignApps(oracle, tokenPair),
+  );
+  const collateralDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 5000, flatFee: true },
+    collateralPool.appId,
+    [enc.encode("ib")],
+    [linkAddr, escrow],
+    [appId],
+    [collateralPool.fAssetId],
+  );
+  const borrowDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    borrowPool.appId,
+    increaseAmount ? [enc.encode("ib"), encodeUint64(increaseAmount)] : [enc.encode("ib")],
+    [linkAddr, escrow],
+    [appId],
+    borrowPool.assetId ? [borrowPool.assetId] : undefined,
+  );
+  const tokenPairAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("ib")],
+    [escrow],
+    [borrowPool.appId],
+  );
   return assignGroupID([oracleAdapterAppCall, collateralDispenserAppCall, borrowDispenserAppCall, tokenPairAppCall]);
 }
 
@@ -211,10 +334,38 @@ function prepareRepayTransactions(
 ): Transaction[] {
   const { appId, collateralPool, borrowPool, linkAddr } = tokenPair;
 
-  const collateralDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 8000, flatFee: true }, collateralPool.appId, [enc.encode("rb")], [linkAddr]);
-  const borrowDispenserAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, borrowPool.appId, [enc.encode("rb")], [linkAddr, escrowAddr, reserveAddr], [appId], borrowPool.assetId ? [borrowPool.assetId, borrowPool.frAssetId] : [borrowPool.frAssetId]);
-  const tokenPairAppCall = makeApplicationNoOpTxn(senderAddr, { ...params, fee: 0, flatFee: true }, appId, [enc.encode("rb")], [escrowAddr], [borrowPool.appId], [collateralPool.fAssetId]);
-  const repayTx = transferAlgoOrAsset(borrowPool.assetId, senderAddr, getApplicationAddress(borrowPool.appId), repayAmount, {...params, fee: 0, flatFee: true});
+  const collateralDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 8000, flatFee: true },
+    collateralPool.appId,
+    [enc.encode("rb")],
+    [linkAddr],
+  );
+  const borrowDispenserAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    borrowPool.appId,
+    [enc.encode("rb")],
+    [linkAddr, escrowAddr, reserveAddr],
+    [appId],
+    borrowPool.assetId ? [borrowPool.assetId, borrowPool.frAssetId] : [borrowPool.frAssetId],
+  );
+  const tokenPairAppCall = makeApplicationNoOpTxn(
+    senderAddr,
+    { ...params, fee: 0, flatFee: true },
+    appId,
+    [enc.encode("rb")],
+    [escrowAddr],
+    [borrowPool.appId],
+    [collateralPool.fAssetId],
+  );
+  const repayTx = transferAlgoOrAsset(
+    borrowPool.assetId,
+    senderAddr,
+    getApplicationAddress(borrowPool.appId),
+    repayAmount,
+    { ...params, fee: 0, flatFee: true },
+  );
   return assignGroupID([collateralDispenserAppCall, borrowDispenserAppCall, tokenPairAppCall, repayTx]);
 }
 

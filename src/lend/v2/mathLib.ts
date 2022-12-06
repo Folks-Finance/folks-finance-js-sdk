@@ -1,14 +1,14 @@
 const SECONDS_IN_YEAR = BigInt(365 * 24 * 60 * 60);
 const HOURS_IN_YEAR = BigInt(365 * 24);
 
-const ONE_2_DP = BigInt(1e2)
-const ONE_4_DP = BigInt(1e4)
-const ONE_10_DP = BigInt(1e10)
-const ONE_14_DP = BigInt(1e14)
-const ONE_16_DP = BigInt(1e16)
+const ONE_2_DP = BigInt(1e2);
+const ONE_4_DP = BigInt(1e4);
+const ONE_10_DP = BigInt(1e10);
+const ONE_14_DP = BigInt(1e14);
+const ONE_16_DP = BigInt(1e16);
 
-const UINT64 = BigInt(2) << BigInt(63)
-const UINT128 = BigInt(2) << BigInt(127)
+const UINT64 = BigInt(2) << BigInt(63);
+const UINT128 = BigInt(2) << BigInt(127);
 
 function maximum(n1: bigint, n2: bigint): bigint {
   return n1 > n2 ? n1 : n2;
@@ -82,4 +82,4 @@ export {
   divScaleRoundUp,
   expBySquaring,
   sqrt,
-}
+};
