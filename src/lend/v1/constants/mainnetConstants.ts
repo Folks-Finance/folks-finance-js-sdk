@@ -661,7 +661,7 @@ const MainnetTokenPairs: Record<MainnetTokenPairKey, TokenPair> = {
 };
 
 const MainnetOracle: Oracle = {
-  oracle1AppId: 793269965,
+  oracle1AppId: 956833333,
   oracle2AppId: 751307722,
   oracleAdapterAppId: 751277258,
   tinymanValidatorAppId: 552635992,
