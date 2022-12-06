@@ -2,23 +2,11 @@
   "name": "folks-finance-js-sdk",
   "version": "0.3.2",
   "description": "The official JavaScript SDK for the Folks Finance Protocol",
-  "main": "dist/cjs/index.js",
-  "types": "dist/cjs/types/index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
   "files": [
     "dist/**/*"
   ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/esm/types/index.d.ts",
-        "default": "./dist/esm/index.mjs"
-      },
-      "require": {
-        "types": "./dist/cjs/types/index.d.ts",
-        "default": "./dist/cjs/index.js"
-      }
-    }
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Folks-Finance/folks-finance-js-sdk.git"
@@ -29,9 +17,7 @@
   ],
   "scripts": {
     "clean": "rm -rf ./lib",
-    "build": "npm run clean && npm run build:esm && npm run build:cjs",
-    "build:esm": "tsc -p tsconfig.esm.json && mv dist/esm/index.js dist/esm/index.mjs",
-    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build": "npm run clean && tsc -p tsconfig.cjs.json",
     "prepack": "npm run build",
     "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.cjs.json",
     "format": "prettier --write 'src/**/*'",
