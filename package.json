@@ -2,11 +2,23 @@
   "name": "folks-finance-js-sdk",
   "version": "0.3.1",
   "description": "The official JavaScript SDK for the Folks Finance Protocol",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/cjs/index.js",
+  "types": "dist/cjs/types/index.d.ts",
   "files": [
-    "dist/"
+    "dist/**/*"
   ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/types/index.d.ts",
+        "default": "./dist/esm/index.mjs"
+      },
+      "require": {
+        "types": "./dist/cjs/types/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Folks-Finance/folks-finance-js-sdk.git"
@@ -16,7 +28,11 @@
     "Algorand"
   ],
   "scripts": {
-    "build": "tsc",
+    "clean": "rm -rf ./lib",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc -p tsconfig.esm.json && mv dist/esm/index.js dist/esm/index.mjs",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "prepack": "npm run build",
     "docs": "typedoc src/index.ts --options typedoc.config.json",
     "example": "ts-node"
   },
@@ -29,7 +45,7 @@
     "mocha": "^9.2.1",
     "ts-node": "^10.5.0",
     "typedoc": "^0.22.12",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.3"
   },
   "author": "Folks Finance",
   "license": "MIT"
