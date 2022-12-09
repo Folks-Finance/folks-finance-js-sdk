@@ -1,5 +1,6 @@
 export * from "./abiContracts";
 export * from "./constants/testnetConstants";
+export * from "./constants/mainnetConstants";
 export * from "./deposit";
 export * from "./formulae";
 export * from "./loan";
