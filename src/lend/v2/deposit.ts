@@ -57,7 +57,7 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
         const lu = BigInt("0x" + poolValue.slice(basePos + 76, basePos + 84));
 
         const vbii = calcBorrowInterestIndex(vbir, vbiit1, lu);
-        const dii = calcBorrowInterestIndex(dir, diit1, lu);
+        const dii = calcDepositInterestIndex(dir, diit1, lu);
 
         pools[poolAppId] = {
           variableBorrowInterestRate: vbir,
