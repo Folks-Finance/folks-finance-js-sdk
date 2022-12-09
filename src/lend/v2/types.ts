@@ -132,6 +132,7 @@ interface PoolLoanInfo {
 enum LoanType {
   "GENERAL" = "GENERAL",
   "STABLECOIN_EFFICIENCY" = "STABLECOIN_EFFICIENCY",
+  "ALGO_EFFICIENCY" = "ALGO_EFFICIENCY",
 }
 
 interface LoanInfo {
