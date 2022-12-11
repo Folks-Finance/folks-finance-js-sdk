@@ -13,6 +13,6 @@ Documentation for this SDK is available at https://folks-finance.github.io/folks
 ## Running examples
 Portions of the codebase are written in TypeScript, so running examples requires ts-node, an npm package that runs TypeScript files directly. To make this easier for the user, we've included an example alias for ts-node in the project's package.json scripts:
 ```
-$ npm run example examples/liquidate.ts 
+$ npm run example examples/v2/liquidate.ts 
 ```
 Make sure to set your desired configuration in `examples/config.ts` first.

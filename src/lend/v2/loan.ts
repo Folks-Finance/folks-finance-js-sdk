@@ -21,7 +21,7 @@ import {
 } from "../../utils";
 import { loanABIContract, poolABIContract } from "./abiContracts";
 import { retrievePoolManagerInfo } from "./deposit";
-import { calcBorrowUtilisationRatio, calcDepositReturn } from "./formulae";
+import { calcBorrowUtilisationRatio, calcDepositReturn, calcFlashLoanRepayment } from "./formulae";
 import { divScale, minimum, mulScale, ONE_10_DP, ONE_4_DP } from "./mathLib";
 import { getOraclePrices, prepareRefreshPricesInOracleAdapter } from "./oracle";
 import {
@@ -226,45 +226,46 @@ async function retrieveUserLoanInfo(
  *
  * @param indexerClient - Algorand indexer client to query
  * @param loanAppId - loan application to query about
- * @param poolInfo - pool manager info which is returned by retrievePoolManagerInfo function
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
  * @param loanInfo - loan info which is returned by retrieveLoanInfo function
  * @param oraclePrices - oracle prices which is returned by getOraclePrices function
- * @returns Promise<UserLoanInfo[]> liquidatable loans
+ * @param nextToken - token for retrieving next escrows
+ * @returns Promise<{ loans: UserLoanInfo[], nextToken?: string}> object containing liquidatable loans and next token
  */
 async function retrieveLiquidatableLoans(
   indexerClient: Indexer,
   loanAppId: number,
-  poolInfo: PoolManagerInfo,
+  poolManagerInfo: PoolManagerInfo,
   loanInfo: LoanInfo,
   oraclePrices: OraclePrices,
-): Promise<UserLoanInfo[]> {
+  nextToken?: string,
+): Promise<{ loans: UserLoanInfo[], nextToken?: string }> {
   const loans: UserLoanInfo[] = [];
 
-  let nextToken = undefined;
-  do {
-    const req = await indexerClient
-      .searchAccounts()
-      .applicationID(loanAppId)
-      .exclude("assets,created-assets,created-apps");
-    if (nextToken !== undefined) req.nextToken(nextToken);
-    const res = await req.do();
+  const req = await indexerClient
+    .searchAccounts()
+    .applicationID(loanAppId)
+    .exclude("assets,created-assets,created-apps");
+  if (nextToken !== undefined) req.nextToken(nextToken);
+  const res = await req.do();
 
-    // metadata
-    const currentRound = res["current-round"];
-    nextToken = res["next-token"];
+  // metadata
+  const currentRound = res["current-round"];
+  nextToken = res["next-token"];
 
-    // convert to user loan info and add if liquidatable
-    for (const acc of res["accounts"]) {
-      const escrowAddr = acc["address"];
-      const state = acc["apps-local-state"]?.find(({ id }: any) => id === loanAppId)?.["key-value"];
-      const localState = loanLocalState(state, loanAppId, escrowAddr);
-      const loan = userLoanInfo(localState, poolInfo, loanInfo, oraclePrices);
-      if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue)
-        loans.push({ ...loan, currentRound });
-    }
-  } while (nextToken !== undefined);
+  // convert to user loan info and add if liquidatable
+  for (const acc of res["accounts"]) {
+    const escrowAddr = acc["address"];
+    const state = acc["apps-local-state"]?.find(({ id }: any) => id === loanAppId)?.["key-value"];
+    const localState = loanLocalState(state, loanAppId, escrowAddr);
+    const loan = userLoanInfo(localState, poolManagerInfo, loanInfo, oraclePrices);
+    if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue) loans.push({
+      ...loan,
+      currentRound
+    });
+  }
 
-  return loans;
+  return { loans, nextToken };
 }
 
 /**
@@ -1179,6 +1180,50 @@ function prepareFlashLoanEnd(
   });
 }
 
+/**
+ *
+ * Wraps given transactions with flash loan.
+ *
+ * @param txns - txns to wrap flash loan around
+ * @param pool - pool to borrow from
+ * @param userAddr - account address for the user
+ * @param receiverAddr - account address to receive the loan
+ * @param reserveAddr - account address to receive the protocol revenue from the flash loan fee
+ * @param borrowAmount - the amount of the asset to borrow
+ * @param params - suggested params for the transactions with the fees overwritten
+ * @param flashLoanFee - fee for flash loan as 16 d.p integer (default 0.1%)
+ * @returns Transaction[] group transaction wrapped with flash loan
+ */
+function wrapWithFlashLoan(
+  txns: Transaction[],
+  pool: Pool,
+  userAddr: string,
+  receiverAddr: string,
+  reserveAddr: ReserveAddress,
+  borrowAmount: number | bigint,
+  params: SuggestedParams,
+  flashLoanFee: bigint = BigInt(0.001e16),
+): Transaction[] {
+  // clear group id in passed txns
+  const wrappedTxns = txns.map(txn => {
+    txn.group = undefined;
+    return txn;
+  });
+
+  // add flash loan begin
+  const txnIndexForFlashLoanEnd = txns.length + 2;
+  const flashLoanBegin = prepareFlashLoanBegin(pool, userAddr, receiverAddr, borrowAmount, txnIndexForFlashLoanEnd, params);
+  wrappedTxns.unshift(flashLoanBegin);
+
+  // add flash loan end
+  const repaymentAmount = calcFlashLoanRepayment(BigInt(borrowAmount), flashLoanFee);
+  const flashLoanEnd = prepareFlashLoanEnd(pool, userAddr, reserveAddr, repaymentAmount, params);
+  wrappedTxns.push(...flashLoanEnd);
+
+  // return txns wrapped with flash loan
+  return wrappedTxns;
+}
+
 export {
   retrieveLoanInfo,
   retrieveLoansLocalState,
@@ -1206,4 +1251,5 @@ export {
   prepareRemoveUserLoan,
   prepareFlashLoanBegin,
   prepareFlashLoanEnd,
+  wrapWithFlashLoan,
 };

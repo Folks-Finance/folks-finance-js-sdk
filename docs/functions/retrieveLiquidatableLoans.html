@@ -17,11 +17,11 @@
 <h1>Function retrieveLiquidatableLoans</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures tsd-kind-function">
-<li class="tsd-signature tsd-anchor-link" id="retrieveLiquidatableLoans">retrieve<wbr/>Liquidatable<wbr/>Loans<span class="tsd-signature-symbol">(</span>indexerClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">default</span>, loanAppId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, poolInfo<span class="tsd-signature-symbol">: </span><a href="../types/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Type alias">PoolManagerInfo</a>, loanInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/LoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">LoanInfo</a>, oraclePrices<span class="tsd-signature-symbol">: </span><a href="../interfaces/OraclePrices.html" class="tsd-signature-type" data-tsd-kind="Interface">OraclePrices</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserLoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">UserLoanInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#retrieveLiquidatableLoans" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="retrieveLiquidatableLoans">retrieve<wbr/>Liquidatable<wbr/>Loans<span class="tsd-signature-symbol">(</span>indexerClient<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">default</span>, loanAppId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, poolManagerInfo<span class="tsd-signature-symbol">: </span><a href="../types/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Type alias">PoolManagerInfo</a>, loanInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/LoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">LoanInfo</a>, oraclePrices<span class="tsd-signature-symbol">: </span><a href="../interfaces/OraclePrices.html" class="tsd-signature-type" data-tsd-kind="Interface">OraclePrices</a>, nextToken<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>loans<span class="tsd-signature-symbol">: </span><a href="../interfaces/UserLoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">UserLoanInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>nextToken<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span><a href="#retrieveLiquidatableLoans" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Returns all loans that are liquidatable.</p>
 
-<h3>Returns</h3><p>Promise&lt;UserLoanInfo[]&gt; liquidatable loans</p>
+<h3>Returns</h3><p>Promise&lt;{ loans: UserLoanInfo[], nextToken?: string}&gt; object containing liquidatable loans and next token</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -35,7 +35,7 @@
 <div class="tsd-comment tsd-typography"><p>loan application to query about</p>
 </div></li>
 <li>
-<h5>poolInfo: <a href="../types/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Type alias">PoolManagerInfo</a></h5>
+<h5>poolManagerInfo: <a href="../types/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Type alias">PoolManagerInfo</a></h5>
 <div class="tsd-comment tsd-typography"><p>pool manager info which is returned by retrievePoolManagerInfo function</p>
 </div></li>
 <li>
@@ -45,10 +45,14 @@
 <li>
 <h5>oraclePrices: <a href="../interfaces/OraclePrices.html" class="tsd-signature-type" data-tsd-kind="Interface">OraclePrices</a></h5>
 <div class="tsd-comment tsd-typography"><p>oracle prices which is returned by getOraclePrices function</p>
+</div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> nextToken: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>token for retrieving next escrows</p>
 </div></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/UserLoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">UserLoanInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span><br/><span>    </span>loans<span class="tsd-signature-symbol">: </span><a href="../interfaces/UserLoanInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">UserLoanInfo</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>nextToken<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/4499e04/src/lend/v2/loan.ts#L234">lend/v2/loan.ts:234</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/c0f1813/src/lend/v2/loan.ts#L235">lend/v2/loan.ts:235</a></li></ul></aside></li></ul></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -218,7 +222,8 @@
 <li class="tsd-kind-function"><a href="retrieveUserLoanInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>User<wbr/>Loan<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="retrieveUserLoansInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>User<wbr/>Loans<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="sqrt.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>sqrt</a></li>
-<li class="tsd-kind-function"><a href="userLoanInfo-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>user<wbr/>Loan<wbr/>Info</a></li></ul></nav></div></div>
+<li class="tsd-kind-function"><a href="userLoanInfo-1.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>user<wbr/>Loan<wbr/>Info</a></li>
+<li class="tsd-kind-function"><a href="wrapWithFlashLoan.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>wrap<wbr/>With<wbr/>Flash<wbr/>Loan</a></li></ul></nav></div></div>
 <div class="container tsd-generator">
 <p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
 <div class="overlay"></div><script src="../assets/main.js"></script></body></html>

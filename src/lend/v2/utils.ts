@@ -150,18 +150,18 @@ export function loanLocalState(state: TealKeyValue[], loanAppId: number, escrowA
  * Use for advanced use cases where optimising number of network request.
  *
  * @param localState - local state of escrow account
- * @param poolInfo - pool manager info which is returned by retrievePoolManagerInfo function
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
  * @param loanInfo - loan info which is returned by retrieveLoanInfo function
  * @param oraclePrices - oracle prices which is returned by getOraclePrices function
  * @returns Promise<UserLoansInfo> user loans info
  */
 export function userLoanInfo(
   localState: LoanLocalState,
-  poolInfo: PoolManagerInfo,
+  poolManagerInfo: PoolManagerInfo,
   loanInfo: LoanInfo,
   oraclePrices: OraclePrices,
 ): UserLoanInfo {
-  const { pools: poolManagerPools } = poolInfo;
+  const { pools: poolManagerPools } = poolManagerInfo;
   const { pools: loanPools } = loanInfo;
   const { prices } = oraclePrices;
 

@@ -1,6 +1,6 @@
 {
   "name": "folks-finance-js-sdk",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "The official JavaScript SDK for the Folks Finance Protocol",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -21,7 +21,7 @@
     "prepack": "npm run build",
     "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.cjs.json",
     "format": "prettier --write 'src/**/*'",
-    "example": "ts-node",
+    "example": "ts-node --project tsconfig.cjs.json",
     "prepare": "husky install"
   },
   "dependencies": {
