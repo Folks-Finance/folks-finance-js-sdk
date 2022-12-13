@@ -22,10 +22,10 @@ import {
   transferAlgoOrAsset,
 } from "../../utils";
 import { depositsABIContract, poolABIContract } from "./abiContracts";
-import { calcBorrowInterestIndex, calcDepositInterestIndex } from "./formulae";
-import { expBySquaring, HOURS_IN_YEAR, ONE_16_DP, SECONDS_IN_YEAR, UINT64 } from "./mathLib";
-import { prepareRefreshPricesInOracleAdapter } from "./oracle";
-import { Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
+import { calcBorrowInterestIndex, calcDepositInterestIndex, calcWithdrawReturn } from "./formulae";
+import { expBySquaring, HOURS_IN_YEAR, mulScale, ONE_10_DP, ONE_16_DP, SECONDS_IN_YEAR, UINT64 } from "./mathLib";
+import { getOraclePrices } from "./oracle";
+import { UserDepositFullInfo, Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
 import { addEscrowNoteTransaction, getEscrows, removeEscrowNoteTransaction } from "./utils";
 
 /**
@@ -152,7 +152,7 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
 
 /**
  *
- * Returns information regarding the given user's deposit escrows.
+ * Returns basic information regarding the given user's deposit escrows.
  *
  * @param indexerClient - Algorand indexer client to query
  * @param depositsAppId - deposits application to query about
@@ -177,6 +177,69 @@ async function retrieveUserDepositsInfo(
   }
 
   return userDepositsInfo;
+}
+
+/**
+ *
+ * Returns full information regarding the given user's deposit escrows.
+ *
+ * @param indexerClient - Algorand indexer client to query
+ * @param poolManagerAppId - pool manager application to query about
+ * @param depositsAppId - deposits application to query about
+ * @param pools - pools in pool manager (either MainnetPools or TestnetPools)
+ * @param oracle - oracle to query
+ * @param userAddr - account address for the user
+ * @returns Promise<UserDepositFullInfo[]> user deposits full info
+ */
+async function retrieveUserDepositsFullInfo(
+  indexerClient: Indexer,
+  poolManagerAppId: number,
+  depositsAppId: number,
+  pools: Record<string, Pool>,
+  oracle: Oracle,
+  userAddr: string,
+): Promise<UserDepositFullInfo[]> {
+  // get all prerequisites
+  const userDepositsInfoReq = retrieveUserDepositsInfo(indexerClient, depositsAppId, userAddr);
+  const poolManagerInfoReq = retrievePoolManagerInfo(indexerClient, poolManagerAppId);
+  const oraclePricesReq = getOraclePrices(indexerClient, oracle);
+  const [userDepositsInfo, poolManagerInfo, { prices }] = await Promise.all([
+    userDepositsInfoReq,
+    poolManagerInfoReq,
+    oraclePricesReq,
+  ]);
+
+  // map from UserDepositInfo to ExtendedUserDepositInfo
+  return userDepositsInfo.map(deposit => {
+    const holdings = deposit.holdings.map(({ fAssetId, fAssetBalance }) => {
+      const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.fAssetId === fAssetId);
+      if (pool === undefined) throw Error("Could not find pool with fAsset " + fAssetId);
+      const poolAppId = pool.appId;
+      const assetId = pool.assetId;
+
+      const poolInfo = poolManagerInfo.pools[poolAppId];
+      if (poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
+      const { depositInterestIndex } = poolInfo;
+
+      const oraclePrice = prices[assetId];
+      if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
+      const { price: assetPrice } = oraclePrice;
+
+      const assetBalance = calcWithdrawReturn(fAssetBalance, depositInterestIndex);
+      const balanceValue = mulScale(assetBalance, assetPrice, ONE_10_DP); // 4 d.p.
+
+      return {
+        fAssetId,
+        fAssetBalance,
+        poolAppId,
+        assetId,
+        assetPrice,
+        assetBalance,
+        balanceValue,
+      }
+    });
+    return { ...deposit, holdings };
+  });
 }
 
 /**
@@ -529,6 +592,7 @@ export {
   retrievePoolManagerInfo,
   retrievePoolInfo,
   retrieveUserDepositsInfo,
+  retrieveUserDepositsFullInfo,
   retrieveUserDepositInfo,
   prepareAddDepositEscrowToDeposits,
   prepareOptDepositEscrowIntoAssetInDeposits,

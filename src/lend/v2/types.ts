@@ -117,6 +117,20 @@ type UserDepositInfo = {
   }[];
 };
 
+type UserDepositFullInfo = {
+  currentRound?: number;
+  escrowAddress: string;
+  holdings: {
+    fAssetId: number;
+    fAssetBalance: bigint;
+    poolAppId: number;
+    assetId: number;
+    assetPrice: bigint; // 14 d.p.
+    assetBalance: bigint;
+    balanceValue: bigint; // in $, 4 d.p.
+  }[];
+}
+
 interface PoolLoanInfo {
   poolAppId: number;
   assetId: number;
@@ -247,6 +261,7 @@ export {
   Pool,
   PoolInfo,
   UserDepositInfo,
+  UserDepositFullInfo,
   PoolLoanInfo,
   LoanType,
   LoanLocalState,

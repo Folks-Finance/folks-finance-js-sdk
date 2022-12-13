@@ -167,7 +167,7 @@ async function retrieveUserLoansInfo(
   const loanInfoReq = retrieveLoanInfo(indexerClient, loanAppId);
   const poolManagerInfoReq = retrievePoolManagerInfo(indexerClient, poolManagerAppId);
   const oraclePricesReq = getOraclePrices(indexerClient, oracle);
-  const [escrows, poolInfo, loanInfo, oraclePrices] = await Promise.all([
+  const [escrows, poolManagerInfo, loanInfo, oraclePrices] = await Promise.all([
     escrowsReq,
     poolManagerInfoReq,
     loanInfoReq,
@@ -183,7 +183,7 @@ async function retrieveUserLoansInfo(
     );
     if (state === undefined) throw Error(`Could not find loan ${loanAppId} in escrow ${escrowAddr}`);
     const localState = loanLocalState(state, loanAppId, escrowAddr);
-    userLoanInfos.push({ ...userLoanInfo(localState, poolInfo, loanInfo, oraclePrices), currentRound });
+    userLoanInfos.push({ ...userLoanInfo(localState, poolManagerInfo, loanInfo, oraclePrices), currentRound });
   }
 
   return userLoanInfos;
