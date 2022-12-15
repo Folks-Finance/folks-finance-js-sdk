@@ -136,7 +136,6 @@ export function loanLocalState(state: TealKeyValue[], loanAppId: number, escrowA
     });
   }
 
-  console.log(userAddress)
   return {
     userAddress,
     escrowAddress: escrowAddr,
