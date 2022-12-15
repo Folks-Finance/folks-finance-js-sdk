@@ -105,7 +105,7 @@ export async function getEscrows(
  */
 export function loanLocalState(state: TealKeyValue[], loanAppId: number, escrowAddr: string): LoanLocalState {
   // standard
-  const userAddress = encodeAddress(Buffer.from(String(getParsedValueFromState(state, "ua")), "base64"));
+  const userAddress = encodeAddress(Buffer.from(String(getParsedValueFromState(state, "u")), "base64"));
   const colPls = parseUint64s(String(getParsedValueFromState(state, "c")));
   const borPls = parseUint64s(String(getParsedValueFromState(state, "b")));
   const colBals = parseUint64s(String(getParsedValueFromState(state, "cb")));
@@ -136,6 +136,7 @@ export function loanLocalState(state: TealKeyValue[], loanAppId: number, escrowA
     });
   }
 
+  console.log(userAddress)
   return {
     userAddress,
     escrowAddress: escrowAddr,
