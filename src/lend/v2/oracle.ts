@@ -20,7 +20,7 @@ import { lpTokenOracleABIContract, oracleAdapterABIContract } from "./abiContrac
 import { calcLPPrice } from "./formulae";
 import { minimum } from "./mathLib";
 import { LPToken, LPTokenProvider, Oracle, OraclePrice, OraclePrices, PactLPToken, TinymanLPToken } from "./types";
-import { TealKeyValue } from "algosdk/dist/types/src/client/v2/algod/models/types";
+import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 
 function parseOracleValue(base64Value: string) {
   const value = Buffer.from(base64Value, "base64").toString("hex");

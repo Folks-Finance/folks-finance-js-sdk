@@ -7,7 +7,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
-import { TealKeyValue } from "algosdk/dist/types/src/client/v2/algod/models/types";
+import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 import { enc, getParsedValueFromState, parseUint64s } from "../../utils";
 import {
   calcBorrowAssetLoanValue,
