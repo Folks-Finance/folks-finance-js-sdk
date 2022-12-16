@@ -128,6 +128,8 @@ type UserDepositFullInfo = {
     assetPrice: bigint; // 14 d.p.
     assetBalance: bigint;
     balanceValue: bigint; // in $, 4 d.p.
+    interestRate: bigint; // 16 d.p.
+    interestYield: bigint; // approximation 16 d.p.
   }[];
 }
 

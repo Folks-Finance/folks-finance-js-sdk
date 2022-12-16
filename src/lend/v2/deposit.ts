@@ -219,7 +219,7 @@ async function retrieveUserDepositsFullInfo(
 
       const poolInfo = poolManagerInfo.pools[poolAppId];
       if (poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
-      const { depositInterestIndex } = poolInfo;
+      const { depositInterestIndex, depositInterestRate, depositInterestYield } = poolInfo;
 
       const oraclePrice = prices[assetId];
       if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
@@ -236,6 +236,8 @@ async function retrieveUserDepositsFullInfo(
         assetPrice,
         assetBalance,
         balanceValue,
+        interestRate: depositInterestRate,
+        interestYield: depositInterestYield,
       }
     });
     return { ...deposit, holdings };
