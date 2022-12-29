@@ -8,7 +8,7 @@ import {
   Transaction,
 } from "algosdk";
 import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
-import { enc, getParsedValueFromState, parseUint64s } from "../../utils";
+import { enc, fromIntToByteHex, getParsedValueFromState, parseUint64s, unixTime } from "../../utils";
 import {
   calcBorrowAssetLoanValue,
   calcBorrowBalance,
@@ -19,15 +19,20 @@ import {
   calcLTVRatio,
   calcWithdrawReturn,
 } from "./formulae";
-import { expBySquaring, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
+import { expBySquaring, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
 import {
+  DepositStakingInfo,
   LoanInfo,
   LoanLocalState,
   OraclePrices,
+  Pool,
   PoolManagerInfo,
+  UserDepositStakingInfo,
+  UserDepositStakingInfoStakingProgram,
+  UserDepositStakingLocalState,
   UserLoanInfo,
   UserLoanInfoBorrow,
-  UserLoanInfoCollateral,
+  UserLoanInfoCollateral
 } from "./types";
 
 export function addEscrowNoteTransaction(
@@ -92,6 +97,146 @@ export async function getEscrows(
   }
 
   return escrows;
+}
+
+/**
+ *
+ * Derives deposit staking local state from escrow account.
+ *
+ * @param state - escrow account local state
+ * @param depositStakingAppId - deposit staking application to query about
+ * @param escrowAddr - escrow address
+ * @returns LoanLocalState loan local state
+ */
+export function depositStakingLocalState(
+  state: TealKeyValue[],
+  depositStakingAppId: number,
+  escrowAddr: string,
+): UserDepositStakingLocalState {
+  // standard
+  const userAddress = encodeAddress(Buffer.from(String(getParsedValueFromState(state, "ua")), "base64"));
+
+  const stakedAmounts: bigint[] = [];
+  for (let i = 0; i < 2; i++) {
+    const prefix = "S".charCodeAt(0).toString(16);
+    const stakeBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
+    const stakeValue = parseUint64s(stakeBase64Value);
+    stakedAmounts.push(...stakeValue);
+  }
+
+  const rewardPerTokens: bigint[] = [];
+  for (let i = 0; i < 6; i++) {
+    const prefix = "R".charCodeAt(0).toString(16);
+    const rewardBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
+    const rewardValue = parseUint64s(rewardBase64Value);
+    rewardPerTokens.push(...rewardValue);
+  }
+
+  const unclaimedRewards: bigint[] = [];
+  for (let i = 0; i < 6; i++) {
+    const prefix = "U".charCodeAt(0).toString(16);
+    const unclaimedBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
+    const unclaimedValue = parseUint64s(unclaimedBase64Value);
+    unclaimedRewards.push(...unclaimedValue);
+  }
+
+  return {
+    userAddress,
+    escrowAddress: escrowAddr,
+    stakedAmounts,
+    rewardPerTokens,
+    unclaimedRewards,
+  };
+}
+
+/**
+ *
+ * Derives user loan info from escrow account.
+ * Use for advanced use cases where optimising number of network request.
+ *
+ * @param localState - local state of escrow account
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
+ * @param depositStakingInfo - deposit staking info which is returned by retrieveDepositStakingInfo function
+ * @param pools - pools in pool manager (either MainnetPools or TestnetPools)
+ * @param oraclePrices - oracle prices which is returned by getOraclePrices function
+ * @returns Promise<UserDepositStakingInfo> user loans info
+ */
+export function userDepositStakingInfo(
+  localState: UserDepositStakingLocalState,
+  poolManagerInfo: PoolManagerInfo,
+  depositStakingInfo: DepositStakingInfo,
+  pools: Record<string, Pool>,
+  oraclePrices: OraclePrices,
+): UserDepositStakingInfo {
+  const stakingPrograms: UserDepositStakingInfoStakingProgram[] = [];
+
+  const { pools: poolManagerPools } = poolManagerInfo;
+  const { prices } = oraclePrices;
+
+  depositStakingInfo.stakingPrograms.forEach(({ poolAppId, rewards }, stakeIndex) => {
+    const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.appId === poolAppId);
+    const poolInfo = poolManagerPools[poolAppId];
+    if (pool === undefined || poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
+    const { assetId, fAssetId } = pool;
+    const { depositInterestIndex, depositInterestRate, depositInterestYield } = poolInfo;
+
+    const oraclePrice = prices[assetId];
+    if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
+    const { price: assetPrice } = oraclePrice;
+
+    const fAssetStakedAmount = localState.stakedAmounts[stakeIndex];
+    const assetStakedAmount = calcWithdrawReturn(fAssetStakedAmount, depositInterestIndex);
+    const stakedAmountValue = mulScale(assetStakedAmount, assetPrice, ONE_10_DP); // 4 d.p.
+
+    const userRewards: {
+      rewardAssetId: number;
+      assetPrice: bigint;
+      unclaimedReward: bigint;
+      unclaimedRewardValue: bigint;
+      interestRate: bigint;
+    }[] = [];
+    rewards.forEach(({ rewardAssetId, endTimestamp, rewardRate, rewardPerToken }, localRewardIndex) => {
+      const rewardIndex = stakeIndex * 3 + localRewardIndex;
+      const oldRewardPerToken = localState.rewardPerTokens[rewardIndex];
+      const oldUnclaimedReward = localState.unclaimedRewards[rewardIndex];
+
+      const oraclePrice = prices[rewardAssetId];
+      if (oraclePrice === undefined) throw Error("Could not find asset price " + rewardAssetId);
+      const { price: rewardAssetPrice } = oraclePrice;
+
+      const unclaimedReward = oldUnclaimedReward + mulScale(fAssetStakedAmount, rewardPerToken - oldRewardPerToken, ONE_10_DP);
+      const unclaimedRewardValue = mulScale(unclaimedReward, rewardAssetPrice, ONE_10_DP); // 4 d.p.
+      const interestRate = unixTime() > endTimestamp ? BigInt(0) : ((fAssetStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR) / (assetStakedAmount * assetPrice));
+
+      userRewards.push({
+        rewardAssetId,
+        assetPrice: rewardAssetPrice,
+        unclaimedReward,
+        unclaimedRewardValue,
+        interestRate,
+      })
+    });
+
+    stakingPrograms.push({
+      poolAppId,
+      fAssetId,
+      fAssetStakedAmount,
+      assetId,
+      assetPrice,
+      assetStakedAmount,
+      stakedAmountValue,
+      interestRate: depositInterestRate,
+      interestYield: depositInterestYield,
+      rewards: userRewards,
+    });
+  });
+
+  return {
+    currentRound: localState.currentRound,
+    userAddress: localState.userAddress,
+    escrowAddress: localState.escrowAddress,
+    stakingPrograms,
+  }
 }
 
 /**

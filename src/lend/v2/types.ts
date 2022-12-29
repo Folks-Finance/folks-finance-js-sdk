@@ -133,6 +133,57 @@ type UserDepositFullInfo = {
   }[];
 }
 
+interface DepositStakingInfo {
+  currentRound?: number;
+  stakingPrograms: {
+    poolAppId: number;
+    totalStaked: bigint;
+    minTotalStaked: bigint;
+    stakeIndex: number;
+    rewards: {
+      rewardAssetId: number;
+      endTimestamp: bigint;
+      rewardRate: bigint; // 10 d.p.
+      rewardPerToken: bigint; // 10 d.p.
+    }[];
+  }[];
+}
+
+interface UserDepositStakingLocalState {
+  currentRound?: number;
+  userAddress: string;
+  escrowAddress: string;
+  stakedAmounts: bigint[];
+  rewardPerTokens: bigint[]; // 10 d.p.
+  unclaimedRewards: bigint[];
+}
+
+interface UserDepositStakingInfoStakingProgram {
+  poolAppId: number;
+  fAssetId: number;
+  fAssetStakedAmount: bigint;
+  assetId: number;
+  assetPrice: bigint; // 14 d.p.
+  assetStakedAmount: bigint;
+  stakedAmountValue: bigint; // in $, 4 d.p.
+  interestRate: bigint; // 16 d.p.
+  interestYield: bigint; // approximation 16 d.p.
+  rewards: {
+    rewardAssetId: number;
+    assetPrice: bigint; // 14 d.p.
+    unclaimedReward: bigint;
+    unclaimedRewardValue: bigint; // in $, 4 d.p.
+    interestRate: bigint; // 0 if past reward end timestamp, 10 d.p.
+  }[];
+}
+
+interface UserDepositStakingInfo {
+  currentRound?: number;
+  userAddress: string;
+  escrowAddress: string;
+  stakingPrograms: UserDepositStakingInfoStakingProgram[];
+}
+
 interface PoolLoanInfo {
   poolAppId: number;
   assetId: number;
@@ -264,6 +315,10 @@ export {
   PoolInfo,
   UserDepositInfo,
   UserDepositFullInfo,
+  DepositStakingInfo,
+  UserDepositStakingLocalState,
+  UserDepositStakingInfoStakingProgram,
+  UserDepositStakingInfo,
   PoolLoanInfo,
   LoanType,
   LoanLocalState,

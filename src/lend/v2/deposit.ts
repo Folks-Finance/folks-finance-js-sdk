@@ -86,7 +86,7 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
  *
  * @param client - Algorand client to query
  * @param pool - pool application to query about
- * @returns Promise<PoolInfo[]> pool info
+ * @returns Promise<PoolInfo> pool info
  */
 async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<PoolInfo> {
   const { currentRound, globalState: state } = await getApplicationGlobalState(client, pool.appId);

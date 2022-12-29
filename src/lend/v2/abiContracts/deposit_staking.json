@@ -1,0 +1,197 @@
+{
+    "name": "f_staking",
+    "methods": [
+        {
+            "name": "add_f_staking_escrow",
+            "desc": "Add f staking escrow for a user. The escrow opts in and rekeys itself to the f staking application.",
+            "args": [
+                {
+                    "type": "pay",
+                    "name": "user_call",
+                    "desc": "The transaction from the user to approve the f staking escrow."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "opt_escrow_into_asset",
+            "desc": "Add support for a f staking escrow to hold a pool's f asset.",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                },
+                {
+                    "type": "application",
+                    "name": "pool",
+                    "desc": "The pool application to support."
+                },
+                {
+                    "type": "asset",
+                    "name": "f_asset",
+                    "desc": "The f asset of the pool."
+                },
+                {
+                    "type": "uint8",
+                    "name": "stake_index",
+                    "desc": "The index of the staking program in the array."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "sync_stake",
+            "desc": "Sync the stake balance of an escrow's staking program.",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                },
+                {
+                    "type": "application",
+                    "name": "pool",
+                    "desc": "The pool of the staking program."
+                },
+                {
+                    "type": "asset",
+                    "name": "f_asset",
+                    "desc": "The f asset of the pool."
+                },
+                {
+                    "type": "uint8",
+                    "name": "stake_index",
+                    "desc": "The index of the staking program in the array."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "withdraw_stake",
+            "desc": "Withdraw a stake from f staking escrow.",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                },
+                {
+                    "type": "account",
+                    "name": "receiver",
+                    "desc": "The account to receive the stake sent from the f staking escrow."
+                },
+                {
+                    "type": "application",
+                    "name": "pool_manager",
+                    "desc": "The pool manager application of the pool."
+                },
+                {
+                    "type": "application",
+                    "name": "pool",
+                    "desc": "The pool of the staking program to withdraw from."
+                },
+                {
+                    "type": "asset",
+                    "name": "asset",
+                    "desc": "The asset of the pool."
+                },
+                {
+                    "type": "asset",
+                    "name": "f_asset",
+                    "desc": "The f asset of the pool."
+                },
+                {
+                    "type": "uint64",
+                    "name": "amount",
+                    "desc": "The amount of asset / f asset to send to withdraw from escrow."
+                },
+                {
+                    "type": "bool",
+                    "name": "is_f_asset_amount",
+                    "desc": "Whether the amount to withdraw is expressed in terms of f asset or asset."
+                },
+                {
+                    "type": "bool",
+                    "name": "remain_deposited",
+                    "desc": "Whether receiver should get f asset or asset. Cannot remain deposited and use asset amount."
+                },
+                {
+                    "type": "uint8",
+                    "name": "stake_index",
+                    "desc": "The index of the staking program in the array."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "claim_rewards",
+            "desc": "Claim rewards for an escrow's staking program",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                },
+                {
+                    "type": "account",
+                    "name": "receiver",
+                    "desc": "The account to receive the reward sent from the f staking application."
+                },
+                {
+                    "type": "uint64",
+                    "name": "stake_index",
+                    "desc": "The index of the staking program in the array."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "close_out_escrow_from_asset",
+            "desc": "Remove support for a f staking escrow to hold a pool's f asset.",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                },
+                {
+                    "type": "account",
+                    "name": "f_asset_creator"
+                },
+                {
+                    "type": "asset",
+                    "name": "f_asset"
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        },
+        {
+            "name": "remove_f_staking_escrow",
+            "desc": "Remove a f staking escrow for a user and return its minimum balance.",
+            "args": [
+                {
+                    "type": "account",
+                    "name": "escrow",
+                    "desc": "The user's f staking escrow."
+                }
+            ],
+            "returns": {
+                "type": "void"
+            }
+        }
+    ],
+    "networks": {}
+}
