@@ -422,10 +422,9 @@ export function userLoanInfo(
     },
   );
 
-  const amount = totalCollateralBalanceValue + totalBorrowBalanceValue;
-  if (amount > BigInt(0)) {
-    netRate /= amount;
-    netYield /= amount;
+  if (totalCollateralBalanceValue > BigInt(0)) {
+    netRate /= totalCollateralBalanceValue;
+    netYield /= totalCollateralBalanceValue;
   }
 
   // combine
