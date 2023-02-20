@@ -87,7 +87,7 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
 const MainnetReserveAddress: ReserveAddress = "Q5Q5FC5PTYQIUX5PGNTEW22UJHJHVVUEMMWV2LSG6MGT33YQ54ST7FEIGA";
 
 const MainnetOracle: Oracle = {
-  oracle0AppId: 956833333,
+  oracle0AppId: 1040271396,
   oracle1AppId: 971323141,
   oracleAdapterAppId: 971333964,
   decimals: 14,

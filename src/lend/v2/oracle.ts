@@ -110,7 +110,7 @@ async function getOraclePrices(client: Algodv2 | Indexer, oracle: Oracle, assetI
     .filter(({ key }: TealKeyValue) => {
       // remove non asset ids global state
       key = Buffer.from(key, "base64").toString("utf8");
-      return key !== "updater_addr" && key !== "admin" && key !== "tinyman_validator_app_id";
+      return key !== "updater_addr" && key !== "admin" && key !== "tinyman_validator_app_id" && key !== "td";
     })
     .map(({ key }: TealKeyValue) => {
       // convert key to asset id
