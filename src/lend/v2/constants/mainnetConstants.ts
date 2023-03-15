@@ -4,7 +4,7 @@ const MainnetPoolManagerAppId = 971350278;
 
 const MainnetDepositsAppId = 971353536;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL";
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -86,6 +86,18 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     loans: {
       971388781: BigInt(6),
     }
+  },
+  GARD: {
+    appId: 1060585819,
+    assetId: 684649988,
+    fAssetId: 1060587336,
+    frAssetId: 1060587337,
+    assetDecimals: 6,
+    poolManagerIndex: 7,
+    loans: {
+      971388781: BigInt(7),
+      971388977: BigInt(2),
+    },
   },
 };
 
