@@ -74,7 +74,7 @@ async function retrieveDepositStakingInfo(client: Algodv2 | Indexer, depositStak
     const prefix = "R".charCodeAt(0).toString(16);
     const rewardBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
     const rewardValue = Buffer.from(rewardBase64Value, 'base64').toString('hex');
-    for (let j = 0; j <= 3; j++) {
+    for (let j = 0; j <= (i !== 22 ? 3 : 1); j++) {
       const basePos = j * 60;
 
       const stakeIndex = Number(BigInt(i * 4 + j) / BigInt(3));
