@@ -1,9 +1,4 @@
-import { Dispenser, Distributor } from "../types";
-
-const govDispenser: Dispenser = {
-  appId: 793119194,
-  gAlgoId: 793124631,
-};
+import { Distributor } from "../../common";
 
 const govDistributor4: Distributor = {
   appId: 793119270,
@@ -21,4 +16,4 @@ const govDistributor6: Distributor = {
   appId: 991196662,
 };
 
-export { govDispenser, govDistributor4, govDistributor5a, govDistributor5b, govDistributor6 };
+export { govDistributor4, govDistributor5a, govDistributor5b, govDistributor6 };

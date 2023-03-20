@@ -8,36 +8,10 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
-import { enc, getParsedValueFromState, parseUint64s, transferAlgoOrAsset } from "../../utils";
+import { Dispenser, Distributor } from "../common";
+import { getParsedValueFromState, signer, transferAlgoOrAsset } from "../../utils";
 import { abiDistributor } from "./constants/abiContracts";
-import { Dispenser, DispenserInfo, Distributor, DistributorInfo, UserCommitmentInfo } from "./types";
-
-const signer = async () => [];
-
-/**
- *
- * Returns information regarding the given liquid governance dispenser.
- *
- * @param indexerClient - Algorand indexer client to query
- * @param dispenser - dispenser to query about
- * @returns DispenserInfo[] dispenser info
- */
-async function getDispenserInfo(indexerClient: Indexer, dispenser: Dispenser): Promise<DispenserInfo> {
-  const { appId } = dispenser;
-  const res = await indexerClient.lookupApplications(appId).do();
-  const state = res["application"]["params"]["global-state"];
-
-  const distributorAppIds = parseUint64s(String(getParsedValueFromState(state, "distribs"))).map((appId) =>
-    Number(appId),
-  );
-  const isMintingPaused = Boolean(getParsedValueFromState(state, "is_minting_paused") || 0);
-
-  return {
-    currentRound: res["current-round"],
-    distributorAppIds,
-    isMintingPaused,
-  };
-}
+import { DistributorInfo, UserCommitmentInfo } from "./types";
 
 /**
  *
@@ -408,7 +382,6 @@ function prepareClaimGovernanceRewardsTransaction(
 }
 
 export {
-  getDispenserInfo,
   getDistributorInfo,
   getUserLiquidGovernanceInfo,
   prepareMintTransactions,

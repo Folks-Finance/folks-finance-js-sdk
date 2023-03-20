@@ -12,23 +12,19 @@ import {
   Transaction
 } from "algosdk";
 import {
+  addEscrowNoteTransaction,
   fromIntToByteHex,
   getAccountApplicationLocalState,
   getApplicationGlobalState,
   getParsedValueFromState,
+  removeEscrowNoteTransaction,
   signer,
   unixTime
 } from "../../utils";
 import { depositStakingABIContract } from "./abiContracts";
 import { maximum } from "./mathLib";
 import { DepositStakingInfo, Pool, UserDepositStakingLocalState } from "./types";
-import {
-  addEscrowNoteTransaction,
-  depositStakingLocalState,
-  getEscrows,
-  removeEscrowNoteTransaction,
-  userDepositStakingInfo
-} from "./utils";
+import { depositStakingLocalState, getEscrows, userDepositStakingInfo } from "./utils";
 
 /**
  *

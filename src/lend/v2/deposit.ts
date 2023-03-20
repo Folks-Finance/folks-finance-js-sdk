@@ -12,12 +12,14 @@ import {
   Transaction,
 } from "algosdk";
 import {
+  addEscrowNoteTransaction,
   fromIntToByteHex,
   getAccountAssets,
   getApplicationGlobalState,
   getParsedValueFromState,
   parseBitsAsBooleans,
   parseUint64s,
+  removeEscrowNoteTransaction,
   signer,
   transferAlgoOrAsset,
 } from "../../utils";
@@ -26,7 +28,7 @@ import { calcBorrowInterestIndex, calcDepositInterestIndex, calcWithdrawReturn }
 import { expBySquaring, HOURS_IN_YEAR, mulScale, ONE_10_DP, ONE_16_DP, SECONDS_IN_YEAR, UINT64 } from "./mathLib";
 import { getOraclePrices } from "./oracle";
 import { UserDepositFullInfo, Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
-import { addEscrowNoteTransaction, getEscrows, removeEscrowNoteTransaction } from "./utils";
+import { getEscrows } from "./utils";
 
 /**
  *

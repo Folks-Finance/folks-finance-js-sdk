@@ -1,8 +1,6 @@
-export * from "./algoLiquidGovernannce/v1/constants/abiContracts";
-export * from "./algoLiquidGovernannce/v1/constants/mainnetConstants";
-export * from "./algoLiquidGovernannce/v1/governance";
-export * from "./algoLiquidGovernannce/v1/types";
+export * as algoLiquidGovernanceV1 from "./algoLiquidGovernance/v1";
+export * from "./algoLiquidGovernance/common";
+export * from "./algoLiquidGovernance/v2";
 
 export * as lendV1 from "./lend/v1";
-
 export * from "./lend/v2";

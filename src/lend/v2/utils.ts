@@ -1,12 +1,4 @@
-import {
-  decodeAddress,
-  encodeAddress,
-  getApplicationAddress,
-  Indexer,
-  makePaymentTxnWithSuggestedParams,
-  SuggestedParams,
-  Transaction,
-} from "algosdk";
+import { encodeAddress, getApplicationAddress, Indexer } from "algosdk";
 import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 import { enc, fromIntToByteHex, getParsedValueFromState, parseUint64s, unixTime } from "../../utils";
 import {
@@ -34,27 +26,6 @@ import {
   UserLoanInfoBorrow,
   UserLoanInfoCollateral
 } from "./types";
-
-export function addEscrowNoteTransaction(
-  userAddr: string,
-  escrowAddr: string,
-  appId: number,
-  notePrefix: string,
-  params: SuggestedParams,
-): Transaction {
-  const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
-  return makePaymentTxnWithSuggestedParams(userAddr, getApplicationAddress(appId), 0, undefined, note, params);
-}
-
-export function removeEscrowNoteTransaction(
-  escrowAddr: string,
-  userAddr: string,
-  notePrefix: string,
-  params: SuggestedParams,
-): Transaction {
-  const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
-  return makePaymentTxnWithSuggestedParams(escrowAddr, userAddr, 0, userAddr, note, params);
-}
 
 export async function getEscrows(
   indexerClient: Indexer,

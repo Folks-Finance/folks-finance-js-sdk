@@ -1,18 +1,3 @@
-interface Dispenser {
-  appId: number;
-  gAlgoId: number;
-}
-
-interface DispenserInfo {
-  currentRound: number; // round the data was read at
-  distributorAppIds: number[]; // list of valid distributor app ids
-  isMintingPaused: boolean; // flag indicating if users can mint gALGO
-}
-
-interface Distributor {
-  appId: number;
-}
-
 interface DistributorInfo {
   currentRound: number; // round the data was read at
   dispenserAppId: number; // id of dispenser app which mints gALGO
@@ -34,4 +19,4 @@ interface UserCommitmentInfo {
   commitmentClaimed: bigint; // amount of ALGOs the user has committed whose rewards have already been claimed
 }
 
-export { Dispenser, DispenserInfo, Distributor, DistributorInfo, UserCommitmentInfo };
+export { DistributorInfo, UserCommitmentInfo };

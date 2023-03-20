@@ -12,10 +12,12 @@ import {
   Transaction,
 } from "algosdk";
 import {
+  addEscrowNoteTransaction,
   fromIntToByteHex,
   getAccountApplicationLocalState,
   getApplicationGlobalState,
   getParsedValueFromState,
+  removeEscrowNoteTransaction,
   signer,
   transferAlgoOrAsset,
 } from "../../utils";
@@ -36,13 +38,7 @@ import {
   ReserveAddress,
   UserLoanInfo,
 } from "./types";
-import {
-  addEscrowNoteTransaction,
-  getEscrows,
-  loanLocalState,
-  removeEscrowNoteTransaction,
-  userLoanInfo,
-} from "./utils";
+import { getEscrows, loanLocalState, userLoanInfo } from "./utils";
 
 /**
  *
