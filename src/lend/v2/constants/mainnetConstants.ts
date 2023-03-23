@@ -4,7 +4,7 @@ const MainnetPoolManagerAppId = 971350278;
 
 const MainnetDepositsAppId = 971353536;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD";
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD" | "WBTC" | "WETH" ;
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -54,6 +54,18 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
       971388977: BigInt(1),
     },
   },
+  GARD: {
+    appId: 1060585819,
+    assetId: 684649988,
+    fAssetId: 1060587336,
+    frAssetId: 1060587337,
+    assetDecimals: 6,
+    poolManagerIndex: 7,
+    loans: {
+      971388781: BigInt(7),
+      971388977: BigInt(2),
+    },
+  },
   goBTC: {
     appId: 971373361,
     assetId: 386192725,
@@ -76,6 +88,28 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
       971388781: BigInt(5),
     },
   },
+  WBTC: {
+    appId: 1067289273,
+    assetId: 1058926737,
+    fAssetId: 1067295154,
+    frAssetId: 1067295155,
+    assetDecimals: 8,
+    poolManagerIndex: 8,
+    loans: {
+      971388781: BigInt(8),
+    },
+  },
+  WETH: {
+    appId: 1067289481,
+    assetId: 887406851,
+    fAssetId: 1067295558,
+    frAssetId: 1067295559,
+    assetDecimals: 8,
+    poolManagerIndex: 9,
+    loans: {
+      971388781: BigInt(9),
+    },
+  },
   OPUL: {
     appId: 1044267181,
     assetId: 287867876,
@@ -86,18 +120,6 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     loans: {
       971388781: BigInt(6),
     }
-  },
-  GARD: {
-    appId: 1060585819,
-    assetId: 684649988,
-    fAssetId: 1060587336,
-    frAssetId: 1060587337,
-    assetDecimals: 6,
-    poolManagerIndex: 7,
-    loans: {
-      971388781: BigInt(7),
-      971388977: BigInt(2),
-    },
   },
 };
 
