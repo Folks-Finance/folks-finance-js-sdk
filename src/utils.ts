@@ -48,7 +48,7 @@ async function getApplicationGlobalState(
     : client.lookupApplications(appId)
   ).do();
 
-  // algod https://developer.algorand.org/docs/rest-apis/algod/v2/#application
+  // algod https://developer.algorand.org/docs/rest-apis/algod/#application
   // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupapplicationbyid-response-200
   const app = client instanceof Algodv2 ? res : res["application"];
 
@@ -74,7 +74,7 @@ async function getAccountApplicationLocalState(
     : client.lookupAccountAppLocalStates(addr).applicationID(appId)
   ).do();
 
-  // algod https://developer.algorand.org/docs/rest-apis/algod/v2/#accountapplicationinformation-response-200
+  // algod https://developer.algorand.org/docs/rest-apis/algod/#accountapplicationinformation-response-200
   // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupaccountapplocalstates-response-200
   const localState =
     client instanceof Algodv2 ? res["app-local-state"] : res["apps-local-states"]?.find(({ id }: any) => id === appId);
@@ -93,21 +93,21 @@ async function getAccountAssets(
   addr: string,
 ): Promise<{
   currentRound?: number;
-  holdings: { assetId: number; balance: bigint }[];
+  holdings: Map<number, bigint>;
 }> {
   const res = await (client instanceof Algodv2
     ? client.accountInformation(addr)
-    : client.lookupAccountAssets(addr)
+    : client.lookupAccountByID(addr).exclude("apps-local-state,created-apps")
   ).do();
 
-  // algod https://developer.algorand.org/docs/rest-apis/algod/v2/#account
-  // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupaccountassets-response-200
-  const assets = res["assets"];
+  // algod https://developer.algorand.org/docs/rest-apis/algod/#account
+  // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupaccountbyid-response-200
+  const account = client instanceof Algodv2 ? res : res["account"];
+  const assets = account["assets"] || [];
 
-  const holdings: { assetId: number; balance: bigint }[] = [];
-  assets.forEach(({ "asset-id": assetId, amount }: any) => {
-    holdings.push({ assetId, balance: BigInt(amount) });
-  });
+  const holdings: Map<number, bigint> = new Map();
+  holdings.set(0, BigInt(account["amount"])); // includes min balance
+  assets.forEach(({ "asset-id": assetId, amount }: any) => holdings.set(assetId, BigInt(amount)));
 
   return {
     currentRound: res["current-round"],

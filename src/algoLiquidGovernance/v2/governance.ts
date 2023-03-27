@@ -1,4 +1,5 @@
 import {
+  Algodv2,
   AtomicTransactionComposer,
   decodeAddress,
   getApplicationAddress,
@@ -13,12 +14,16 @@ import {
 import { Dispenser, Distributor } from "../common";
 import {
   addEscrowNoteTransaction,
+  enc,
+  getAccountApplicationLocalState,
+  getAccountAssets,
+  getApplicationGlobalState,
   getParsedValueFromState,
   signer,
   transferAlgoOrAsset
 } from "../../utils";
 import { abiDistributor } from "./constants/abiContracts";
-import { DistributorInfo, UserCommitmentInfo } from "./types";
+import { DistributorInfo, EscrowGovernanceStatus, UserCommitmentInfo } from "./types";
 
 function getDistributorLogicSig(userAddr: string): LogicSigAccount {
   const prefix = Uint8Array.from([
@@ -42,14 +47,14 @@ function getDistributorLogicSig(userAddr: string): LogicSigAccount {
  *
  * Returns information regarding the given liquid governance distributor.
  *
- * @param indexerClient - Algorand indexer client to query
+ * @param client - Algorand client to query
  * @param distributor - distributor to query about
  * @returns DistributorInfo[] distributor info
  */
-async function getDistributorInfo(indexerClient: Indexer, distributor: Distributor): Promise<DistributorInfo> {
+async function getDistributorInfo(client: Algodv2 | Indexer, distributor: Distributor): Promise<DistributorInfo> {
   const { appId } = distributor;
-  const res = await indexerClient.lookupApplications(appId).do();
-  const state = res["application"]["params"]["global-state"];
+  const { currentRound, globalState: state } = await getApplicationGlobalState(client, appId);
+  if (state === undefined) throw Error("Could not find Distributor");
 
   const dispenserAppId = Number(getParsedValueFromState(state, "dispenser_app_id") || 0);
   const premintEnd = BigInt(getParsedValueFromState(state, "premint_end") || 0);
@@ -59,7 +64,7 @@ async function getDistributorInfo(indexerClient: Indexer, distributor: Distribut
   const isBurningPaused = Boolean(getParsedValueFromState(state, "is_burning_paused") || 0);
 
   return {
-    currentRound: res["current-round"],
+    currentRound,
     dispenserAppId,
     premintEnd,
     commitEnd,
@@ -73,13 +78,13 @@ async function getDistributorInfo(indexerClient: Indexer, distributor: Distribut
  *
  * Returns information regarding a user's liquid governance commitment.
  *
- * @param indexerClient - Algorand indexer client to query
+ * @param client - Algorand client to query
  * @param distributor - distributor to query about
  * @param userAddr - user address to get governance info about
- * @returns UserCommitmentInfo[] user commitment info
+ * @returns UserCommitmentInfo user commitment info
  */
 async function getUserLiquidGovernanceInfo(
-  indexerClient: Indexer,
+  client: Algodv2 | Indexer,
   distributor: Distributor,
   userAddr: string,
 ): Promise<UserCommitmentInfo> {
@@ -87,25 +92,76 @@ async function getUserLiquidGovernanceInfo(
   const escrowAddr = getDistributorLogicSig(userAddr).address();
 
   // get user account local state
-  const req = indexerClient.lookupAccountAppLocalStates(escrowAddr).applicationID(appId);
-  const res = await req.do();
+  const { currentRound, localState: state } = await getAccountApplicationLocalState(client, appId, escrowAddr);
+  if (state === undefined) throw Error(`Could not find user ${userAddr} in liquid gov ${appId}`);
 
   // user local state
-  const state = res["apps-local-states"]?.find((app: any) => app.id === appId)?.["key-value"];
-  if (state === undefined) throw new Error("Unable to find commitment for: " + userAddr + ".");
   const canDelegate = Boolean(getParsedValueFromState(state, "d"));
   const premint = BigInt(getParsedValueFromState(state, "p") || 0);
   const commitment = BigInt(getParsedValueFromState(state, "c") || 0);
   const nonCommitment = BigInt(getParsedValueFromState(state, "n") || 0);
 
   return {
-    currentRound: res["current-round"],
+    currentRound,
     userAddress: userAddr,
     canDelegate,
     premint,
     commitment,
     nonCommitment,
   };
+}
+
+/**
+ *
+ * Returns information regarding a user's escrow governance status.
+ *
+ * @param indexerClient - Algorand indexer client to query
+ * @param userAddr - user address to get governance info about
+ * @param signUpAddr - sign up address for the governance period
+ * @returns EscrowGovernanceStatus escrow governance status
+ */
+async function getEscrowGovernanceStatus(
+  indexerClient: Indexer,
+  userAddr: string,
+  signUpAddr: string,
+): Promise<EscrowGovernanceStatus | undefined> {
+  const escrowAddr = getDistributorLogicSig(userAddr).address();
+  const notePrefix = "af/gov";
+
+  const req = indexerClient
+    .searchForTransactions()
+    .address(escrowAddr)
+    .addressRole("sender")
+    .txType("pay")
+    .notePrefix(enc.encode(notePrefix));
+  const [res, bal] = await Promise.all([req.do(), getAccountAssets(indexerClient, escrowAddr)]);
+  const { currentRound, holdings: assetHoldings } = bal;
+
+  for (const txn of res["transactions"]) {
+    const payTxn = txn['tx-type'] === "appl" ? txn['inner-txns'][0] : txn;
+    const receiver: string = payTxn["payment-transaction"]["receiver"];
+    if (receiver === signUpAddr) {
+      const note: string = Buffer.from(payTxn["note"], "base64").toString();
+      const NOTE_SPECS_REGEX = new RegExp(String.raw`^${notePrefix}(?<version>\d+):j(?<jsonData>.*)$`);
+      const match = note.match(NOTE_SPECS_REGEX);
+
+      if (!match?.groups) return;
+      const { version, jsonData } = match.groups;
+
+      try {
+        const data = JSON.parse(jsonData);
+        const commitment = data['com'];
+        if (commitment !== undefined) return {
+          currentRound,
+          balance: assetHoldings.get(0)!,
+          version: Number(version),
+          commitment: BigInt(commitment),
+          beneficiaryAddress: data['bnf'],
+          xGovControlAddress: data['xGv'],
+        }
+      } catch (e) {}
+    }
+  }
 }
 
 /**
@@ -502,6 +558,7 @@ export {
   getDistributorLogicSig,
   getDistributorInfo,
   getUserLiquidGovernanceInfo,
+  getEscrowGovernanceStatus,
   prepareAddLiquidGovernanceEscrowTransactions,
   prepareMintTransactions,
   prepareUnmintPremintTransaction,
