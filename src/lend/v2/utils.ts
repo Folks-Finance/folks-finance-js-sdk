@@ -144,7 +144,10 @@ export function userDepositStakingInfo(
   const { pools: poolManagerPools } = poolManagerInfo;
   const { prices } = oraclePrices;
 
-  depositStakingInfo.stakingPrograms.forEach(({ poolAppId, rewards }, stakeIndex) => {
+  depositStakingInfo.stakingPrograms
+    .filter(({ poolAppId }) => poolAppId !== 0)
+    .forEach(({ poolAppId, rewards }, stakeIndex) => {
+
     const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.appId === poolAppId);
     const poolInfo = poolManagerPools[poolAppId];
     if (pool === undefined || poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
