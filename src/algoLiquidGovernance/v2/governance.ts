@@ -176,12 +176,14 @@ async function getEscrowGovernanceStatus(
  *
  * @param distributor - distributor that adding escrow to
  * @param userAddr - account address for the user
+ * @param delegatable - whether governance action for escrow can be delegated to gov admin
  * @param params - suggested params for the transactions with the fees overwritten
  * @returns { txns: Transaction[], escrow: LogicSigAccount } object containing group transaction and generated escrow account
  */
 function prepareAddLiquidGovernanceEscrowTransactions(
   distributor: Distributor,
   userAddr: string,
+  delegatable: boolean,
   params: SuggestedParams,
 ): { txns: Transaction[]; escrow: LogicSigAccount } {
   const { appId } = distributor;
@@ -200,7 +202,7 @@ function prepareAddLiquidGovernanceEscrowTransactions(
     appID: appId,
     onComplete: OnApplicationComplete.OptInOC,
     method: getMethodByName(abiDistributor.methods, "add_escrow"),
-    methodArgs: [{ txn: userCall, signer }],
+    methodArgs: [{ txn: userCall, signer }, delegatable],
     rekeyTo: getApplicationAddress(appId),
     suggestedParams: { ...params, flatFee: true, fee: 0 },
   });
