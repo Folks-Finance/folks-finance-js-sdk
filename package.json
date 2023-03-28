@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -16,7 +17,7 @@
     "Algorand"
   ],
   "scripts": {
-    "clean": "rm -rf ./lib",
+    "clean": "rm -rf ./dist",
     "build": "npm run clean && tsc -p tsconfig.cjs.json",
     "prepack": "npm run build",
     "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.cjs.json",
