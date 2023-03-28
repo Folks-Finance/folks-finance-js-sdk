@@ -95,24 +95,30 @@ async function getAccountAssets(
   currentRound?: number;
   holdings: Map<number, bigint>;
 }> {
-  const res = await (client instanceof Algodv2
-    ? client.accountInformation(addr)
-    : client.lookupAccountByID(addr).exclude("apps-local-state,created-apps")
-  ).do();
-
-  // algod https://developer.algorand.org/docs/rest-apis/algod/#account
-  // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupaccountbyid-response-200
-  const account = client instanceof Algodv2 ? res : res["account"];
-  const assets = account["assets"] || [];
-
   const holdings: Map<number, bigint> = new Map();
-  holdings.set(0, BigInt(account["amount"])); // includes min balance
-  assets.forEach(({ "asset-id": assetId, amount }: any) => holdings.set(assetId, BigInt(amount)));
 
-  return {
-    currentRound: res["current-round"],
-    holdings,
-  };
+  try {
+    const res = await (client instanceof Algodv2
+        ? client.accountInformation(addr)
+        : client.lookupAccountByID(addr).exclude("apps-local-state,created-apps")
+    ).do();
+
+    // algod https://developer.algorand.org/docs/rest-apis/algod/#account
+    // indexer https://developer.algorand.org/docs/rest-apis/indexer/#lookupaccountbyid-response-200
+    const account = client instanceof Algodv2 ? res : res["account"];
+    const assets = account["assets"] || [];
+
+    holdings.set(0, BigInt(account["amount"])); // includes min balance
+    assets.forEach(({ "asset-id": assetId, amount }: any) => holdings.set(assetId, BigInt(amount)));
+
+    return { currentRound: res["current-round"], holdings };
+  } catch (e: any) {
+    if (e.status === 404 && e.response?.text?.includes("no accounts found for address")) {
+      holdings.set(0, BigInt(0));
+      return { holdings };
+    }
+    throw e;
+  }
 }
 
 /**
