@@ -169,7 +169,7 @@ function prepareAddDepositStakingEscrow(
 ): { txns: Transaction[]; escrow: Account } {
   const escrow = generateAccount();
 
-  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, depositStakingAppId, "la ", {
+  const userCall = addEscrowNoteTransaction(userAddr, escrow.addr, depositStakingAppId, "fa ", {
     ...params,
     flatFee: true,
     fee: 2000,
