@@ -249,7 +249,7 @@ function prepareMintTransactions(
     signer,
     appID: distributor.appId,
     method: getMethodByName(abiDistributor.methods, "mint"),
-    methodArgs: [sendAlgo, dispenser.appId, dispenser.gAlgoId, ensureCommit],
+    methodArgs: [sendAlgo, escrowAddr, dispenser.appId, dispenser.gAlgoId, ensureCommit],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
     note,
   });
