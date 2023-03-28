@@ -124,7 +124,7 @@ async function getEscrowGovernanceStatus(
   indexerClient: Indexer,
   userAddr: string,
   signUpAddr: string,
-): Promise<EscrowGovernanceStatus | undefined> {
+): Promise<EscrowGovernanceStatus> {
   const escrowAddr = getDistributorLogicSig(userAddr).address();
   const notePrefix = "af/gov";
 
@@ -136,6 +136,7 @@ async function getEscrowGovernanceStatus(
     .notePrefix(enc.encode(notePrefix));
   const [res, bal] = await Promise.all([req.do(), getAccountAssets(indexerClient, escrowAddr)]);
   const { currentRound, holdings: assetHoldings } = bal;
+  const algoBalance = assetHoldings.get(0)!;
 
   for (const txn of res["transactions"]) {
     const payTxn = txn['tx-type'] === "appl" ? txn['inner-txns'][0] : txn;
@@ -145,7 +146,7 @@ async function getEscrowGovernanceStatus(
       const NOTE_SPECS_REGEX = new RegExp(String.raw`^${notePrefix}(?<version>\d+):j(?<jsonData>.*)$`);
       const match = note.match(NOTE_SPECS_REGEX);
 
-      if (!match?.groups) return;
+      if (!match?.groups) continue;
       const { version, jsonData } = match.groups;
 
       try {
@@ -153,15 +154,20 @@ async function getEscrowGovernanceStatus(
         const commitment = data['com'];
         if (commitment !== undefined) return {
           currentRound,
-          balance: assetHoldings.get(0)!,
-          version: Number(version),
-          commitment: BigInt(commitment),
-          beneficiaryAddress: data['bnf'],
-          xGovControlAddress: data['xGv'],
+          balance: algoBalance,
+          status: {
+            version: Number(version),
+            commitment: BigInt(commitment),
+            beneficiaryAddress: data['bnf'],
+            xGovControlAddress: data['xGv'],
+          },
+
         }
       } catch (e) {}
     }
   }
+
+  return { currentRound, balance: algoBalance };
 }
 
 /**

@@ -20,10 +20,12 @@ interface UserCommitmentInfo {
 interface EscrowGovernanceStatus {
   currentRound?: number;
   balance: bigint;
-  version: number;
-  commitment: bigint;
-  beneficiaryAddress?: string;
-  xGovControlAddress?: string;
+  status?: {
+    version: number;
+    commitment: bigint;
+    beneficiaryAddress?: string;
+    xGovControlAddress?: string;
+  }
 }
 
 export { DistributorInfo, UserCommitmentInfo, EscrowGovernanceStatus };
