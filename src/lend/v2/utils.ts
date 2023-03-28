@@ -177,7 +177,10 @@ export function userDepositStakingInfo(
 
       const unclaimedReward = oldUnclaimedReward + mulScale(fAssetStakedAmount, rewardPerToken - oldRewardPerToken, ONE_10_DP);
       const unclaimedRewardValue = mulScale(unclaimedReward, rewardAssetPrice, ONE_10_DP); // 4 d.p.
-      const interestRate = unixTime() > endTimestamp ? BigInt(0) : ((fAssetStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR) / (assetStakedAmount * assetPrice));
+      const stakedAmountValue = assetStakedAmount * assetPrice;
+      const interestRate = unixTime() < endTimestamp && stakedAmountValue !== BigInt(0) ?
+        ((fAssetStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR) / stakedAmountValue) :
+        BigInt(0);
 
       userRewards.push({
         rewardAssetId,
