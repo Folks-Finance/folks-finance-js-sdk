@@ -59,7 +59,7 @@ const abiDistributor = new ABIContract({
       name: "register_online",
       desc: "",
       args: [
-        { type: "address", name: "escrow", desc: "" },
+        { type: "account", name: "escrow", desc: "" },
         { type: "address", name: "vote_key", desc: "" },
         { type: "address", name: "sel_key", desc: "" },
         { type: "byte[64]", name: "state_proof_key", desc: "" },
@@ -73,7 +73,7 @@ const abiDistributor = new ABIContract({
       name: "register_offline",
       desc: "",
       args: [
-        { type: "address", name: "escrow", desc: "" },
+        { type: "account", name: "escrow", desc: "" },
       ],
       returns: { type: "void" },
     },
@@ -81,8 +81,8 @@ const abiDistributor = new ABIContract({
       name: "governance",
       desc: "",
       args: [
-        { type: "address", name: "escrow", desc: "" },
-        { type: "address", name: "dest", desc: "" },
+        { type: "account", name: "escrow", desc: "" },
+        { type: "account", name: "dest", desc: "" },
         { type: "string", name: "note", desc: "" },
       ],
       returns: { type: "void" },
@@ -91,7 +91,7 @@ const abiDistributor = new ABIContract({
       name: "remove_escrow",
       desc: "",
       args: [
-        { type: "address", name: "escrow", desc: "" },
+        { type: "account", name: "escrow", desc: "" },
       ],
       returns: { type: "void" },
     },
