@@ -496,15 +496,17 @@ function prepareCommitOrVoteTransaction(
  *
  * @param distributor - distributor that removing escrow from
  * @param senderAddr - account address for the sender
+ * @param ownerAddr - account address for the owner of the escrow
  * @param params - suggested params for the transactions with the fees overwritten
  * @returns Transaction[] burn transactions
  */
 function prepareRemoveLiquidGovernanceEscrowTransactions(
   distributor: Distributor,
   senderAddr: string,
+  ownerAddr: string,
   params: SuggestedParams,
 ): Transaction[] {
-  const escrowAddr = getDistributorLogicSig(senderAddr).address();
+  const escrowAddr = getDistributorLogicSig(ownerAddr).address();
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
