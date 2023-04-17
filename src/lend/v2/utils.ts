@@ -174,7 +174,7 @@ export function depositStakingProgramsInfo(
 
         const stakedAmountValue = assetTotalStakedAmount * assetPrice;
         const rewardInterestRate = unixTime() < endTimestamp && stakedAmountValue !== BigInt(0) ?
-          ((fAssetTotalStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR * BigInt(1e6)) / stakedAmountValue) :
+          ((rewardRate * BigInt(1e6) * rewardAssetPrice * SECONDS_IN_YEAR) / stakedAmountValue) :
           BigInt(0);
 
         userRewards.push({ rewardAssetId, endTimestamp, rewardAssetPrice, rewardInterestRate, rewardRate, rewardPerToken });
