@@ -143,7 +143,7 @@ export function depositStakingProgramsInfo(
 
   depositStakingInfo.stakingPrograms
     .filter(({ poolAppId }) => poolAppId !== 0)
-    .forEach(({ poolAppId, totalStaked, minTotalStaked, rewards }) => {
+    .forEach(({ poolAppId, totalStaked, minTotalStaked, rewards, stakeIndex }) => {
 
       const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.appId === poolAppId);
       const poolInfo = poolManagerPools[poolAppId];
@@ -182,6 +182,7 @@ export function depositStakingProgramsInfo(
 
       stakingPrograms.push({
         poolAppId,
+        stakeIndex,
         fAssetId,
         fAssetTotalStakedAmount,
         assetId,
