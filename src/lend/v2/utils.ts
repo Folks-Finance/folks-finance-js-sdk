@@ -77,7 +77,7 @@ export async function getEscrows(
  * @param state - escrow account local state
  * @param depositStakingAppId - deposit staking application to query about
  * @param escrowAddr - escrow address
- * @returns LoanLocalState loan local state
+ * @returns UserDepositStakingLocalState user deposit staking local state
  */
 export function depositStakingLocalState(
   state: TealKeyValue[],
@@ -114,6 +114,7 @@ export function depositStakingLocalState(
   return {
     userAddress,
     escrowAddress: escrowAddr,
+    optedIntoAssets: new Set(),
     stakedAmounts,
     rewardPerTokens,
     unclaimedRewards,
@@ -271,6 +272,7 @@ export function userDepositStakingInfo(
     currentRound: localState.currentRound,
     userAddress: localState.userAddress,
     escrowAddress: localState.escrowAddress,
+    optedIntoAssets: localState.optedIntoAssets,
     stakingPrograms,
   }
 }

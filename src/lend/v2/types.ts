@@ -174,6 +174,7 @@ interface UserDepositStakingLocalState {
   currentRound?: number;
   userAddress: string;
   escrowAddress: string;
+  optedIntoAssets: Set<number>
   stakedAmounts: bigint[];
   rewardPerTokens: bigint[]; // 10 d.p.
   unclaimedRewards: bigint[];
@@ -203,6 +204,7 @@ interface UserDepositStakingInfo {
   currentRound?: number;
   userAddress: string;
   escrowAddress: string;
+  optedIntoAssets: Set<number>
   stakingPrograms: UserDepositStakingProgramInfo[];
 }
 

@@ -14,7 +14,7 @@ import {
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
-  getAccountApplicationLocalState,
+  getAccountApplicationLocalState, getAccountAssets,
   getApplicationGlobalState,
   getParsedValueFromState,
   removeEscrowNoteTransaction,
@@ -121,13 +121,22 @@ async function retrieveUserDepositStakingsLocalState(
 
   // get all remaining deposit stakings' local state
   for (const escrowAddr of escrows) {
-    const { currentRound, localState: state } = await getAccountApplicationLocalState(
-      indexerClient,
-      depositStakingAppId,
-      escrowAddr,
-    );
+    const [
+      { holdings },
+      { currentRound, localState: state },
+    ] = await Promise.all([
+      getAccountAssets(indexerClient, escrowAddr),
+      getAccountApplicationLocalState(indexerClient, depositStakingAppId, escrowAddr),
+    ]);
+
+    const optedIntoAssets: Set<number> = new Set(holdings.keys());
     if (state === undefined) throw Error(`Could not find deposit staking ${depositStakingAppId} in escrow ${escrowAddr}`);
-    depositStakingsLocalState.push({ currentRound, ...depositStakingLocalState(state, depositStakingAppId, escrowAddr) });
+
+    depositStakingsLocalState.push({
+      ...depositStakingLocalState(state, depositStakingAppId, escrowAddr),
+      currentRound,
+      optedIntoAssets,
+    });
   }
 
   return depositStakingsLocalState;
