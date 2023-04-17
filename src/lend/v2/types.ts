@@ -151,6 +151,7 @@ interface DepositStakingInfo {
 
 interface DepositStakingProgramInfo {
   poolAppId: number;
+  stakeIndex: number;
   fAssetId: number;
   fAssetTotalStakedAmount: bigint;
   assetId: number;
