@@ -149,6 +149,26 @@ interface DepositStakingInfo {
   }[];
 }
 
+interface DepositStakingProgramInfo {
+  poolAppId: number;
+  fAssetId: number;
+  fAssetTotalStakedAmount: bigint;
+  assetId: number;
+  assetPrice: bigint; // 14 d.p.
+  assetTotalStakedAmount: bigint;
+  totalStakedAmountValue: bigint; // in $, 4 d.p.
+  depositInterestRate: bigint; // 16 d.p.
+  depositInterestYield: bigint; // approximation 16 d.p.
+  rewards: {
+    rewardAssetId: number;
+    endTimestamp: bigint;
+    rewardRate: bigint; // 10 d.p.
+    rewardPerToken: bigint; // 10 d.p.
+    rewardAssetPrice: bigint; // 14 d.p.
+    rewardInterestRate: bigint; // 0 if past reward end timestamp, 16 d.p.
+  }[];
+}
+
 interface UserDepositStakingLocalState {
   currentRound?: number;
   userAddress: string;
@@ -158,7 +178,7 @@ interface UserDepositStakingLocalState {
   unclaimedRewards: bigint[];
 }
 
-interface UserDepositStakingInfoStakingProgram {
+interface UserDepositStakingProgramInfo {
   poolAppId: number;
   fAssetId: number;
   fAssetStakedAmount: bigint;
@@ -166,14 +186,15 @@ interface UserDepositStakingInfoStakingProgram {
   assetPrice: bigint; // 14 d.p.
   assetStakedAmount: bigint;
   stakedAmountValue: bigint; // in $, 4 d.p.
-  interestRate: bigint; // 16 d.p.
-  interestYield: bigint; // approximation 16 d.p.
+  depositInterestRate: bigint; // 16 d.p.
+  depositInterestYield: bigint; // approximation 16 d.p.
   rewards: {
     rewardAssetId: number;
-    assetPrice: bigint; // 14 d.p.
+    endTimestamp: bigint;
+    rewardAssetPrice: bigint; // 14 d.p.
+    rewardInterestRate: bigint; // 0 if past reward end timestamp, 16 d.p.
     unclaimedReward: bigint;
     unclaimedRewardValue: bigint; // in $, 4 d.p.
-    interestRate: bigint; // 0 if past reward end timestamp, 10 d.p.
   }[];
 }
 
@@ -181,7 +202,7 @@ interface UserDepositStakingInfo {
   currentRound?: number;
   userAddress: string;
   escrowAddress: string;
-  stakingPrograms: UserDepositStakingInfoStakingProgram[];
+  stakingPrograms: UserDepositStakingProgramInfo[];
 }
 
 interface PoolLoanInfo {
@@ -316,8 +337,9 @@ export {
   UserDepositInfo,
   UserDepositFullInfo,
   DepositStakingInfo,
+  DepositStakingProgramInfo,
   UserDepositStakingLocalState,
-  UserDepositStakingInfoStakingProgram,
+  UserDepositStakingProgramInfo,
   UserDepositStakingInfo,
   PoolLoanInfo,
   LoanType,

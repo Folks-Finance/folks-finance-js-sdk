@@ -11,17 +11,17 @@ import {
   calcLTVRatio,
   calcWithdrawReturn,
 } from "./formulae";
-import { expBySquaring, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
+import { expBySquaring, maximum, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
 import {
   DepositStakingInfo,
+  DepositStakingProgramInfo,
   LoanInfo,
   LoanLocalState,
   OraclePrices,
   Pool,
   PoolManagerInfo,
   UserDepositStakingInfo,
-  UserDepositStakingInfoStakingProgram,
-  UserDepositStakingLocalState,
+  UserDepositStakingLocalState, UserDepositStakingProgramInfo,
   UserLoanInfo,
   UserLoanInfoBorrow,
   UserLoanInfoCollateral
@@ -122,41 +122,105 @@ export function depositStakingLocalState(
 
 /**
  *
- * Derives user loan info from escrow account.
+ * Derives deposit staking programs info from deposit staking info.
  * Use for advanced use cases where optimising number of network request.
  *
- * @param localState - local state of escrow account
- * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
  * @param depositStakingInfo - deposit staking info which is returned by retrieveDepositStakingInfo function
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
  * @param pools - pools in pool manager (either MainnetPools or TestnetPools)
  * @param oraclePrices - oracle prices which is returned by getOraclePrices function
- * @returns Promise<UserDepositStakingInfo> user loans info
+ * @returns Promise<DepositStakingProgramInfo[]> deposit staking programs info
  */
-export function userDepositStakingInfo(
-  localState: UserDepositStakingLocalState,
-  poolManagerInfo: PoolManagerInfo,
+export function depositStakingProgramsInfo(
   depositStakingInfo: DepositStakingInfo,
+  poolManagerInfo: PoolManagerInfo,
   pools: Record<string, Pool>,
   oraclePrices: OraclePrices,
-): UserDepositStakingInfo {
-  const stakingPrograms: UserDepositStakingInfoStakingProgram[] = [];
-
+): DepositStakingProgramInfo[] {
+  const stakingPrograms: DepositStakingProgramInfo[] = [];
   const { pools: poolManagerPools } = poolManagerInfo;
   const { prices } = oraclePrices;
 
   depositStakingInfo.stakingPrograms
     .filter(({ poolAppId }) => poolAppId !== 0)
-    .forEach(({ poolAppId, rewards }, stakeIndex) => {
+    .forEach(({ poolAppId, totalStaked, minTotalStaked, rewards }) => {
 
-    const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.appId === poolAppId);
+      const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.appId === poolAppId);
+      const poolInfo = poolManagerPools[poolAppId];
+      if (pool === undefined || poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
+      const { assetId, fAssetId } = pool;
+      const { depositInterestIndex, depositInterestRate, depositInterestYield } = poolInfo;
+
+      const oraclePrice = prices[assetId];
+      if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
+      const { price: assetPrice } = oraclePrice;
+
+      const fAssetTotalStakedAmount = maximum(totalStaked, minTotalStaked);
+      const assetTotalStakedAmount = calcWithdrawReturn(fAssetTotalStakedAmount, depositInterestIndex);
+      const totalStakedAmountValue = mulScale(assetTotalStakedAmount, assetPrice, ONE_10_DP); // 4 d.p.
+
+      const userRewards: {
+        rewardAssetId: number;
+        endTimestamp: bigint;
+        rewardRate: bigint;
+        rewardPerToken: bigint;
+        rewardAssetPrice: bigint;
+        rewardInterestRate: bigint;
+      }[] = [];
+      rewards.forEach(({ rewardAssetId, endTimestamp, rewardRate, rewardPerToken }) => {
+        const oraclePrice = prices[rewardAssetId];
+        if (oraclePrice === undefined) throw Error("Could not find asset price " + rewardAssetId);
+        const { price: rewardAssetPrice } = oraclePrice;
+
+        const stakedAmountValue = assetTotalStakedAmount * assetPrice;
+        const rewardInterestRate = unixTime() < endTimestamp && stakedAmountValue !== BigInt(0) ?
+          ((fAssetTotalStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR * BigInt(1e6)) / stakedAmountValue) :
+          BigInt(0);
+
+        userRewards.push({ rewardAssetId, endTimestamp, rewardAssetPrice, rewardInterestRate, rewardRate, rewardPerToken });
+      });
+
+      stakingPrograms.push({
+        poolAppId,
+        fAssetId,
+        fAssetTotalStakedAmount,
+        assetId,
+        assetPrice,
+        assetTotalStakedAmount,
+        totalStakedAmountValue,
+        depositInterestRate,
+        depositInterestYield,
+        rewards: userRewards,
+      });
+    });
+
+  return stakingPrograms;
+}
+
+/**
+ *
+ * Derives user loan info from escrow account.
+ * Use for advanced use cases where optimising number of network request.
+ *
+ * @param localState - local state of escrow account
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function*
+ * @param depositStakingProgramsInfo - deposit staking programs info which is returned by depositStakingProgramsInfo function
+ * @returns Promise<UserDepositStakingInfo> user loans info
+ */
+export function userDepositStakingInfo(
+  localState: UserDepositStakingLocalState,
+  poolManagerInfo: PoolManagerInfo,
+  depositStakingProgramsInfo: DepositStakingProgramInfo[],
+): UserDepositStakingInfo {
+  const stakingPrograms: UserDepositStakingProgramInfo[] = [];
+  const { pools: poolManagerPools } = poolManagerInfo;
+
+  depositStakingProgramsInfo.forEach((stakingProgram, stakeIndex) => {
+    const { poolAppId, fAssetId, assetId, assetPrice, depositInterestRate, depositInterestYield, rewards } = stakingProgram;
+
     const poolInfo = poolManagerPools[poolAppId];
-    if (pool === undefined || poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
-    const { assetId, fAssetId } = pool;
-    const { depositInterestIndex, depositInterestRate, depositInterestYield } = poolInfo;
-
-    const oraclePrice = prices[assetId];
-    if (oraclePrice === undefined) throw Error("Could not find asset price " + assetId);
-    const { price: assetPrice } = oraclePrice;
+    if (poolInfo === undefined) throw Error("Could not find pool " + poolAppId);
+    const { depositInterestIndex } = poolInfo;
 
     const fAssetStakedAmount = localState.stakedAmounts[stakeIndex];
     const assetStakedAmount = calcWithdrawReturn(fAssetStakedAmount, depositInterestIndex);
@@ -164,33 +228,27 @@ export function userDepositStakingInfo(
 
     const userRewards: {
       rewardAssetId: number;
-      assetPrice: bigint;
+      endTimestamp: bigint;
+      rewardAssetPrice: bigint;
+      rewardInterestRate: bigint;
       unclaimedReward: bigint;
       unclaimedRewardValue: bigint;
-      interestRate: bigint;
     }[] = [];
-    rewards.forEach(({ rewardAssetId, endTimestamp, rewardRate, rewardPerToken }, localRewardIndex) => {
+    rewards.forEach(({ rewardAssetId, endTimestamp, rewardAssetPrice, rewardInterestRate, rewardPerToken }, localRewardIndex) => {
       const rewardIndex = stakeIndex * 3 + localRewardIndex;
       const oldRewardPerToken = localState.rewardPerTokens[rewardIndex];
       const oldUnclaimedReward = localState.unclaimedRewards[rewardIndex];
 
-      const oraclePrice = prices[rewardAssetId];
-      if (oraclePrice === undefined) throw Error("Could not find asset price " + rewardAssetId);
-      const { price: rewardAssetPrice } = oraclePrice;
-
       const unclaimedReward = oldUnclaimedReward + mulScale(fAssetStakedAmount, rewardPerToken - oldRewardPerToken, ONE_10_DP);
       const unclaimedRewardValue = mulScale(unclaimedReward, rewardAssetPrice, ONE_10_DP); // 4 d.p.
-      const stakedAmountValue = assetStakedAmount * assetPrice;
-      const interestRate = unixTime() < endTimestamp && stakedAmountValue !== BigInt(0) ?
-        ((fAssetStakedAmount * rewardRate * rewardAssetPrice * SECONDS_IN_YEAR) / stakedAmountValue) :
-        BigInt(0);
 
       userRewards.push({
         rewardAssetId,
-        assetPrice: rewardAssetPrice,
+        endTimestamp,
+        rewardAssetPrice,
+        rewardInterestRate,
         unclaimedReward,
         unclaimedRewardValue,
-        interestRate,
       })
     });
 
@@ -202,8 +260,8 @@ export function userDepositStakingInfo(
       assetPrice,
       assetStakedAmount,
       stakedAmountValue,
-      interestRate: depositInterestRate,
-      interestYield: depositInterestYield,
+      depositInterestRate,
+      depositInterestYield,
       rewards: userRewards,
     });
   });

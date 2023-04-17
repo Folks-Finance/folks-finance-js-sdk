@@ -24,7 +24,7 @@ import {
 import { depositStakingABIContract } from "./abiContracts";
 import { maximum } from "./mathLib";
 import { DepositStakingInfo, Pool, UserDepositStakingLocalState } from "./types";
-import { depositStakingLocalState, getEscrows, userDepositStakingInfo } from "./utils";
+import { depositStakingLocalState, depositStakingProgramsInfo, getEscrows, userDepositStakingInfo } from "./utils";
 
 /**
  *
@@ -441,6 +441,7 @@ function prepareRemoveDepositStakingEscrow(
 
 export {
   retrieveDepositStakingInfo,
+  depositStakingProgramsInfo,
   retrieveUserDepositStakingsLocalState,
   retrieveUserDepositStakingLocalState,
   userDepositStakingInfo,
