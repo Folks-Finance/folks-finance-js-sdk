@@ -4,6 +4,8 @@ const MainnetPoolManagerAppId = 971350278;
 
 const MainnetDepositsAppId = 971353536;
 
+const MainnetDepositStakingAppId = 1093729103;
+
 type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD" | "WBTC" | "WETH" ;
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
@@ -146,6 +148,7 @@ const MainnetOpUp: OpUp = {
 export {
   MainnetPoolManagerAppId,
   MainnetDepositsAppId,
+  MainnetDepositStakingAppId,
   MainnetPoolKey,
   MainnetPools,
   MainnetLoans,
