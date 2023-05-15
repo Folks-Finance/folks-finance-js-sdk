@@ -11,7 +11,15 @@ import {
   calcLTVRatio,
   calcWithdrawReturn,
 } from "./formulae";
-import { expBySquaring, maximum, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
+import {
+  compoundEverySecond,
+  maximum,
+  mulScale,
+  ONE_10_DP,
+  ONE_16_DP,
+  ONE_4_DP,
+  SECONDS_IN_YEAR
+} from "./mathLib";
 import {
   DepositStakingInfo,
   DepositStakingProgramInfo,
@@ -431,9 +439,7 @@ export function userLoanInfo(
       const borrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, ONE_4_DP);
       const effectiveBorrowBalanceValue = calcBorrowAssetLoanValue(borrowBalance, assetPrice, borrowFactor);
       const interestRate = isStable ? stableBorrowInterestRate : poolInfo.variableBorrowInterestRate;
-      const interestYield = isStable
-        ? expBySquaring(ONE_16_DP + stableBorrowInterestRate / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP
-        : poolInfo.variableBorrowInterestYield;
+      const interestYield = isStable ? compoundEverySecond(stableBorrowInterestRate, ONE_16_DP) : poolInfo.variableBorrowInterestYield;
 
       totalBorrowedAmountValue += borrowedAmount;
       totalBorrowBalanceValue += borrowBalanceValue;

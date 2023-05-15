@@ -22,7 +22,36 @@ interface PactLPToken extends BaseLPToken {
 
 type LPToken = TinymanLPToken | PactLPToken;
 
-type PoolManagerInfo = {
+interface BaseLendingPool extends BaseLPToken {
+  pool0AppId: number;
+  pool1AppId: number;
+  feeScale: bigint;
+}
+
+interface PactLendingPool extends BaseLendingPool {
+  provider: LPTokenProvider.PACT;
+  lpPoolAppId: number;
+}
+
+type LendingPool = PactLendingPool;
+
+interface LendingPoolInfo {
+  currentRound?: number;
+  fAsset0Supply: bigint;
+  asset0Supply: bigint;
+  fAsset1Supply: bigint;
+  asset1Supply: bigint;
+  liquidityTokenCirculatingSupply: bigint;
+  fee: bigint;
+  swapFeeInterestRate: bigint; // 16 d.p.
+  swapFeeInterestYield: bigint; // 16 d.p.
+  asset0DepositInterestRate: bigint; // 16 d.p.
+  asset0DepositInterestYield: bigint; // approximation 16 d.p.
+  asset1DepositInterestRate: bigint; // 16 d.p.
+  asset1DepositInterestYield: bigint; // approximation 16 d.p.
+}
+
+interface PoolManagerInfo {
   currentRound?: number;
   pools: Partial<
     Record<
@@ -41,9 +70,9 @@ type PoolManagerInfo = {
           oldTimestamp: bigint;
         };
       }
-    >
-  >;
-};
+      >
+    >;
+}
 
 interface BasePool {
   appId: number;
@@ -332,6 +361,9 @@ export {
   TinymanLPToken,
   PactLPToken,
   LPToken,
+  PactLendingPool,
+  LendingPool,
+  LendingPoolInfo,
   PoolManagerInfo,
   BasePool,
   LPTokenPool,

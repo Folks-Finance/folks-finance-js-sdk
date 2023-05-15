@@ -50,6 +50,18 @@ function expBySquaring(x: bigint, n: bigint, scale: bigint): bigint {
   return mulScale(x, y, scale);
 }
 
+function compound(rate: bigint, scale: bigint, period: bigint): bigint {
+  return expBySquaring(scale + rate / period, period, scale) - scale;
+}
+
+function compoundEverySecond(rate: bigint, scale: bigint): bigint {
+  return compound(rate, scale, SECONDS_IN_YEAR);
+}
+
+function compoundEveryHour(rate: bigint, scale: bigint): bigint {
+  return compound(rate, scale, HOURS_IN_YEAR);
+}
+
 function sqrt(value: bigint): bigint {
   if (value < BigInt(0)) throw Error("square root of negative numbers is not supported");
 
@@ -81,5 +93,7 @@ export {
   divScale,
   divScaleRoundUp,
   expBySquaring,
+  compoundEverySecond,
+  compoundEveryHour,
   sqrt,
 };

@@ -25,7 +25,14 @@ import {
 } from "../../utils";
 import { depositsABIContract, poolABIContract } from "./abiContracts";
 import { calcBorrowInterestIndex, calcDepositInterestIndex, calcWithdrawReturn } from "./formulae";
-import { expBySquaring, HOURS_IN_YEAR, mulScale, ONE_10_DP, ONE_16_DP, SECONDS_IN_YEAR, UINT64 } from "./mathLib";
+import {
+  compoundEveryHour,
+  compoundEverySecond,
+  mulScale,
+  ONE_10_DP,
+  ONE_16_DP,
+  UINT64
+} from "./mathLib";
 import { getOraclePrices } from "./oracle";
 import { UserDepositFullInfo, Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
 import { getEscrows } from "./utils";
@@ -63,11 +70,10 @@ async function retrievePoolManagerInfo(client: Algodv2 | Indexer, poolManagerApp
 
         pools[poolAppId] = {
           variableBorrowInterestRate: vbir,
-          variableBorrowInterestYield:
-            expBySquaring(ONE_16_DP + vbir / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+          variableBorrowInterestYield: compoundEverySecond(vbir, ONE_16_DP),
           variableBorrowInterestIndex: vbii,
           depositInterestRate: dir,
-          depositInterestYield: expBySquaring(ONE_16_DP + dir / HOURS_IN_YEAR, HOURS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+          depositInterestYield: compoundEveryHour(dir, ONE_16_DP),
           depositInterestIndex: dii,
           metadata: {
             oldVariableBorrowInterestIndex: vbiit1,
@@ -109,8 +115,7 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       vr2: varBor[2],
       totalVariableBorrowAmount: varBor[3],
       variableBorrowInterestRate: varBor[4],
-      variableBorrowInterestYield:
-        expBySquaring(ONE_16_DP + varBor[4] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      variableBorrowInterestYield: compoundEverySecond(varBor[4], ONE_16_DP),
       variableBorrowInterestIndex: calcBorrowInterestIndex(varBor[4], varBor[5], interest[6]),
     },
     stableBorrow: {
@@ -124,8 +129,7 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       rebalanceDownDelta: stblBor[7],
       totalStableBorrowAmount: stblBor[8],
       stableBorrowInterestRate: stblBor[9],
-      stableBorrowInterestYield:
-        expBySquaring(ONE_16_DP + stblBor[9] / SECONDS_IN_YEAR, SECONDS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      stableBorrowInterestYield: compoundEverySecond(stblBor[9], ONE_16_DP),
       overallStableBorrowInterestAmount: stblBor[10] * UINT64 + stblBor[11],
     },
     interest: {
@@ -134,8 +138,7 @@ async function retrievePoolInfo(client: Algodv2 | Indexer, pool: Pool): Promise<
       optimalUtilisationRatio: interest[2],
       totalDeposits: interest[3],
       depositInterestRate: interest[4],
-      depositInterestYield:
-        expBySquaring(ONE_16_DP + interest[4] / HOURS_IN_YEAR, HOURS_IN_YEAR, ONE_16_DP) - ONE_16_DP,
+      depositInterestYield: compoundEveryHour(interest[4], ONE_16_DP),
       depositInterestIndex: calcDepositInterestIndex(interest[4], interest[5], interest[6]),
       latestUpdate: interest[6],
     },
