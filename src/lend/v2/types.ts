@@ -49,6 +49,7 @@ interface LendingPoolInfo {
   asset0DepositInterestYield: bigint; // approximation 16 d.p.
   asset1DepositInterestRate: bigint; // 16 d.p.
   asset1DepositInterestYield: bigint; // approximation 16 d.p.
+  tvlUsd: number;
 }
 
 interface PoolManagerInfo {
@@ -70,8 +71,8 @@ interface PoolManagerInfo {
           oldTimestamp: bigint;
         };
       }
-      >
-    >;
+    >
+  >;
 }
 
 interface BasePool {
@@ -160,7 +161,7 @@ type UserDepositFullInfo = {
     interestRate: bigint; // 16 d.p.
     interestYield: bigint; // approximation 16 d.p.
   }[];
-}
+};
 
 interface DepositStakingInfo {
   currentRound?: number;
@@ -203,7 +204,7 @@ interface UserDepositStakingLocalState {
   currentRound?: number;
   userAddress: string;
   escrowAddress: string;
-  optedIntoAssets: Set<number>
+  optedIntoAssets: Set<number>;
   stakedAmounts: bigint[];
   rewardPerTokens: bigint[]; // 10 d.p.
   unclaimedRewards: bigint[];
@@ -233,7 +234,7 @@ interface UserDepositStakingInfo {
   currentRound?: number;
   userAddress: string;
   escrowAddress: string;
-  optedIntoAssets: Set<number>
+  optedIntoAssets: Set<number>;
   stakingPrograms: UserDepositStakingProgramInfo[];
 }
 
