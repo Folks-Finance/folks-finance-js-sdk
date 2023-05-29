@@ -27,7 +27,9 @@ async function retrievePactLendingPoolInfo(
   // pact pool swap fee interest
   const res = await fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`);
   if (!res.ok || res.status !== 200) throw Error("Failed to fetch pact swap fee from api");
-  const swapFeeInterestRate = BigInt(Number((await res.json())?.["apr_7d"] || 0) * 1e16);
+  const pactPoolData = await res.json();
+  const swapFeeInterestRate = BigInt(Number(pactPoolData?.["apr_7d"] || 0) * 1e16);
+  const tvlUsd = Number(pactPoolData?.["tvl_usd"] || 0);
 
   // lending pool deposit interest
   const pool0 = poolManagerInfo.pools[lendingPool.pool0AppId];
@@ -48,6 +50,7 @@ async function retrievePactLendingPoolInfo(
     asset0DepositInterestYield: pool0.depositInterestYield / BigInt(2),
     asset1DepositInterestRate: pool1.depositInterestRate / BigInt(2),
     asset1DepositInterestYield: pool1.depositInterestYield / BigInt(2),
+    tvlUsd,
   };
 }
 
