@@ -1,0 +1,46 @@
+{
+  "name": "XAlgo",
+  "methods": [
+    {
+      "name": "mint",
+      "args": [
+        {
+          "type": "pay",
+          "name": "send_algo"
+        },
+        {
+          "type": "asset",
+          "name": "x_algo"
+        },
+        {
+          "type": "uint64",
+          "name": "min_received"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "burn",
+      "args": [
+        {
+          "type": "axfer",
+          "name": "send_xalgo"
+        },
+        {
+          "type": "asset",
+          "name": "x_algo"
+        },
+        {
+          "type": "uint64",
+          "name": "min_received"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    }
+  ],
+  "networks": {}
+}

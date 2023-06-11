@@ -1,6 +1,6 @@
 {
   "name": "folks-finance-js-sdk",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "The official JavaScript SDK for the Folks Finance Protocol",
   "main": "dist/index.js",
   "types": "dist/types/index.d.ts",
@@ -18,11 +18,11 @@
   ],
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build": "npm run clean && tsc -p tsconfig.cjs.json",
+    "build": "npm run clean && tsc -p tsconfig.json",
     "prepack": "npm run build",
-    "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.cjs.json",
+    "docs": "typedoc src/index.ts --options typedoc.config.json --tsconfig tsconfig.json",
     "format": "prettier --write 'src/**/*'",
-    "example": "ts-node --project tsconfig.cjs.json",
+    "example": "ts-node --project tsconfig.json",
     "prepare": "husky install"
   },
   "dependencies": {

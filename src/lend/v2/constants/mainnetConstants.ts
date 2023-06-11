@@ -1,4 +1,5 @@
-import { LoanType, OpUp, Oracle, Pool, ReserveAddress } from "../types";
+import { LoanType, LPTokenProvider, OpUp, Oracle, PactLendingPool, Pool, ReserveAddress } from "../types";
+import { ONE_4_DP } from "../mathLib";
 
 const MainnetPoolManagerAppId = 971350278;
 
@@ -131,6 +132,70 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ALGO_EFFICIENCY]: 971389489,
 };
 
+type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOGARDPLP" | "USDCUSDtPLP";
+const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
+  ALGOUSDCPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116363704,
+    lpAssetId: 1116363710,
+    pool0AppId: 971368268,
+    pool1AppId: 971372237,
+    asset0Id: 0,
+    asset1Id: 31566704,
+    feeScale: ONE_4_DP,
+  },
+  ALGOgALGOPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116366345,
+    lpAssetId: 1116366351,
+    pool0AppId: 971368268,
+    pool1AppId: 971370097,
+    asset0Id: 0,
+    asset1Id: 793124631,
+    feeScale: ONE_4_DP,
+  },
+  ALGOwBTCPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116367260,
+    lpAssetId: 1116367266,
+    pool0AppId: 971368268,
+    pool1AppId: 1067289273,
+    asset0Id: 0,
+    asset1Id: 1058926737,
+    feeScale: ONE_4_DP,
+  },
+  ALGOwETHPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116369904,
+    lpAssetId: 1116369910,
+    pool0AppId: 971368268,
+    pool1AppId: 1067289481,
+    asset0Id: 0,
+    asset1Id: 887406851,
+    feeScale: ONE_4_DP,
+  },
+  ALGOGARDPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116372017,
+    lpAssetId: 1116372023,
+    pool0AppId: 971368268,
+    pool1AppId: 1060585819,
+    asset0Id: 0,
+    asset1Id: 684649988,
+    feeScale: ONE_4_DP,
+  },
+  USDCUSDtPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1116364721,
+    lpAssetId: 1116364727,
+    pool0AppId: 971372237,
+    pool1AppId: 971372700,
+    asset0Id: 31566704,
+    asset1Id: 312769,
+    feeScale: ONE_4_DP,
+  },
+}
+
 const MainnetReserveAddress: ReserveAddress = "Q5Q5FC5PTYQIUX5PGNTEW22UJHJHVVUEMMWV2LSG6MGT33YQ54ST7FEIGA";
 
 const MainnetOracle: Oracle = {
@@ -152,6 +217,8 @@ export {
   MainnetPoolKey,
   MainnetPools,
   MainnetLoans,
+  MainnetLendingPoolKey,
+  MainnetLendingPools,
   MainnetReserveAddress,
   MainnetOracle,
   MainnetOpUp,
