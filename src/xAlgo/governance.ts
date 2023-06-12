@@ -1,4 +1,5 @@
 import {
+  Algodv2,
   AtomicTransactionComposer,
   getApplicationAddress,
   getMethodByName,
@@ -6,7 +7,13 @@ import {
   SuggestedParams,
   Transaction
 } from "algosdk";
-import { getParsedValueFromState, signer, transferAlgoOrAsset } from "../utils";
+import {
+  getAccountAssets,
+  getApplicationGlobalState,
+  getParsedValueFromState,
+  signer,
+  transferAlgoOrAsset
+} from "../utils";
 import { xAlgoABIContract } from "./abiContracts";
 import { XAlgo, XAlgoInfo } from "./types";
 
@@ -14,14 +21,20 @@ import { XAlgo, XAlgoInfo } from "./types";
  *
  * Returns information regarding the given xAlgo application.
  *
- * @param indexerClient - Algorand indexer client to query
+ * @param client - Algorand client to query
  * @param xAlgo - xAlgo to query about
  * @returns DispenserInfo[] dispenser info
  */
-async function getXAlgoInfo(indexerClient: Indexer, xAlgo: XAlgo): Promise<XAlgoInfo> {
-  const { appId } = xAlgo;
-  const res = await indexerClient.lookupApplications(appId).do();
-  const state = res["application"]["params"]["global-state"];
+async function getXAlgoInfo(client: Algodv2 | Indexer, xAlgo: XAlgo): Promise<XAlgoInfo> {
+  const { appId, xAlgoId } = xAlgo;
+  const [
+    { holdings },
+    { currentRound, globalState: state },
+  ] = await Promise.all([
+    getAccountAssets(client, getApplicationAddress(appId)),
+    getApplicationGlobalState(client, appId),
+  ]);
+  if (state === undefined) throw Error("Could not find xAlgo application");
 
   const timeDelay = BigInt(getParsedValueFromState(state, "time_delay") || 0);
   const commitEnd = BigInt(getParsedValueFromState(state, "commit_end") || 0);
@@ -29,13 +42,18 @@ async function getXAlgoInfo(indexerClient: Indexer, xAlgo: XAlgo): Promise<XAlgo
   const hasClaimedFee = Boolean(getParsedValueFromState(state, "has_claimed_fee") || 0);
   const isMintingPaused = Boolean(getParsedValueFromState(state, "is_minting_paused") || 0);
 
+  const algoBalance = holdings.get(0)! - BigInt(0.2e6);
+  const xAlgoCirculatingBalance = BigInt(10e15) - holdings.get(xAlgoId)!;
+
   return {
-    currentRound: res["current-round"],
+    currentRound,
     timeDelay,
     commitEnd,
     fee,
     hasClaimedFee,
     isMintingPaused,
+    algoBalance,
+    xAlgoCirculatingBalance,
   };
 }
 
