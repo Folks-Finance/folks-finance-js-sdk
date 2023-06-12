@@ -87,7 +87,7 @@ function prepareMintXAlgoTransactions(
     appID: appId,
     method: getMethodByName(xAlgoABIContract.methods, "mint"),
     methodArgs: [sendAlgo, xAlgoId, minReceivedAmount],
-    suggestedParams: { ...params, flatFee: true, fee: 2000 },
+    suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
   return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
 }
@@ -122,7 +122,7 @@ function prepareBurnXAlgoTransactions(
     appID: appId,
     method: getMethodByName(xAlgoABIContract.methods, "burn"),
     methodArgs: [sendXAlgo, xAlgoId, minReceivedAmount],
-    suggestedParams: { ...params, flatFee: true, fee: 2000 },
+    suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
   return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
 }
