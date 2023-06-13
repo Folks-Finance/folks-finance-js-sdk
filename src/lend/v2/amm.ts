@@ -28,7 +28,7 @@ async function retrievePactLendingPoolInfo(
   const res = await fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`);
   if (!res.ok || res.status !== 200) throw Error("Failed to fetch pact swap fee from api");
   const pactPoolData = await res.json();
-  const swapFeeInterestRate = BigInt(Number(pactPoolData?.["apr_7d"] || 0) * 1e16);
+  const swapFeeInterestRate = BigInt(Math.round(Number(pactPoolData?.["apr_7d"] || 0) * 1e16));
   const tvlUsd = Number(pactPoolData?.["tvl_usd"] || 0);
 
   // lending pool deposit interest
