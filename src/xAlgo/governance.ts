@@ -66,6 +66,7 @@ async function getXAlgoInfo(client: Algodv2 | Indexer, xAlgo: XAlgo): Promise<XA
  * @param amount - amount of ALGO to send
  * @param minReceivedAmount - min amount of xALGO expected to receive
  * @param params - suggested params for the transactions with the fees overwritten
+ * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] mint transactions
  */
 function prepareMintXAlgoTransactions(
@@ -74,6 +75,7 @@ function prepareMintXAlgoTransactions(
   amount: number | bigint,
   minReceivedAmount: number | bigint,
   params: SuggestedParams,
+  note?: Uint8Array,
 ): Transaction[] {
   const { appId, xAlgoId } = xAlgo;
   const sendAlgo = {
@@ -88,6 +90,7 @@ function prepareMintXAlgoTransactions(
     method: getMethodByName(xAlgoABIContract.methods, "mint"),
     methodArgs: [sendAlgo, xAlgoId, minReceivedAmount],
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
+    note,
   });
   return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
 }
@@ -101,6 +104,7 @@ function prepareMintXAlgoTransactions(
  * @param amount - amount of xALGO to send
  * @param minReceivedAmount - min amount of ALGO expected to receive
  * @param params - suggested params for the transactions with the fees overwritten
+ * @param note - optional note to distinguish who is the burner (must pass to be eligible for revenue share)
  * @returns Transaction[] mint transactions
  */
 function prepareBurnXAlgoTransactions(
@@ -109,6 +113,7 @@ function prepareBurnXAlgoTransactions(
   amount: number | bigint,
   minReceivedAmount: number | bigint,
   params: SuggestedParams,
+  note?: Uint8Array,
 ): Transaction[] {
   const { appId, xAlgoId } = xAlgo;
   const sendXAlgo = {
@@ -123,6 +128,7 @@ function prepareBurnXAlgoTransactions(
     method: getMethodByName(xAlgoABIContract.methods, "burn"),
     methodArgs: [sendXAlgo, xAlgoId, minReceivedAmount],
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
+    note,
   });
   return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
 }
