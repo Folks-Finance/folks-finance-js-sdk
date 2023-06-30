@@ -2,6 +2,7 @@ import {
   Algodv2,
   AtomicTransactionComposer,
   decodeAddress,
+  encodeAddress,
   getApplicationAddress,
   getMethodByName,
   Indexer,
@@ -16,7 +17,7 @@ import {
   addEscrowNoteTransaction,
   enc,
   getAccountApplicationLocalState,
-  getAccountAssets,
+  getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   signer,
@@ -134,8 +135,8 @@ async function getEscrowGovernanceStatus(
     .addressRole("sender")
     .txType("pay")
     .notePrefix(enc.encode(notePrefix));
-  const [res, bal] = await Promise.all([req.do(), getAccountAssets(indexerClient, escrowAddr)]);
-  const { currentRound, holdings: assetHoldings } = bal;
+  const [res, bal] = await Promise.all([req.do(), getAccountDetails(indexerClient, escrowAddr)]);
+  const { currentRound, isOnline, holdings: assetHoldings } = bal;
   const algoBalance = assetHoldings.get(0)!;
 
   for (const txn of res["transactions"]) {
@@ -155,6 +156,7 @@ async function getEscrowGovernanceStatus(
         if (commitment !== undefined) return {
           currentRound,
           balance: algoBalance,
+          isOnline,
           status: {
             version: Number(version),
             commitment: BigInt(commitment),
@@ -167,7 +169,11 @@ async function getEscrowGovernanceStatus(
     }
   }
 
-  return { currentRound, balance: algoBalance };
+  return {
+    currentRound,
+    balance: algoBalance,
+    isOnline,
+  };
 }
 
 /**
@@ -383,8 +389,8 @@ function prepareClaimPremintTransaction(
  *
  * @param distributor - distributor that has escrow
  * @param senderAddr - account address for the sender
- * @param voteKeyAddr - account address for the vote key
- * @param selectionKeyAddr - account address for the selection key
+ * @param voteKey - vote key
+ * @param selectionKey - selection key
  * @param stateProofKey - state proof key
  * @param voteFirstRound - vote first round
  * @param voteLastRound - vote last round
@@ -395,8 +401,8 @@ function prepareClaimPremintTransaction(
 function prepareRegisterEscrowOnlineTransaction(
   distributor: Distributor,
   senderAddr: string,
-  voteKeyAddr: string,
-  selectionKeyAddr: string,
+  voteKey: Buffer,
+  selectionKey: Buffer,
   stateProofKey: Buffer,
   voteFirstRound: number | bigint,
   voteLastRound: number | bigint,
@@ -411,7 +417,7 @@ function prepareRegisterEscrowOnlineTransaction(
     signer,
     appID: distributor.appId,
     method: getMethodByName(abiDistributor.methods, "register_online"),
-    methodArgs: [escrowAddr, voteKeyAddr, selectionKeyAddr, stateProofKey, voteFirstRound, voteLastRound, voteKeyDilution],
+    methodArgs: [escrowAddr, encodeAddress(voteKey), encodeAddress(selectionKey), stateProofKey, voteFirstRound, voteLastRound, voteKeyDilution],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
   const txns = atc.buildGroup().map(({ txn }) => {

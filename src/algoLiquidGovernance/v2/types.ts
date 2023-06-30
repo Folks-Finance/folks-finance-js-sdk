@@ -20,6 +20,7 @@ interface UserCommitmentInfo {
 interface EscrowGovernanceStatus {
   currentRound?: number;
   balance: bigint;
+  isOnline: boolean;
   status?: {
     version: number;
     commitment: bigint;

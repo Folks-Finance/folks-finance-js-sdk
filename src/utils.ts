@@ -86,13 +86,14 @@ async function getAccountApplicationLocalState(
 }
 
 /**
- * Wraps a call to Algorand client (algod/indexer) and returns asset holdings
+ * Wraps a call to Algorand client (algod/indexer) and returns account details
  */
-async function getAccountAssets(
+async function getAccountDetails(
   client: Algodv2 | Indexer,
   addr: string,
 ): Promise<{
   currentRound?: number;
+  isOnline: boolean;
   holdings: Map<number, bigint>;
 }> {
   const holdings: Map<number, bigint> = new Map();
@@ -111,11 +112,19 @@ async function getAccountAssets(
     holdings.set(0, BigInt(account["amount"])); // includes min balance
     assets.forEach(({ "asset-id": assetId, amount }: any) => holdings.set(assetId, BigInt(amount)));
 
-    return { currentRound: res["current-round"], holdings };
+    return {
+      currentRound: res["current-round"],
+      isOnline: account['status'] === "Online",
+      holdings,
+    };
   } catch (e: any) {
     if (e.status === 404 && e.response?.text?.includes("no accounts found for address")) {
       holdings.set(0, BigInt(0));
-      return { holdings };
+
+      return {
+        isOnline: false,
+        holdings,
+      };
     }
     throw e;
   }
@@ -212,7 +221,7 @@ export {
   unixTime,
   getApplicationGlobalState,
   getAccountApplicationLocalState,
-  getAccountAssets,
+  getAccountDetails,
   fromIntToBytes8Hex,
   fromIntToByteHex,
   getParsedValueFromState,

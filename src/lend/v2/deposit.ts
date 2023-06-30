@@ -14,7 +14,7 @@ import {
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
-  getAccountAssets,
+  getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   parseBitsAsBooleans,
@@ -176,7 +176,7 @@ async function retrieveUserDepositsInfo(
 
   // get all remaining escrows' holdings
   for (const escrowAddr of escrows) {
-    const { currentRound, holdings: assetHoldings } = await getAccountAssets(indexerClient, escrowAddr);
+    const { currentRound, holdings: assetHoldings } = await getAccountDetails(indexerClient, escrowAddr);
     const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
     assetHoldings.forEach((balance, assetId) => holdings.push({ fAssetId: assetId, fAssetBalance: balance }));
     userDepositsInfo.push({ currentRound, escrowAddress: escrowAddr, holdings });
@@ -264,7 +264,7 @@ async function retrieveUserDepositInfo(
   depositsAppId: number,
   escrowAddr: string,
 ): Promise<UserDepositInfo> {
-  const { currentRound, holdings: assetHoldings } = await getAccountAssets(client, escrowAddr);
+  const { currentRound, holdings: assetHoldings } = await getAccountDetails(client, escrowAddr);
   const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
   assetHoldings.forEach((balance, assetId) => holdings.push({ fAssetId: assetId, fAssetBalance: balance }));
   return { currentRound, escrowAddress: escrowAddr, holdings };

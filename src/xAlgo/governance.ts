@@ -8,7 +8,7 @@ import {
   Transaction
 } from "algosdk";
 import {
-  getAccountAssets,
+  getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   signer,
@@ -31,7 +31,7 @@ async function getXAlgoInfo(client: Algodv2 | Indexer, xAlgo: XAlgo): Promise<XA
     { holdings },
     { currentRound, globalState: state },
   ] = await Promise.all([
-    getAccountAssets(client, getApplicationAddress(appId)),
+    getAccountDetails(client, getApplicationAddress(appId)),
     getApplicationGlobalState(client, appId),
   ]);
   if (state === undefined) throw Error("Could not find xAlgo application");
