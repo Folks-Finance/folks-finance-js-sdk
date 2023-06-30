@@ -17,7 +17,7 @@
 <h1>Function prepareRegisterEscrowOnlineTransaction</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures tsd-kind-function">
-<li class="tsd-signature tsd-anchor-link" id="prepareRegisterEscrowOnlineTransaction">prepare<wbr/>Register<wbr/>Escrow<wbr/>Online<wbr/>Transaction<span class="tsd-signature-symbol">(</span>distributor<span class="tsd-signature-symbol">: </span><a href="../interfaces/Distributor.html" class="tsd-signature-type" data-tsd-kind="Interface">Distributor</a>, senderAddr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteKeyAddr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, selectionKeyAddr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, stateProofKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, voteFirstRound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, voteLastRound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, voteKeyDilution<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SuggestedParams</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transaction</span><a href="#prepareRegisterEscrowOnlineTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="prepareRegisterEscrowOnlineTransaction">prepare<wbr/>Register<wbr/>Escrow<wbr/>Online<wbr/>Transaction<span class="tsd-signature-symbol">(</span>distributor<span class="tsd-signature-symbol">: </span><a href="../interfaces/Distributor.html" class="tsd-signature-type" data-tsd-kind="Interface">Distributor</a>, senderAddr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, selectionKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, stateProofKey<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Buffer</span>, voteFirstRound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, voteLastRound<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, voteKeyDilution<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SuggestedParams</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transaction</span><a href="#prepareRegisterEscrowOnlineTransaction" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Returns a transaction to register escrow online.</p>
 
@@ -35,12 +35,12 @@
 <div class="tsd-comment tsd-typography"><p>account address for the sender</p>
 </div></li>
 <li>
-<h5>voteKeyAddr: <span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>account address for the vote key</p>
+<h5>voteKey: <span class="tsd-signature-type">Buffer</span></h5>
+<div class="tsd-comment tsd-typography"><p>vote key</p>
 </div></li>
 <li>
-<h5>selectionKeyAddr: <span class="tsd-signature-type">string</span></h5>
-<div class="tsd-comment tsd-typography"><p>account address for the selection key</p>
+<h5>selectionKey: <span class="tsd-signature-type">Buffer</span></h5>
+<div class="tsd-comment tsd-typography"><p>selection key</p>
 </div></li>
 <li>
 <h5>stateProofKey: <span class="tsd-signature-type">Buffer</span></h5>
@@ -64,7 +64,7 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Transaction</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/5028892/src/algoLiquidGovernance/v2/governance.ts#L395">algoLiquidGovernance/v2/governance.ts:395</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/2040102/src/algoLiquidGovernance/v2/governance.ts#L401">algoLiquidGovernance/v2/governance.ts:401</a></li></ul></aside></li></ul></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

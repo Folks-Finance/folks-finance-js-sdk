@@ -14,7 +14,7 @@ import {
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
-  getAccountApplicationLocalState, getAccountAssets,
+  getAccountApplicationLocalState, getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   removeEscrowNoteTransaction,
@@ -125,7 +125,7 @@ async function retrieveUserDepositStakingsLocalState(
       { holdings },
       { currentRound, localState: state },
     ] = await Promise.all([
-      getAccountAssets(indexerClient, escrowAddr),
+      getAccountDetails(indexerClient, escrowAddr),
       getAccountApplicationLocalState(indexerClient, depositStakingAppId, escrowAddr),
     ]);
 
