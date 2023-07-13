@@ -222,13 +222,15 @@ function prepareAddLiquidGovernanceEscrowTransactions(
 /**
  *
  * Returns a group transaction to mint gALGO for ALGO at a one-to-one rate.
- * If in the commitment period then also commits user into governance.
+ *
+ * If you want to commit then MUST be paired with prepareCommitOrVoteTransaction
+ * as to send the required note to the signup address.
  *
  * @param dispenser - dispenser to mint gALGO from
  * @param distributor - distributor that calls dispenser and to send ALGO to
  * @param senderAddr - account address for the sender
  * @param amount - amount of ALGO to send and gALGO to mint
- * @param ensureCommit - whether to ensure commitment
+ * @param ensureCommit - whether to ensure in commitment period
  * @param params - suggested params for the transactions with the fees overwritten
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] mint transactions

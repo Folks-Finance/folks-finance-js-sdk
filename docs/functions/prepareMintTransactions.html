@@ -19,8 +19,9 @@
 <ul class="tsd-signatures tsd-kind-function">
 <li class="tsd-signature tsd-anchor-link" id="prepareMintTransactions">prepare<wbr/>Mint<wbr/>Transactions<span class="tsd-signature-symbol">(</span>dispenser<span class="tsd-signature-symbol">: </span><a href="../interfaces/Dispenser.html" class="tsd-signature-type" data-tsd-kind="Interface">Dispenser</a>, distributor<span class="tsd-signature-symbol">: </span><a href="../interfaces/Distributor.html" class="tsd-signature-type" data-tsd-kind="Interface">Distributor</a>, senderAddr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, amount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">bigint</span>, ensureCommit<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, params<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SuggestedParams</span>, note<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Transaction</span><span class="tsd-signature-symbol">[]</span><a href="#prepareMintTransactions" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Returns a group transaction to mint gALGO for ALGO at a one-to-one rate.
-If in the commitment period then also commits user into governance.</p>
+<div class="tsd-comment tsd-typography"><p>Returns a group transaction to mint gALGO for ALGO at a one-to-one rate.</p>
+<p>If you want to commit then MUST be paired with prepareCommitOrVoteTransaction
+as to send the required note to the signup address.</p>
 
 <h3>Returns</h3><p>Transaction[] mint transactions</p>
 </div>
@@ -45,7 +46,7 @@ If in the commitment period then also commits user into governance.</p>
 </div></li>
 <li>
 <h5>ensureCommit: <span class="tsd-signature-type">boolean</span></h5>
-<div class="tsd-comment tsd-typography"><p>whether to ensure commitment</p>
+<div class="tsd-comment tsd-typography"><p>whether to ensure in commitment period</p>
 </div></li>
 <li>
 <h5>params: <span class="tsd-signature-type">SuggestedParams</span></h5>
@@ -57,7 +58,7 @@ If in the commitment period then also commits user into governance.</p>
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Transaction</span><span class="tsd-signature-symbol">[]</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/d83e800/src/algoLiquidGovernance/v2/governance.ts#L236">algoLiquidGovernance/v2/governance.ts:236</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/6bc61bf/src/algoLiquidGovernance/v2/governance.ts#L238">algoLiquidGovernance/v2/governance.ts:238</a></li></ul></aside></li></ul></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
