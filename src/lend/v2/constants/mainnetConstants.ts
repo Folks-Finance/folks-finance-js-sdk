@@ -132,7 +132,7 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ALGO_EFFICIENCY]: 971389489,
 };
 
-type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOGARDPLP" | "USDCUSDtPLP";
+type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOGARDPLP" | "USDCUSDtPLP" | "USDCGARDPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
   ALGOUSDCPLP: {
     provider: LPTokenProvider.PACT,
@@ -192,6 +192,16 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     pool1AppId: 971372700,
     asset0Id: 31566704,
     asset1Id: 312769,
+    feeScale: ONE_4_DP,
+  },
+  USDCGARDPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1150038072,
+    lpAssetId: 1150038078,
+    pool0AppId: 971372237,
+    pool1AppId: 1060585819,
+    asset0Id: 31566704,
+    asset1Id: 684649988,
     feeScale: ONE_4_DP,
   },
 }
