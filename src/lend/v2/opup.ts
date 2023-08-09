@@ -27,12 +27,11 @@ function prefixWithOpUp(
 
   const { callerAppId, baseAppId } = opup;
   const fee = (numInnerTransactions + 1) * 1000;
-  const budget = numInnerTransactions === 0 ? 0 : 686 * numInnerTransactions - 3;
   const prefix = makeApplicationNoOpTxn(
     userAddr,
     { ...params, flatFee: true, fee },
     callerAppId,
-    [encodeUint64(budget)],
+    [encodeUint64(numInnerTransactions)],
     undefined,
     [baseAppId],
   );

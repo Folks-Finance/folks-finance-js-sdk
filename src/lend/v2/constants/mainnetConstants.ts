@@ -216,7 +216,7 @@ const MainnetOracle: Oracle = {
 };
 
 const MainnetOpUp: OpUp = {
-  callerAppId: 971335937,
+  callerAppId: 1167143153,
   baseAppId: 971335616,
 };
 
