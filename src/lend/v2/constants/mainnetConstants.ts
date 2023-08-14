@@ -7,7 +7,7 @@ const MainnetDepositsAppId = 971353536;
 
 const MainnetDepositStakingAppId = 1093729103;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD" | "WBTC" | "WETH" ;
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "goBTC" | "goETH" | "OPUL" | "GARD" | "WBTC" | "WETH" | "WAVAX" ;
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -113,6 +113,17 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
       971388781: BigInt(9),
     },
   },
+  WAVAX: {
+    appId: 1166977433,
+    assetId: 893309613,
+    fAssetId: 1166979636,
+    frAssetId: 1166979637,
+    assetDecimals: 8,
+    poolManagerIndex: 10,
+    loans: {
+      971388781: BigInt(10),
+    },
+  },
   OPUL: {
     appId: 1044267181,
     assetId: 287867876,
@@ -132,7 +143,7 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ALGO_EFFICIENCY]: 971389489,
 };
 
-type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOGARDPLP" | "USDCUSDtPLP" | "USDCGARDPLP";
+type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOGARDPLP" | "USDCUSDtPLP" | "USDCGARDPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
   ALGOUSDCPLP: {
     provider: LPTokenProvider.PACT,
@@ -172,6 +183,16 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     pool1AppId: 1067289481,
     asset0Id: 0,
     asset1Id: 887406851,
+    feeScale: ONE_4_DP,
+  },
+  ALGOwAVAXPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1168319565,
+    lpAssetId: 1168319571,
+    pool0AppId: 971368268,
+    pool1AppId: 1166977433,
+    asset0Id: 0,
+    asset1Id: 893309613,
     feeScale: ONE_4_DP,
   },
   ALGOGARDPLP: {
