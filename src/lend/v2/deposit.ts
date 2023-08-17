@@ -178,7 +178,9 @@ async function retrieveUserDepositsInfo(
   for (const escrowAddr of escrows) {
     const { currentRound, holdings: assetHoldings } = await getAccountDetails(indexerClient, escrowAddr);
     const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
-    assetHoldings.forEach((balance, assetId) => holdings.push({ fAssetId: assetId, fAssetBalance: balance }));
+    assetHoldings.forEach((balance, assetId) => {
+      if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance })
+    });
     userDepositsInfo.push({ currentRound, escrowAddress: escrowAddr, holdings });
   }
 
@@ -266,7 +268,9 @@ async function retrieveUserDepositInfo(
 ): Promise<UserDepositInfo> {
   const { currentRound, holdings: assetHoldings } = await getAccountDetails(client, escrowAddr);
   const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
-  assetHoldings.forEach((balance, assetId) => holdings.push({ fAssetId: assetId, fAssetBalance: balance }));
+  assetHoldings.forEach((balance, assetId) => {
+    if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance })
+  });
   return { currentRound, escrowAddress: escrowAddr, holdings };
 }
 
