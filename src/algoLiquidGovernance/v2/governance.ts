@@ -61,6 +61,7 @@ async function getDistributorInfo(client: Algodv2 | Indexer, distributor: Distri
   const premintEnd = BigInt(getParsedValueFromState(state, "premint_end") || 0);
   const commitEnd = BigInt(getParsedValueFromState(state, "commit_end") || 0);
   const periodEnd = BigInt(getParsedValueFromState(state, "period_end") || 0);
+  const fee = BigInt(getParsedValueFromState(state, "fee") || 0);
   const totalCommitment = BigInt(getParsedValueFromState(state, "total_commitment") || 0);
   const isBurningPaused = Boolean(getParsedValueFromState(state, "is_burning_paused") || 0);
 
@@ -70,6 +71,7 @@ async function getDistributorInfo(client: Algodv2 | Indexer, distributor: Distri
     premintEnd,
     commitEnd,
     periodEnd,
+    fee,
     totalCommitment,
     isBurningPaused,
   };

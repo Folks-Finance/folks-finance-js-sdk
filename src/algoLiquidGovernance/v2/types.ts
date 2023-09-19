@@ -4,6 +4,7 @@ interface DistributorInfo {
   premintEnd: bigint; // unix timestamp for the end of the pre-mint period
   commitEnd: bigint; // unix timestamp for end of the commitment period
   periodEnd: bigint; // unix timestamp for end of the governance period
+  fee: bigint; // minting fee 4 d.p.
   totalCommitment: bigint; // total amount of ALGOs committed
   isBurningPaused: boolean; // flag to indicate if users can burn their ALGO for gALGO
 }
