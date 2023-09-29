@@ -103,7 +103,7 @@ const TestnetOracle: Oracle = {
 };
 
 const TestnetOpUp: OpUp = {
-  callerAppId: 118186228,
+  callerAppId: 397104542,
   baseAppId: 118186203,
 };
 
