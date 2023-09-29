@@ -16,8 +16,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     loans: {
       147173131: BigInt(0),
       168153622: BigInt(0),
-      370141442: BigInt(1),
-      370142819: BigInt(1),
+      397181473: BigInt(1),
+      397181998: BigInt(1),
     },
   },
   gALGO: {
@@ -42,8 +42,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     loans: {
       147173131: BigInt(1),
       147173190: BigInt(0),
-      370141442: BigInt(0),
-      370142819: BigInt(0),
+      397181473: BigInt(0),
+      397181998: BigInt(0),
     },
   },
   USDt: {
@@ -67,8 +67,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     poolManagerIndex: 3,
     loans: {
       147173131: BigInt(3),
-      370141442: BigInt(2),
-      370142819: BigInt(2),
+      397181473: BigInt(2),
+      397181998: BigInt(2),
     },
   },
   goETH: {
@@ -80,8 +80,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     poolManagerIndex: 4,
     loans: {
       147173131: BigInt(4),
-      370141442: BigInt(3),
-      370142819: BigInt(3),
+      397181473: BigInt(3),
+      397181998: BigInt(3),
     },
   },
 };
@@ -90,8 +90,8 @@ const TestnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.GENERAL]: 147173131,
   [LoanType.STABLECOIN_EFFICIENCY]: 147173190,
   [LoanType.ALGO_EFFICIENCY]: 168153622,
-  [LoanType.ULTRASWAP_UP]: 370141442,
-  [LoanType.ULTRASWAP_DOWN]: 370142819,
+  [LoanType.ULTRASWAP_UP]: 397181473,
+  [LoanType.ULTRASWAP_DOWN]: 397181998,
 };
 
 const TestnetReserveAddress: ReserveAddress = "KLF3MEIIHMTA7YHNPLBDVHLN2MVC27X5M7ULTDZLMEX5XO5XCUP7HGBHMQ";
