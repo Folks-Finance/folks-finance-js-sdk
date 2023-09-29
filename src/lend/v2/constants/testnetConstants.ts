@@ -16,18 +16,20 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     loans: {
       147173131: BigInt(0),
       168153622: BigInt(0),
+      370141442: BigInt(1),
+      370142819: BigInt(1),
     },
   },
   gALGO: {
     appId: 168152517,
-      assetId: 167184545,
-      fAssetId: 168153084,
-      frAssetId: 168153085,
-      assetDecimals: 6,
-      poolManagerIndex: 5,
-      loans: {
-        147173131: BigInt(5),
-        168153622: BigInt(1),
+    assetId: 167184545,
+    fAssetId: 168153084,
+    frAssetId: 168153085,
+    assetDecimals: 6,
+    poolManagerIndex: 5,
+    loans: {
+      147173131: BigInt(5),
+      168153622: BigInt(1),
     },
   },
   USDC: {
@@ -40,6 +42,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     loans: {
       147173131: BigInt(1),
       147173190: BigInt(0),
+      370141442: BigInt(0),
+      370142819: BigInt(0),
     },
   },
   USDt: {
@@ -63,6 +67,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     poolManagerIndex: 3,
     loans: {
       147173131: BigInt(3),
+      370141442: BigInt(2),
+      370142819: BigInt(2),
     },
   },
   goETH: {
@@ -74,6 +80,8 @@ const TestnetPools: Record<TestnetPoolKey, Pool> = {
     poolManagerIndex: 4,
     loans: {
       147173131: BigInt(4),
+      370141442: BigInt(3),
+      370142819: BigInt(3),
     },
   },
 };
@@ -82,6 +90,8 @@ const TestnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.GENERAL]: 147173131,
   [LoanType.STABLECOIN_EFFICIENCY]: 147173190,
   [LoanType.ALGO_EFFICIENCY]: 168153622,
+  [LoanType.ULTRASWAP_UP]: 370141442,
+  [LoanType.ULTRASWAP_DOWN]: 370142819,
 };
 
 const TestnetReserveAddress: ReserveAddress = "KLF3MEIIHMTA7YHNPLBDVHLN2MVC27X5M7ULTDZLMEX5XO5XCUP7HGBHMQ";
