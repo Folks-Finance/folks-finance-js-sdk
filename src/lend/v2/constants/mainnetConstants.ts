@@ -19,6 +19,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     loans: {
       971388781: BigInt(0),
       971389489: BigInt(0),
+      1202382736: BigInt(1),
+      1202382829: BigInt(1),
     },
   },
   gALGO: {
@@ -43,6 +45,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     loans: {
       971388781: BigInt(2),
       971388977: BigInt(0),
+      1202382736: BigInt(0),
+      1202382829: BigInt(0),
     },
   },
   USDt: {
@@ -78,6 +82,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 4,
     loans: {
       971388781: BigInt(4),
+      1202382736: BigInt(2),
+      1202382829: BigInt(2),
     },
   },
   goETH: {
@@ -89,6 +95,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 5,
     loans: {
       971388781: BigInt(5),
+      1202382736: BigInt(3),
+      1202382829: BigInt(3),
     },
   },
   WBTC: {
@@ -100,6 +108,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 8,
     loans: {
       971388781: BigInt(8),
+      1202382736: BigInt(4),
+      1202382829: BigInt(4),
     },
   },
   WETH: {
@@ -111,6 +121,8 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 9,
     loans: {
       971388781: BigInt(9),
+      1202382736: BigInt(5),
+      1202382829: BigInt(5),
     },
   },
   WAVAX: {
@@ -163,6 +175,8 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.GENERAL]: 971388781,
   [LoanType.STABLECOIN_EFFICIENCY]: 971388977,
   [LoanType.ALGO_EFFICIENCY]: 971389489,
+  [LoanType.ULTRASWAP_UP]: 1202382736,
+  [LoanType.ULTRASWAP_DOWN]: 1202382829,
 };
 
 type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOGARDPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCGARDPLP";
