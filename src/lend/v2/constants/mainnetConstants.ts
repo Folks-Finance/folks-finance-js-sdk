@@ -7,7 +7,7 @@ const MainnetDepositsAppId = 971353536;
 
 const MainnetDepositStakingAppId = 1093729103;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "GARD" | "goBTC" | "goETH" | "WBTC" | "WETH" | "WAVAX" | "WSOL"| "OPUL" | "WMPL";
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "GARD" | "goBTC" | "goETH" | "WBTC" | "WETH" | "WAVAX" | "WSOL"| "WLINK"| "OPUL" | "WMPL";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -147,6 +147,17 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
       971388781: BigInt(11),
     },
   },
+  WLINK: {
+    appId: 1216434571,
+    assetId: 1200094857,
+    fAssetId: 1216437148,
+    frAssetId: 1216437149,
+    assetDecimals: 8,
+    poolManagerIndex: 13,
+    loans: {
+      971388781: BigInt(13),
+    },
+  },
   OPUL: {
     appId: 1044267181,
     assetId: 287867876,
@@ -179,7 +190,7 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ULTRASWAP_DOWN]: 1202382829,
 };
 
-type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOGARDPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCGARDPLP";
+type MainnetLendingPoolKey = "ALGOUSDCPLP" | "ALGOgALGOPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
   ALGOUSDCPLP: {
     provider: LPTokenProvider.PACT,
@@ -199,16 +210,6 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     pool1AppId: 971370097,
     asset0Id: 0,
     asset1Id: 793124631,
-    feeScale: ONE_4_DP,
-  },
-  ALGOGARDPLP: {
-    provider: LPTokenProvider.PACT,
-    lpPoolAppId: 1116372017,
-    lpAssetId: 1116372023,
-    pool0AppId: 971368268,
-    pool1AppId: 1060585819,
-    asset0Id: 0,
-    asset1Id: 684649988,
     feeScale: ONE_4_DP,
   },
   ALGOwBTCPLP: {
@@ -251,6 +252,16 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     asset1Id: 887648583,
     feeScale: ONE_4_DP,
   },
+  ALGOwLINKPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1123472996,
+    lpAssetId: 1217112832,
+    pool0AppId: 971368268,
+    pool1AppId: 1216434571,
+    asset0Id: 0,
+    asset1Id: 1200094857,
+    feeScale: ONE_4_DP,
+  },
   ALGOwMPLPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1168322907,
@@ -269,16 +280,6 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     pool1AppId: 971372700,
     asset0Id: 31566704,
     asset1Id: 312769,
-    feeScale: ONE_4_DP,
-  },
-  USDCGARDPLP: {
-    provider: LPTokenProvider.PACT,
-    lpPoolAppId: 1150038072,
-    lpAssetId: 1150038078,
-    pool0AppId: 971372237,
-    pool1AppId: 1060585819,
-    asset0Id: 31566704,
-    asset1Id: 684649988,
     feeScale: ONE_4_DP,
   },
 }
