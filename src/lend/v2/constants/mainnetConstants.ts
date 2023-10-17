@@ -254,7 +254,7 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
   },
   ALGOwLINKPLP: {
     provider: LPTokenProvider.PACT,
-    lpPoolAppId: 1123472996,
+    lpPoolAppId: 1217112826,
     lpAssetId: 1217112832,
     pool0AppId: 971368268,
     pool1AppId: 1216434571,
