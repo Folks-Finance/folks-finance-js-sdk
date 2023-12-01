@@ -7,7 +7,7 @@ const MainnetDepositsAppId = 971353536;
 
 const MainnetDepositStakingAppId = 1093729103;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "GARD" | "EURS" | "goBTC" | "goETH" | "WBTC" | "WETH" | "WAVAX" | "WSOL"| "WLINK"| "OPUL" | "WMPL";
+type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "GARD" | "EURS" | "goBTC" | "goETH" | "WBTC" | "WETH" | "WAVAX" | "WSOL"| "WLINK" | "GOLD" | "SILVER" | "OPUL" | "WMPL";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -170,6 +170,28 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
       971388781: BigInt(13),
     },
   },
+  GOLD: {
+    appId: 1258515734,
+    assetId: 246516580,
+    fAssetId: 1258524377,
+    frAssetId: 1258524378,
+    assetDecimals: 6,
+    poolManagerIndex: 15,
+    loans: {
+      971388781: BigInt(15),
+    }
+  },
+  SILVER: {
+    appId: 1258524099,
+    assetId: 246519683,
+    fAssetId: 1258524381,
+    frAssetId: 1258524382,
+    assetDecimals: 6,
+    poolManagerIndex: 16,
+    loans: {
+      971388781: BigInt(16),
+    }
+  },
   OPUL: {
     appId: 1044267181,
     assetId: 287867876,
@@ -202,7 +224,7 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ULTRASWAP_DOWN]: 1202382829,
 };
 
-type MainnetLendingPoolKey = "ALGOgALGOPLP" | "ALGOUSDCPLP" | "ALGOEURSPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCEURSPLP";
+type MainnetLendingPoolKey = "ALGOgALGOPLP" | "ALGOUSDCPLP" | "ALGOEURSPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOGOLDPLP" | "ALGOSILVERPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCEURSPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
   ALGOgALGOPLP: {
     provider: LPTokenProvider.PACT,
@@ -282,6 +304,26 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     pool1AppId: 1216434571,
     asset0Id: 0,
     asset1Id: 1200094857,
+    feeScale: ONE_4_DP,
+  },
+  ALGOGOLDPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1258807438,
+    lpAssetId: 1258807444,
+    pool0AppId: 971368268,
+    pool1AppId: 1258515734,
+    asset0Id: 0,
+    asset1Id: 246516580,
+    feeScale: ONE_4_DP,
+  },
+  ALGOSILVERPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 1258808812,
+    lpAssetId: 1258808818,
+    pool0AppId: 971368268,
+    pool1AppId: 1258524099,
+    asset0Id: 0,
+    asset1Id: 246519683,
     feeScale: ONE_4_DP,
   },
   ALGOwMPLPLP: {
