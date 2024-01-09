@@ -3,7 +3,7 @@ import {
   getAccountApplicationLocalState,
   getApplicationGlobalState,
   getParsedValueFromState,
-  parseUint64s
+  parseUint64s,
 } from "../../utils";
 import { compoundEveryHour, ONE_16_DP } from "./mathLib";
 import { LendingPoolInfo, PactLendingPool, PoolManagerInfo, TinymanLendingPool } from "./types";
@@ -30,11 +30,20 @@ async function retrievePactLendingPoolInfo(
   const ltcs = BigInt(getParsedValueFromState(state, "L") || 0);
 
   // pact pool swap fee interest
-  const res = await fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`);
-  if (!res.ok || res.status !== 200) throw Error("Failed to fetch pact swap fee from api");
-  const pactPoolData = await res.json();
+  const [lpInfoRes, farmInfoRes] = await Promise.all([
+    fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`),
+    fetch("https://api.pact.fi/api/farms/all"),
+  ]);
+  if (!lpInfoRes.ok || lpInfoRes.status !== 200) throw Error("Failed to fetch pact swap fee from api");
+  const pactPoolData = await lpInfoRes.json();
   const swapFeeInterestRate = BigInt(Math.round(Number(pactPoolData?.["apr_7d"] || 0) * 1e16));
   const tvlUsd = Number(pactPoolData?.["tvl_usd"] || 0);
+
+  // if farm apr request failed for any reason, we just set farm interest rate to 0
+  // avoiding the whole function to fail
+  const farmData = farmInfoRes.ok ? await farmInfoRes.json() : [];
+  const farm = farmData.find((f: any) => f?.pool_id === lendingPool.lpPoolAppId);
+  const farmInterestYield = BigInt(Math.round(Number(farm?.apr || 0) * 1e16));
 
   // lending pool deposit interest
   const pool0 = poolManagerInfo.pools[lendingPool.pool0AppId];
@@ -53,6 +62,7 @@ async function retrievePactLendingPoolInfo(
     asset0DepositInterestYield: pool0.depositInterestYield / BigInt(2),
     asset1DepositInterestRate: pool1.depositInterestRate / BigInt(2),
     asset1DepositInterestYield: pool1.depositInterestYield / BigInt(2),
+    farmInterestYield,
     tvlUsd,
   };
 }
@@ -73,7 +83,11 @@ async function retrieveTinymanLendingPoolInfo(
   lendingPool: TinymanLendingPool,
   poolManagerInfo: PoolManagerInfo,
 ): Promise<LendingPoolInfo> {
-  const { currentRound, localState: state } = await getAccountApplicationLocalState(client, tinymanAppId, lendingPool.lpPoolAppAddress);
+  const { currentRound, localState: state } = await getAccountApplicationLocalState(
+    client,
+    tinymanAppId,
+    lendingPool.lpPoolAppAddress,
+  );
   if (state === undefined) throw Error("Could not find lending pool");
   const fee = BigInt(getParsedValueFromState(state, "total_fee_share") || 0);
   const fa0s = BigInt(getParsedValueFromState(state, "asset_2_reserves") || 0);
@@ -84,9 +98,12 @@ async function retrieveTinymanLendingPoolInfo(
   const res = await fetch(`https://mainnet.analytics.tinyman.org/api/v1/pools/${lendingPool.lpPoolAppAddress}`);
   if (!res.ok || res.status !== 200) throw Error("Failed to fetch tinyman swap fee from api");
   const tmPoolData = await res.json();
-  console.log(tmPoolData);
+
   const swapFeeInterestRate = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_rate"] || 0) * 1e16));
   const swapFeeInterestYield = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_yield"] || 0) * 1e16));
+  const farmInterestYield = BigInt(
+    Math.round(Number(tmPoolData?.["staking_total_annual_percentage_rate"] || 0) * 1e16),
+  );
   const tvlUsd = Number(tmPoolData?.["liquidity_in_usd"] || 0);
 
   // lending pool deposit interest
@@ -106,6 +123,7 @@ async function retrieveTinymanLendingPoolInfo(
     asset0DepositInterestYield: pool0.depositInterestYield / BigInt(2),
     asset1DepositInterestRate: pool1.depositInterestRate / BigInt(2),
     asset1DepositInterestYield: pool1.depositInterestYield / BigInt(2),
+    farmInterestYield,
     tvlUsd,
   };
 }
