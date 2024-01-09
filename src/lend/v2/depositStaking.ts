@@ -9,17 +9,18 @@ import {
   makeApplicationCloseOutTxn,
   OnApplicationComplete,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
-  getAccountApplicationLocalState, getAccountDetails,
+  getAccountApplicationLocalState,
+  getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   removeEscrowNoteTransaction,
   signer,
-  unixTime
+  unixTime,
 } from "../../utils";
 import { depositStakingABIContract } from "./abiContracts";
 import { maximum } from "./mathLib";
@@ -34,7 +35,10 @@ import { depositStakingLocalState, depositStakingProgramsInfo, getEscrows, userD
  * @param depositStakingAppId - deposit staking application to query about
  * @returns Promise<DepositStakingInfo> pool info
  */
-async function retrieveDepositStakingInfo(client: Algodv2 | Indexer, depositStakingAppId: number): Promise<DepositStakingInfo> {
+async function retrieveDepositStakingInfo(
+  client: Algodv2 | Indexer,
+  depositStakingAppId: number,
+): Promise<DepositStakingInfo> {
   const { currentRound, globalState: state } = await getApplicationGlobalState(client, depositStakingAppId);
   if (state === undefined) throw Error("Could not find Deposit Staking");
 
@@ -43,7 +47,7 @@ async function retrieveDepositStakingInfo(client: Algodv2 | Indexer, depositStak
   for (let i = 0; i <= 5; i++) {
     const prefix = "S".charCodeAt(0).toString(16);
     const stakeBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
-    const stakeValue = Buffer.from(stakeBase64Value, 'base64').toString('hex');
+    const stakeValue = Buffer.from(stakeBase64Value, "base64").toString("hex");
 
     for (let j = 0; j <= 4; j++) {
       const basePos = j * 46;
@@ -69,30 +73,30 @@ async function retrieveDepositStakingInfo(client: Algodv2 | Indexer, depositStak
   for (let i = 0; i <= 22; i++) {
     const prefix = "R".charCodeAt(0).toString(16);
     const rewardBase64Value = String(getParsedValueFromState(state, prefix + fromIntToByteHex(i), "hex"));
-    const rewardValue = Buffer.from(rewardBase64Value, 'base64').toString('hex');
+    const rewardValue = Buffer.from(rewardBase64Value, "base64").toString("hex");
     for (let j = 0; j <= (i !== 22 ? 3 : 1); j++) {
       const basePos = j * 60;
 
       const stakeIndex = Number(BigInt(i * 4 + j) / BigInt(3));
-      const localRewardIndex = Number(BigInt(i * 4 + j) % BigInt(3))
+      const localRewardIndex = Number(BigInt(i * 4 + j) % BigInt(3));
       const { totalStaked, minTotalStaked, rewards, numRewards } = stakingPrograms[stakeIndex];
       if (localRewardIndex >= numRewards) continue;
 
       const ts = maximum(totalStaked, minTotalStaked);
-      const endTimestamp = BigInt("0x" + rewardValue.slice(basePos + 12, basePos + 20))
+      const endTimestamp = BigInt("0x" + rewardValue.slice(basePos + 12, basePos + 20));
       const lu = BigInt("0x" + rewardValue.slice(basePos + 20, basePos + 28));
       const rewardRate = BigInt("0x" + rewardValue.slice(basePos + 28, basePos + 44));
       const rpt = BigInt("0x" + rewardValue.slice(basePos + 44, basePos + 60));
-      const currTime = BigInt(unixTime())
-      const dt = currTime <= endTimestamp ? currTime - lu : (lu <= endTimestamp ? endTimestamp - lu : BigInt(0));
-      const rewardPerToken = rpt + ((rewardRate * dt) / ts);
+      const currTime = BigInt(unixTime());
+      const dt = currTime <= endTimestamp ? currTime - lu : lu <= endTimestamp ? endTimestamp - lu : BigInt(0);
+      const rewardPerToken = rpt + (rewardRate * dt) / ts;
 
       rewards.push({
         rewardAssetId: Number("0x" + rewardValue.slice(basePos, basePos + 12)),
         endTimestamp,
         rewardRate,
         rewardPerToken,
-      })
+      });
     }
   }
 
@@ -121,16 +125,14 @@ async function retrieveUserDepositStakingsLocalState(
 
   // get all remaining deposit stakings' local state
   for (const escrowAddr of escrows) {
-    const [
-      { holdings },
-      { currentRound, localState: state },
-    ] = await Promise.all([
+    const [{ holdings }, { currentRound, localState: state }] = await Promise.all([
       getAccountDetails(indexerClient, escrowAddr),
       getAccountApplicationLocalState(indexerClient, depositStakingAppId, escrowAddr),
     ]);
 
     const optedIntoAssets: Set<number> = new Set(holdings.keys());
-    if (state === undefined) throw Error(`Could not find deposit staking ${depositStakingAppId} in escrow ${escrowAddr}`);
+    if (state === undefined)
+      throw Error(`Could not find deposit staking ${depositStakingAppId} in escrow ${escrowAddr}`);
 
     depositStakingsLocalState.push({
       ...depositStakingLocalState(state, depositStakingAppId, escrowAddr),
@@ -157,7 +159,11 @@ async function retrieveUserDepositStakingLocalState(
   depositStakingAppId: number,
   escrowAddr: string,
 ): Promise<UserDepositStakingLocalState> {
-  const { currentRound, localState: state } = await getAccountApplicationLocalState(indexerClient, depositStakingAppId, escrowAddr);
+  const { currentRound, localState: state } = await getAccountApplicationLocalState(
+    indexerClient,
+    depositStakingAppId,
+    escrowAddr,
+  );
   if (state === undefined) throw Error(`Could not find deposit staking ${depositStakingAppId} in escrow ${escrowAddr}`);
   return { currentRound, ...depositStakingLocalState(state, depositStakingAppId, escrowAddr) };
 }
@@ -462,5 +468,3 @@ export {
   prepareOptOutDepositStakingEscrowFromAsset,
   prepareRemoveDepositStakingEscrow,
 };
-
-

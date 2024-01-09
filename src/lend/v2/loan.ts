@@ -235,7 +235,7 @@ async function retrieveLiquidatableLoans(
   loanInfo: LoanInfo,
   oraclePrices: OraclePrices,
   nextToken?: string,
-): Promise<{ loans: UserLoanInfo[], nextToken?: string }> {
+): Promise<{ loans: UserLoanInfo[]; nextToken?: string }> {
   const loans: UserLoanInfo[] = [];
 
   const req = await indexerClient
@@ -255,10 +255,11 @@ async function retrieveLiquidatableLoans(
     const state = acc["apps-local-state"]?.find(({ id }: any) => id === loanAppId)?.["key-value"];
     const localState = loanLocalState(state, loanAppId, escrowAddr);
     const loan = userLoanInfo(localState, poolManagerInfo, loanInfo, oraclePrices);
-    if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue) loans.push({
-      ...loan,
-      currentRound
-    });
+    if (loan.totalEffectiveCollateralBalanceValue < loan.totalEffectiveBorrowBalanceValue)
+      loans.push({
+        ...loan,
+        currentRound,
+      });
   }
 
   return { loans, nextToken };
@@ -1201,14 +1202,21 @@ function wrapWithFlashLoan(
   flashLoanFee: bigint = BigInt(0.001e16),
 ): Transaction[] {
   // clear group id in passed txns
-  const wrappedTxns = txns.map(txn => {
+  const wrappedTxns = txns.map((txn) => {
     txn.group = undefined;
     return txn;
   });
 
   // add flash loan begin
   const txnIndexForFlashLoanEnd = txns.length + 2;
-  const flashLoanBegin = prepareFlashLoanBegin(pool, userAddr, receiverAddr, borrowAmount, txnIndexForFlashLoanEnd, params);
+  const flashLoanBegin = prepareFlashLoanBegin(
+    pool,
+    userAddr,
+    receiverAddr,
+    borrowAmount,
+    txnIndexForFlashLoanEnd,
+    params,
+  );
   wrappedTxns.unshift(flashLoanBegin);
 
   // add flash loan end

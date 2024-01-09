@@ -13,4 +13,4 @@ interface Distributor {
   appId: number;
 }
 
-export { Dispenser, DispenserInfo, Distributor }
+export { Dispenser, DispenserInfo, Distributor };

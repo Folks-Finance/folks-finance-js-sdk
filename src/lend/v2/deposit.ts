@@ -25,14 +25,7 @@ import {
 } from "../../utils";
 import { depositsABIContract, poolABIContract } from "./abiContracts";
 import { calcBorrowInterestIndex, calcDepositInterestIndex, calcWithdrawReturn } from "./formulae";
-import {
-  compoundEveryHour,
-  compoundEverySecond,
-  mulScale,
-  ONE_10_DP,
-  ONE_16_DP,
-  UINT64
-} from "./mathLib";
+import { compoundEveryHour, compoundEverySecond, mulScale, ONE_10_DP, ONE_16_DP, UINT64 } from "./mathLib";
 import { getOraclePrices } from "./oracle";
 import { UserDepositFullInfo, Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
 import { getEscrows } from "./utils";
@@ -177,9 +170,9 @@ async function retrieveUserDepositsInfo(
   // get all remaining escrows' holdings
   for (const escrowAddr of escrows) {
     const { currentRound, holdings: assetHoldings } = await getAccountDetails(indexerClient, escrowAddr);
-    const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
+    const holdings: { fAssetId: number; fAssetBalance: bigint }[] = [];
     assetHoldings.forEach((balance, assetId) => {
-      if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance })
+      if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance });
     });
     userDepositsInfo.push({ currentRound, escrowAddress: escrowAddr, holdings });
   }
@@ -218,9 +211,11 @@ async function retrieveUserDepositsFullInfo(
   ]);
 
   // map from UserDepositInfo to ExtendedUserDepositInfo
-  return userDepositsInfo.map(deposit => {
+  return userDepositsInfo.map((deposit) => {
     const holdings = deposit.holdings.map(({ fAssetId, fAssetBalance }) => {
-      const pool = Object.entries(pools).map(([, pool]) => pool).find(pool => pool.fAssetId === fAssetId);
+      const pool = Object.entries(pools)
+        .map(([, pool]) => pool)
+        .find((pool) => pool.fAssetId === fAssetId);
       if (pool === undefined) throw Error("Could not find pool with fAsset " + fAssetId);
       const poolAppId = pool.appId;
       const assetId = pool.assetId;
@@ -246,7 +241,7 @@ async function retrieveUserDepositsFullInfo(
         balanceValue,
         interestRate: depositInterestRate,
         interestYield: depositInterestYield,
-      }
+      };
     });
     return { ...deposit, holdings };
   });
@@ -267,9 +262,9 @@ async function retrieveUserDepositInfo(
   escrowAddr: string,
 ): Promise<UserDepositInfo> {
   const { currentRound, holdings: assetHoldings } = await getAccountDetails(client, escrowAddr);
-  const holdings: { fAssetId: number, fAssetBalance: bigint }[] = [];
+  const holdings: { fAssetId: number; fAssetBalance: bigint }[] = [];
   assetHoldings.forEach((balance, assetId) => {
-    if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance })
+    if (assetId !== 0) holdings.push({ fAssetId: assetId, fAssetBalance: balance });
   });
   return { currentRound, escrowAddress: escrowAddr, holdings };
 }
