@@ -7,7 +7,24 @@ const MainnetDepositsAppId = 971353536;
 
 const MainnetDepositStakingAppId = 1093729103;
 
-type MainnetPoolKey = "ALGO" | "gALGO" | "USDC" | "USDt" | "GARD" | "EURS" | "goBTC" | "goETH" | "WBTC" | "WETH" | "WAVAX" | "WSOL"| "WLINK" | "GOLD" | "SILVER" | "OPUL" | "WMPL";
+type MainnetPoolKey =
+  | "ALGO"
+  | "gALGO"
+  | "USDC"
+  | "USDt"
+  | "GARD"
+  | "EURS"
+  | "goBTC"
+  | "goETH"
+  | "WBTC"
+  | "WETH"
+  | "WAVAX"
+  | "WSOL"
+  | "WLINK"
+  | "GOLD"
+  | "SILVER"
+  | "OPUL"
+  | "WMPL";
 const MainnetPools: Record<MainnetPoolKey, Pool> = {
   ALGO: {
     appId: 971368268,
@@ -179,7 +196,7 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 15,
     loans: {
       971388781: BigInt(15),
-    }
+    },
   },
   SILVER: {
     appId: 1258524099,
@@ -190,7 +207,7 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 16,
     loans: {
       971388781: BigInt(16),
-    }
+    },
   },
   OPUL: {
     appId: 1044267181,
@@ -201,7 +218,7 @@ const MainnetPools: Record<MainnetPoolKey, Pool> = {
     poolManagerIndex: 6,
     loans: {
       971388781: BigInt(6),
-    }
+    },
   },
   WMPL: {
     appId: 1166982094,
@@ -226,7 +243,25 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
 
 const MainnetTinymanAppId = 1002541853;
 
-type MainnetLendingPoolKey = "ALGOgALGOPLP" | "ALGOgALGOTM" | "ALGOUSDCPLP" | "ALGOUSDCTM" | "ALGOEURSPLP" | "ALGOwBTCPLP" | "ALGOwBTCTM" | "ALGOwETHPLP" | "ALGOwETHTM" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOGOLDPLP" | "ALGOSILVERPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCUSDtTM" | "USDCEURSPLP";
+type MainnetLendingPoolKey =
+  | "ALGOgALGOPLP"
+  | "ALGOgALGOTM"
+  | "ALGOUSDCPLP"
+  | "ALGOUSDCTM"
+  | "ALGOEURSPLP"
+  | "ALGOwBTCPLP"
+  | "ALGOwBTCTM"
+  | "ALGOwETHPLP"
+  | "ALGOwETHTM"
+  | "ALGOwAVAXPLP"
+  | "ALGOwSOLPLP"
+  | "ALGOwLINKPLP"
+  | "ALGOGOLDPLP"
+  | "ALGOSILVERPLP"
+  | "ALGOwMPLPLP"
+  | "USDCUSDtPLP"
+  | "USDCUSDtTM"
+  | "USDCEURSPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
   ALGOgALGOPLP: {
     provider: LPTokenProvider.PACT,
@@ -408,7 +443,7 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     asset1Id: 227855942,
     feeScale: ONE_4_DP,
   },
-}
+};
 
 const MainnetReserveAddress: ReserveAddress = "Q5Q5FC5PTYQIUX5PGNTEW22UJHJHVVUEMMWV2LSG6MGT33YQ54ST7FEIGA";
 

@@ -72,9 +72,7 @@ const abiDistributor = new ABIContract({
     {
       name: "register_offline",
       desc: "",
-      args: [
-        { type: "account", name: "escrow", desc: "" },
-      ],
+      args: [{ type: "account", name: "escrow", desc: "" }],
       returns: { type: "void" },
     },
     {
@@ -90,9 +88,7 @@ const abiDistributor = new ABIContract({
     {
       name: "remove_escrow",
       desc: "",
-      args: [
-        { type: "account", name: "escrow", desc: "" },
-      ],
+      args: [{ type: "account", name: "escrow", desc: "" }],
       returns: { type: "void" },
     },
     {

@@ -10,7 +10,7 @@ import {
   makeApplicationCloseOutTxn,
   OnApplicationComplete,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { Dispenser, Distributor } from "../common";
 import {
@@ -21,27 +21,22 @@ import {
   getApplicationGlobalState,
   getParsedValueFromState,
   signer,
-  transferAlgoOrAsset
+  transferAlgoOrAsset,
 } from "../../utils";
 import { abiDistributor } from "./constants/abiContracts";
 import { DistributorInfo, EscrowGovernanceStatus, UserCommitmentInfo } from "./types";
 
 function getDistributorLogicSig(userAddr: string): LogicSigAccount {
   const prefix = Uint8Array.from([
-    7, 32, 1, 1, 128, 36, 70, 79, 76, 75, 83, 95, 70, 73, 78, 65, 78, 67, 69, 95,
-    65, 76, 71, 79, 95, 76, 73, 81, 85, 73, 68, 95, 71, 79, 86, 69, 82, 78, 65, 78,
-    67, 69, 72, 49, 22, 34, 9, 56, 16, 34, 18, 68, 49, 22, 34, 9, 56, 0, 128, 32,
+    7, 32, 1, 1, 128, 36, 70, 79, 76, 75, 83, 95, 70, 73, 78, 65, 78, 67, 69, 95, 65, 76, 71, 79, 95, 76, 73, 81, 85,
+    73, 68, 95, 71, 79, 86, 69, 82, 78, 65, 78, 67, 69, 72, 49, 22, 34, 9, 56, 16, 34, 18, 68, 49, 22, 34, 9, 56, 0,
+    128, 32,
   ]);
   const suffix = Uint8Array.from([
-    18, 68, 49, 22, 34, 9, 56, 8, 20, 68, 49, 22, 34, 9, 56, 32, 50, 3, 18, 68,
-    49, 22, 34, 9, 56, 9, 50, 3, 18, 68, 49, 22, 34, 9, 56, 21, 50, 3, 18, 68,
-    34, 67,
+    18, 68, 49, 22, 34, 9, 56, 8, 20, 68, 49, 22, 34, 9, 56, 32, 50, 3, 18, 68, 49, 22, 34, 9, 56, 9, 50, 3, 18, 68, 49,
+    22, 34, 9, 56, 21, 50, 3, 18, 68, 34, 67,
   ]);
-  return new LogicSigAccount(new Uint8Array([
-    ...prefix,
-    ...decodeAddress(userAddr).publicKey,
-    ...suffix,
-  ]));
+  return new LogicSigAccount(new Uint8Array([...prefix, ...decodeAddress(userAddr).publicKey, ...suffix]));
 }
 
 /**
@@ -142,7 +137,7 @@ async function getEscrowGovernanceStatus(
   const algoBalance = assetHoldings.get(0)!;
 
   for (const txn of res["transactions"]) {
-    const payTxn = txn['tx-type'] === "appl" ? txn['inner-txns'][0] : txn;
+    const payTxn = txn["tx-type"] === "appl" ? txn["inner-txns"][0] : txn;
     const receiver: string = payTxn["payment-transaction"]["receiver"];
     if (receiver === signUpAddr) {
       const note: string = Buffer.from(payTxn["note"], "base64").toString();
@@ -154,19 +149,19 @@ async function getEscrowGovernanceStatus(
 
       try {
         const data = JSON.parse(jsonData);
-        const commitment = data['com'];
-        if (commitment !== undefined) return {
-          currentRound,
-          balance: algoBalance,
-          isOnline,
-          status: {
-            version: Number(version),
-            commitment: BigInt(commitment),
-            beneficiaryAddress: data['bnf'],
-            xGovControlAddress: data['xGv'],
-          },
-
-        }
+        const commitment = data["com"];
+        if (commitment !== undefined)
+          return {
+            currentRound,
+            balance: algoBalance,
+            isOnline,
+            status: {
+              version: Number(version),
+              commitment: BigInt(commitment),
+              beneficiaryAddress: data["bnf"],
+              xGovControlAddress: data["xGv"],
+            },
+          };
       } catch (e) {}
     }
   }
@@ -251,7 +246,7 @@ function prepareMintTransactions(
   const sendAlgo = {
     txn: transferAlgoOrAsset(0, senderAddr, escrowAddr, amount, { ...params, flatFee: true, fee: 0 }),
     signer,
-  }
+  };
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -330,9 +325,13 @@ function prepareUnmintTransactions(
   const escrowAddr = getDistributorLogicSig(senderAddr).address();
 
   const sendgALGO = {
-    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, { ...params, flatFee: true, fee: 0 }),
+    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, {
+      ...params,
+      flatFee: true,
+      fee: 0,
+    }),
     signer,
-  }
+  };
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
@@ -421,7 +420,15 @@ function prepareRegisterEscrowOnlineTransaction(
     signer,
     appID: distributor.appId,
     method: getMethodByName(abiDistributor.methods, "register_online"),
-    methodArgs: [escrowAddr, encodeAddress(voteKey), encodeAddress(selectionKey), stateProofKey, voteFirstRound, voteLastRound, voteKeyDilution],
+    methodArgs: [
+      escrowAddr,
+      encodeAddress(voteKey),
+      encodeAddress(selectionKey),
+      stateProofKey,
+      voteFirstRound,
+      voteLastRound,
+      voteKeyDilution,
+    ],
     suggestedParams: { ...params, flatFee: true, fee: 2000 },
   });
   const txns = atc.buildGroup().map(({ txn }) => {
@@ -531,7 +538,18 @@ function prepareRemoveLiquidGovernanceEscrowTransactions(
     txn.group = undefined;
     return txn;
   });
-  const optOutTx = makeApplicationCloseOutTxn(escrowAddr, { ...params, flatFee: true, fee: 0 }, distributor.appId, undefined, undefined, undefined, undefined, undefined, undefined, escrowAddr);
+  const optOutTx = makeApplicationCloseOutTxn(
+    escrowAddr,
+    { ...params, flatFee: true, fee: 0 },
+    distributor.appId,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    escrowAddr,
+  );
   return [txns[0], optOutTx];
 }
 
@@ -555,9 +573,13 @@ function prepareBurnTransactions(
   params: SuggestedParams,
 ): Transaction[] {
   const sendgALGO = {
-    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, { ...params, flatFee: true, fee: 0 }),
+    txn: transferAlgoOrAsset(dispenser.gAlgoId, senderAddr, getApplicationAddress(dispenser.appId), amount, {
+      ...params,
+      flatFee: true,
+      fee: 0,
+    }),
     signer,
-  }
+  };
 
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({

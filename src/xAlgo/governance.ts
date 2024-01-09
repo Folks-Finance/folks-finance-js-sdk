@@ -5,14 +5,14 @@ import {
   getMethodByName,
   Indexer,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import {
   getAccountDetails,
   getApplicationGlobalState,
   getParsedValueFromState,
   signer,
-  transferAlgoOrAsset
+  transferAlgoOrAsset,
 } from "../utils";
 import { xAlgoABIContract } from "./abiContracts";
 import { XAlgo, XAlgoInfo } from "./types";
@@ -27,10 +27,7 @@ import { XAlgo, XAlgoInfo } from "./types";
  */
 async function getXAlgoInfo(client: Algodv2 | Indexer, xAlgo: XAlgo): Promise<XAlgoInfo> {
   const { appId, xAlgoId } = xAlgo;
-  const [
-    { holdings },
-    { currentRound, globalState: state },
-  ] = await Promise.all([
+  const [{ holdings }, { currentRound, globalState: state }] = await Promise.all([
     getAccountDetails(client, getApplicationAddress(appId)),
     getApplicationGlobalState(client, appId),
   ]);
@@ -92,7 +89,10 @@ function prepareMintXAlgoTransactions(
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
     note,
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
 /**
@@ -119,7 +119,7 @@ function prepareBurnXAlgoTransactions(
   const sendXAlgo = {
     txn: transferAlgoOrAsset(xAlgoId, senderAddr, getApplicationAddress(appId), amount, params),
     signer,
-  }
+  };
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
     sender: senderAddr,
@@ -130,11 +130,10 @@ function prepareBurnXAlgoTransactions(
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
     note,
   });
-  return atc.buildGroup().map(({ txn }) => { txn.group = undefined; return txn; });
+  return atc.buildGroup().map(({ txn }) => {
+    txn.group = undefined;
+    return txn;
+  });
 }
 
-export {
-  getXAlgoInfo,
-  prepareMintXAlgoTransactions,
-  prepareBurnXAlgoTransactions,
-};
+export { getXAlgoInfo, prepareMintXAlgoTransactions, prepareBurnXAlgoTransactions };

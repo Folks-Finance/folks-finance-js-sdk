@@ -6,7 +6,7 @@ import {
   makeAssetTransferTxnWithSuggestedParams,
   makePaymentTxnWithSuggestedParams,
   SuggestedParams,
-  Transaction
+  Transaction,
 } from "algosdk";
 import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 
@@ -100,8 +100,8 @@ async function getAccountDetails(
 
   try {
     const res = await (client instanceof Algodv2
-        ? client.accountInformation(addr)
-        : client.lookupAccountByID(addr).exclude("apps-local-state,created-apps")
+      ? client.accountInformation(addr)
+      : client.lookupAccountByID(addr).exclude("apps-local-state,created-apps")
     ).do();
 
     // algod https://developer.algorand.org/docs/rest-apis/algod/#account
@@ -114,7 +114,7 @@ async function getAccountDetails(
 
     return {
       currentRound: res["current-round"],
-      isOnline: account['status'] === "Online",
+      isOnline: account["status"] === "Online",
       holdings,
     };
   } catch (e: any) {

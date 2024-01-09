@@ -27,7 +27,7 @@ interface EscrowGovernanceStatus {
     commitment: bigint;
     beneficiaryAddress?: string;
     xGovControlAddress?: string;
-  }
+  };
 }
 
 export { DistributorInfo, UserCommitmentInfo, EscrowGovernanceStatus };
