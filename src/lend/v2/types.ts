@@ -33,14 +33,17 @@ interface PactLendingPool extends BaseLendingPool {
   lpPoolAppId: number;
 }
 
-type LendingPool = PactLendingPool;
+interface TinymanLendingPool extends BaseLendingPool {
+  provider: LPTokenProvider.TINYMAN;
+  lpPoolAppAddress: string;
+}
+
+type LendingPool = PactLendingPool | TinymanLendingPool;
 
 interface LendingPoolInfo {
   currentRound?: number;
   fAsset0Supply: bigint;
-  asset0Supply: bigint;
   fAsset1Supply: bigint;
-  asset1Supply: bigint;
   liquidityTokenCirculatingSupply: bigint;
   fee: bigint;
   swapFeeInterestRate: bigint; // 16 d.p.
@@ -49,6 +52,7 @@ interface LendingPoolInfo {
   asset0DepositInterestYield: bigint; // approximation 16 d.p.
   asset1DepositInterestRate: bigint; // 16 d.p.
   asset1DepositInterestYield: bigint; // approximation 16 d.p.
+  farmInterestYield: bigint; // 16 d.p.
   tvlUsd: number;
 }
 
@@ -365,6 +369,7 @@ export {
   PactLPToken,
   LPToken,
   PactLendingPool,
+  TinymanLendingPool,
   LendingPool,
   LendingPoolInfo,
   PoolManagerInfo,
