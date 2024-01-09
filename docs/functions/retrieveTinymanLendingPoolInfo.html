@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>minimum | folks-finance-js-sdk</title><meta name="description" content="Documentation for folks-finance-js-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>retrieveTinymanLendingPoolInfo | folks-finance-js-sdk</title><meta name="description" content="Documentation for folks-finance-js-sdk"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
 <div class="tsd-toolbar-contents container">
 <div class="table-cell" id="tsd-search" data-base="..">
 <div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
@@ -13,22 +13,38 @@
 <div class="tsd-page-title">
 <ul class="tsd-breadcrumb">
 <li><a href="../modules.html">folks-finance-js-sdk</a></li>
-<li><a href="minimum.html">minimum</a></li></ul>
-<h1>Function minimum</h1></div>
+<li><a href="retrieveTinymanLendingPoolInfo.html">retrieveTinymanLendingPoolInfo</a></li></ul>
+<h1>Function retrieveTinymanLendingPoolInfo</h1></div>
 <section class="tsd-panel">
 <ul class="tsd-signatures tsd-kind-function">
-<li class="tsd-signature tsd-anchor-link" id="minimum">minimum<span class="tsd-signature-symbol">(</span>n1<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span>, n2<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><a href="#minimum" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="retrieveTinymanLendingPoolInfo">retrieve<wbr/>Tinyman<wbr/>Lending<wbr/>Pool<wbr/>Info<span class="tsd-signature-symbol">(</span>client<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">default</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">default</span>, tinymanAppId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, lendingPool<span class="tsd-signature-symbol">: </span><a href="../interfaces/TinymanLendingPool.html" class="tsd-signature-type" data-tsd-kind="Interface">TinymanLendingPool</a>, poolManagerInfo<span class="tsd-signature-symbol">: </span><a href="../interfaces/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">PoolManagerInfo</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/LendingPoolInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">LendingPoolInfo</a><span class="tsd-signature-symbol">&gt;</span><a href="#retrieveTinymanLendingPoolInfo" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Returns information regarding the given Tinyman lending pool.</p>
+
+<h3>Returns</h3><p>Promise<LendingPoolInfo> lending pool info</p>
+</div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5>n1: <span class="tsd-signature-type">bigint</span></h5></li>
+<h5>client: <span class="tsd-signature-type">default</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">default</span></h5>
+<div class="tsd-comment tsd-typography"><p>Algorand client to query</p>
+</div></li>
 <li>
-<h5>n2: <span class="tsd-signature-type">bigint</span></h5></li></ul></div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">bigint</span></h4><aside class="tsd-sources">
+<h5>tinymanAppId: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Tinyman application id where lending pool belongs to</p>
+</div></li>
+<li>
+<h5>lendingPool: <a href="../interfaces/TinymanLendingPool.html" class="tsd-signature-type" data-tsd-kind="Interface">TinymanLendingPool</a></h5>
+<div class="tsd-comment tsd-typography"><p>Pact lending pool to query about</p>
+</div></li>
+<li>
+<h5>poolManagerInfo: <a href="../interfaces/PoolManagerInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">PoolManagerInfo</a></h5>
+<div class="tsd-comment tsd-typography"><p>pool manager info which is returned by retrievePoolManagerInfo function</p>
+</div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/LendingPoolInfo.html" class="tsd-signature-type" data-tsd-kind="Interface">LendingPoolInfo</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/736f85a/src/lend/v2/mathLib.ts#L17">lend/v2/mathLib.ts:17</a></li></ul></aside></li></ul></section></div>
+<li>Defined in <a href="https://github.com/Folks-Finance/folks-finance-js-sdk/blob/736f85a/src/lend/v2/amm.ts#L80">lend/v2/amm.ts:80</a></li></ul></aside></li></ul></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -177,7 +193,7 @@
 <li class="tsd-kind-function"><a href="getUserLiquidGovernanceInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>get<wbr/>User<wbr/>Liquid<wbr/>Governance<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="getXAlgoInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>getXAlgo<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="maximum.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>maximum</a></li>
-<li class="current tsd-kind-function"><a href="minimum.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>minimum</a></li>
+<li class="tsd-kind-function"><a href="minimum.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>minimum</a></li>
 <li class="tsd-kind-function"><a href="mulScale.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>mul<wbr/>Scale</a></li>
 <li class="tsd-kind-function"><a href="mulScaleRoundUp.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>mul<wbr/>Scale<wbr/>Round<wbr/>Up</a></li>
 <li class="tsd-kind-function"><a href="prefixWithOpUp.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>prefix<wbr/>With<wbr/>Op<wbr/>Up</a></li>
@@ -234,7 +250,7 @@
 <li class="tsd-kind-function"><a href="retrievePactLendingPoolInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>Pact<wbr/>Lending<wbr/>Pool<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="retrievePoolInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>Pool<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="retrievePoolManagerInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>Pool<wbr/>Manager<wbr/>Info</a></li>
-<li class="tsd-kind-function"><a href="retrieveTinymanLendingPoolInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>Tinyman<wbr/>Lending<wbr/>Pool<wbr/>Info</a></li>
+<li class="current tsd-kind-function"><a href="retrieveTinymanLendingPoolInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>Tinyman<wbr/>Lending<wbr/>Pool<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="retrieveUserDepositInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>User<wbr/>Deposit<wbr/>Info</a></li>
 <li class="tsd-kind-function"><a href="retrieveUserDepositStakingLocalState.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>User<wbr/>Deposit<wbr/>Staking<wbr/>Local<wbr/>State</a></li>
 <li class="tsd-kind-function"><a href="retrieveUserDepositStakingsLocalState.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-64-path"></use><use href="#icon-64-text"></use></svg>retrieve<wbr/>User<wbr/>Deposit<wbr/>Stakings<wbr/>Local<wbr/>State</a></li>
