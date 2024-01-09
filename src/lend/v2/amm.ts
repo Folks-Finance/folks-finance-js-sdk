@@ -1,7 +1,12 @@
-import { LendingPoolInfo, PactLendingPool, PoolManagerInfo } from "./types";
 import { Algodv2, Indexer } from "algosdk";
-import { getApplicationGlobalState, getParsedValueFromState, parseUint64s } from "../../utils";
+import {
+  getAccountApplicationLocalState,
+  getApplicationGlobalState,
+  getParsedValueFromState,
+  parseUint64s
+} from "../../utils";
 import { compoundEveryHour, ONE_16_DP } from "./mathLib";
+import { LendingPoolInfo, PactLendingPool, PoolManagerInfo, TinymanLendingPool } from "./types";
 
 /**
  *
@@ -39,9 +44,7 @@ async function retrievePactLendingPoolInfo(
   return {
     currentRound,
     fAsset0Supply: fa0s,
-    asset0Supply: BigInt(0),
     fAsset1Supply: fa1s,
-    asset1Supply: BigInt(0),
     liquidityTokenCirculatingSupply: ltcs,
     fee: config[2],
     swapFeeInterestRate,
@@ -54,4 +57,57 @@ async function retrievePactLendingPoolInfo(
   };
 }
 
-export { retrievePactLendingPoolInfo };
+/**
+ *
+ * Returns information regarding the given Tinyman lending pool.
+ *
+ * @param client - Algorand client to query
+ * @param tinymanAppId - Tinyman application id where lending pool belongs to
+ * @param lendingPool - Pact lending pool to query about
+ * @param poolManagerInfo - pool manager info which is returned by retrievePoolManagerInfo function
+ * @returns Promise<LendingPoolInfo> lending pool info
+ */
+async function retrieveTinymanLendingPoolInfo(
+  client: Algodv2 | Indexer,
+  tinymanAppId: number,
+  lendingPool: TinymanLendingPool,
+  poolManagerInfo: PoolManagerInfo,
+): Promise<LendingPoolInfo> {
+  const { currentRound, localState: state } = await getAccountApplicationLocalState(client, tinymanAppId, lendingPool.lpPoolAppAddress);
+  if (state === undefined) throw Error("Could not find lending pool");
+  const fee = BigInt(getParsedValueFromState(state, "total_fee_share") || 0);
+  const fa0s = BigInt(getParsedValueFromState(state, "asset_2_reserves") || 0);
+  const fa1s = BigInt(getParsedValueFromState(state, "asset_1_reserves") || 0);
+  const ltcs = BigInt(getParsedValueFromState(state, "issued_pool_tokens") || 0);
+
+  // pact pool swap fee interest
+  const res = await fetch(`https://mainnet.analytics.tinyman.org/api/v1/pools/${lendingPool.lpPoolAppAddress}`);
+  if (!res.ok || res.status !== 200) throw Error("Failed to fetch tinyman swap fee from api");
+  const tmPoolData = await res.json();
+  console.log(tmPoolData);
+  const swapFeeInterestRate = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_rate"] || 0) * 1e16));
+  const swapFeeInterestYield = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_yield"] || 0) * 1e16));
+  const tvlUsd = Number(tmPoolData?.["liquidity_in_usd"] || 0);
+
+  // lending pool deposit interest
+  const pool0 = poolManagerInfo.pools[lendingPool.pool0AppId];
+  const pool1 = poolManagerInfo.pools[lendingPool.pool1AppId];
+  if (pool0 === undefined || pool1 === undefined) throw Error("Could not find deposit pool");
+
+  return {
+    currentRound,
+    fAsset0Supply: fa0s,
+    fAsset1Supply: fa1s,
+    liquidityTokenCirculatingSupply: ltcs,
+    fee,
+    swapFeeInterestRate,
+    swapFeeInterestYield,
+    asset0DepositInterestRate: pool0.depositInterestRate / BigInt(2),
+    asset0DepositInterestYield: pool0.depositInterestYield / BigInt(2),
+    asset1DepositInterestRate: pool1.depositInterestRate / BigInt(2),
+    asset1DepositInterestYield: pool1.depositInterestYield / BigInt(2),
+    tvlUsd,
+  };
+}
+
+export { retrievePactLendingPoolInfo, retrieveTinymanLendingPoolInfo };

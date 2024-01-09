@@ -1,4 +1,4 @@
-import { LoanType, LPTokenProvider, OpUp, Oracle, PactLendingPool, Pool, ReserveAddress } from "../types";
+import { LendingPool, LoanType, LPTokenProvider, OpUp, Oracle, Pool, ReserveAddress } from "../types";
 import { ONE_4_DP } from "../mathLib";
 
 const MainnetPoolManagerAppId = 971350278;
@@ -224,8 +224,10 @@ const MainnetLoans: Partial<Record<LoanType, number>> = {
   [LoanType.ULTRASWAP_DOWN]: 1202382829,
 };
 
-type MainnetLendingPoolKey = "ALGOgALGOPLP" | "ALGOUSDCPLP" | "ALGOEURSPLP" | "ALGOwBTCPLP" | "ALGOwETHPLP" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOGOLDPLP" | "ALGOSILVERPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCEURSPLP";
-const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
+const MainnetTinymanAppId = 1002541853;
+
+type MainnetLendingPoolKey = "ALGOgALGOPLP" | "ALGOgALGOTM" | "ALGOUSDCPLP" | "ALGOUSDCTM" | "ALGOEURSPLP" | "ALGOwBTCPLP" | "ALGOwBTCTM" | "ALGOwETHPLP" | "ALGOwETHTM" | "ALGOwAVAXPLP" | "ALGOwSOLPLP" | "ALGOwLINKPLP" | "ALGOGOLDPLP" | "ALGOSILVERPLP" | "ALGOwMPLPLP" | "USDCUSDtPLP" | "USDCUSDtTM" | "USDCEURSPLP";
+const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
   ALGOgALGOPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1116366345,
@@ -236,10 +238,30 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     asset1Id: 793124631,
     feeScale: ONE_4_DP,
   },
+  ALGOgALGOTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "R5Y6PRR2NEOS27HB2HGQFUMKUUMPXAYUBU4BHDXY4TCEYNSWGPOKGCV66Q",
+    lpAssetId: 1332971358,
+    pool0AppId: 971368268,
+    pool1AppId: 971370097,
+    asset0Id: 0,
+    asset1Id: 793124631,
+    feeScale: ONE_4_DP,
+  },
   ALGOUSDCPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1116363704,
     lpAssetId: 1116363710,
+    pool0AppId: 971368268,
+    pool1AppId: 971372237,
+    asset0Id: 0,
+    asset1Id: 31566704,
+    feeScale: ONE_4_DP,
+  },
+  ALGOUSDCTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "ZA42RCTLUMWUUB6SXEUNTI72LVSGV3TJIUTCGLNQF3KNOXFBMEPXNST3MA",
+    lpAssetId: 1256805381,
     pool0AppId: 971368268,
     pool1AppId: 971372237,
     asset0Id: 0,
@@ -266,10 +288,30 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     asset1Id: 1058926737,
     feeScale: ONE_4_DP,
   },
+  ALGOwBTCTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "IVKGUV5LF7BKJ5CAX6YXYF67743FZEZ2Z5ZFGHQQ5ZF7YJVCGAT2MQJ46Y",
+    lpAssetId: 1385309142,
+    pool0AppId: 971368268,
+    pool1AppId: 1067289273,
+    asset0Id: 0,
+    asset1Id: 1058926737,
+    feeScale: ONE_4_DP,
+  },
   ALGOwETHPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1116369904,
     lpAssetId: 1116369910,
+    pool0AppId: 971368268,
+    pool1AppId: 1067289481,
+    asset0Id: 0,
+    asset1Id: 887406851,
+    feeScale: ONE_4_DP,
+  },
+  ALGOwETHTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "QHFMCKBXVLZCAXCZV36WCQL6GTVK6AGCP4ZI5GYGM7S7FUPWECBFYPNHCE",
+    lpAssetId: 1385320489,
     pool0AppId: 971368268,
     pool1AppId: 1067289481,
     asset0Id: 0,
@@ -346,6 +388,16 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, PactLendingPool> = {
     asset1Id: 312769,
     feeScale: ONE_4_DP,
   },
+  USDCUSDtTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "JADZYEIDHPHZAFSD45M7GOQSAEMETOMTUSHPHLXIMYJPSLKPADF52Y245I",
+    lpAssetId: 1332995647,
+    pool0AppId: 971372237,
+    pool1AppId: 971372700,
+    asset0Id: 31566704,
+    asset1Id: 312769,
+    feeScale: ONE_4_DP,
+  },
   USDCEURSPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1247811167,
@@ -379,6 +431,7 @@ export {
   MainnetPoolKey,
   MainnetPools,
   MainnetLoans,
+  MainnetTinymanAppId,
   MainnetLendingPoolKey,
   MainnetLendingPools,
   MainnetReserveAddress,
