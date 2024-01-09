@@ -102,7 +102,7 @@ async function retrieveTinymanLendingPoolInfo(
   const swapFeeInterestRate = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_rate"] || 0) * 1e16));
   const swapFeeInterestYield = BigInt(Math.round(Number(tmPoolData?.["annual_percentage_yield"] || 0) * 1e16));
   const farmInterestYield = BigInt(
-    Math.round(Number(tmPoolData?.["staking_total_annual_percentage_rate"] || 0) * 1e16),
+    Math.round(Number(tmPoolData?.["staking_total_annual_percentage_yield"] || 0) * 1e16),
   );
   const tvlUsd = Number(tmPoolData?.["liquidity_in_usd"] || 0);
 
