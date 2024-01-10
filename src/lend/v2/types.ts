@@ -40,7 +40,7 @@ interface TinymanLendingPool extends BaseLendingPool {
 
 type LendingPool = PactLendingPool | TinymanLendingPool;
 
-interface LendingPoolInfo {
+interface BaseLendingPoolInfo {
   currentRound?: number;
   fAsset0Supply: bigint;
   fAsset1Supply: bigint;
@@ -52,8 +52,12 @@ interface LendingPoolInfo {
   asset0DepositInterestYield: bigint; // approximation 16 d.p.
   asset1DepositInterestRate: bigint; // 16 d.p.
   asset1DepositInterestYield: bigint; // approximation 16 d.p.
-  farmInterestYield: bigint; // 16 d.p.
   tvlUsd: number;
+}
+
+interface PactLendingPoolInfo extends BaseLendingPoolInfo {}
+interface TinymanLendingPoolInfo extends BaseLendingPoolInfo {
+  farmInterestYield: bigint; // 16 d.p.
 }
 
 interface PoolManagerInfo {
@@ -371,7 +375,9 @@ export {
   PactLendingPool,
   TinymanLendingPool,
   LendingPool,
-  LendingPoolInfo,
+  BaseLendingPoolInfo,
+  PactLendingPoolInfo,
+  TinymanLendingPoolInfo,
   PoolManagerInfo,
   BasePool,
   LPTokenPool,
