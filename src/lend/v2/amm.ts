@@ -6,7 +6,13 @@ import {
   parseUint64s,
 } from "../../utils";
 import { compoundEveryHour, ONE_16_DP } from "./mathLib";
-import { LendingPoolInfo, PactLendingPool, PoolManagerInfo, TinymanLendingPool } from "./types";
+import {
+  PactLendingPool,
+  PactLendingPoolInfo,
+  PoolManagerInfo,
+  TinymanLendingPool,
+  TinymanLendingPoolInfo,
+} from "./types";
 
 /**
  *
@@ -21,7 +27,7 @@ async function retrievePactLendingPoolInfo(
   client: Algodv2 | Indexer,
   lendingPool: PactLendingPool,
   poolManagerInfo: PoolManagerInfo,
-): Promise<LendingPoolInfo> {
+): Promise<PactLendingPoolInfo> {
   const { currentRound, globalState: state } = await getApplicationGlobalState(client, lendingPool.lpPoolAppId);
   if (state === undefined) throw Error("Could not find lending pool");
   const config = parseUint64s(String(getParsedValueFromState(state, "CONFIG")));
@@ -30,20 +36,11 @@ async function retrievePactLendingPoolInfo(
   const ltcs = BigInt(getParsedValueFromState(state, "L") || 0);
 
   // pact pool swap fee interest
-  const [lpInfoRes, farmInfoRes] = await Promise.all([
-    fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`),
-    fetch("https://api.pact.fi/api/farms/all"),
-  ]);
+  const lpInfoRes = await fetch(`https://api.pact.fi/api/pools/${lendingPool.lpPoolAppId}`);
   if (!lpInfoRes.ok || lpInfoRes.status !== 200) throw Error("Failed to fetch pact swap fee from api");
   const pactPoolData = await lpInfoRes.json();
   const swapFeeInterestRate = BigInt(Math.round(Number(pactPoolData?.["apr_7d"] || 0) * 1e16));
   const tvlUsd = Number(pactPoolData?.["tvl_usd"] || 0);
-
-  // if farm apr request failed for any reason, we just set farm interest rate to 0
-  // avoiding the whole function to fail
-  const farmData = farmInfoRes.ok ? await farmInfoRes.json() : [];
-  const farm = farmData.find((f: any) => f?.pool_id === lendingPool.lpPoolAppId);
-  const farmInterestYield = BigInt(Math.round(Number(farm?.apr || 0) * 1e16));
 
   // lending pool deposit interest
   const pool0 = poolManagerInfo.pools[lendingPool.pool0AppId];
@@ -62,7 +59,6 @@ async function retrievePactLendingPoolInfo(
     asset0DepositInterestYield: pool0.depositInterestYield / BigInt(2),
     asset1DepositInterestRate: pool1.depositInterestRate / BigInt(2),
     asset1DepositInterestYield: pool1.depositInterestYield / BigInt(2),
-    farmInterestYield,
     tvlUsd,
   };
 }
@@ -82,7 +78,7 @@ async function retrieveTinymanLendingPoolInfo(
   tinymanAppId: number,
   lendingPool: TinymanLendingPool,
   poolManagerInfo: PoolManagerInfo,
-): Promise<LendingPoolInfo> {
+): Promise<TinymanLendingPoolInfo> {
   const { currentRound, localState: state } = await getAccountApplicationLocalState(
     client,
     tinymanAppId,
