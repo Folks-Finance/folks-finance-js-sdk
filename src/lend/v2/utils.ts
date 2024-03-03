@@ -449,7 +449,7 @@ export function userLoanInfo(
         ? compoundEverySecond(stableBorrowInterestRate, ONE_16_DP)
         : poolInfo.variableBorrowInterestYield;
 
-      totalBorrowedAmountValue += borrowedAmount;
+      totalBorrowedAmountValue += borrowedAmountValue;
       totalBorrowBalanceValue += borrowBalanceValue;
       totalEffectiveBorrowBalanceValue += effectiveBorrowBalanceValue;
       netRate -= borrowBalanceValue * interestRate;
