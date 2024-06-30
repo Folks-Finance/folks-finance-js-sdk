@@ -20,4 +20,8 @@ const govDistributor11: Distributor = {
   appId: 1702641473,
 };
 
-export { govDistributor7, govDistributor8, govDistributor9, govDistributor10, govDistributor11 };
+const govDistributor12: Distributor = {
+  appId: 2057814942,
+};
+
+export { govDistributor7, govDistributor8, govDistributor9, govDistributor10, govDistributor11, govDistributor12 };
