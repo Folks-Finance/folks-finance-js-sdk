@@ -261,7 +261,9 @@ type MainnetLendingPoolKey =
   | "ALGOwSOLPLP"
   | "ALGOwLINKPLP"
   | "ALGOGOLDPLP"
+  | "ALGOGOLDTM"
   | "ALGOSILVERPLP"
+  | "ALGOSILVERTM"
   | "ALGOwMPLPLP"
   | "gALGOUSDCPLP"
   | "gALGOUSDCTM"
@@ -275,9 +277,7 @@ type MainnetLendingPoolKey =
   | "USDCwLINKTM"
   | "USDCwSOLTM"
   | "USDCGOLDPLP"
-  | "USDCGOLDTM"
-  | "USDCSILVERPLP"
-  | "USDCSILVERTM";
+  | "USDCSILVERPLP";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
   ALGOgALGOPLP: {
     provider: LPTokenProvider.PACT,
@@ -449,10 +449,30 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     asset1Id: 246516580,
     feeScale: ONE_4_DP,
   },
+  ALGOGOLDTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "N44TFF4OLWLUTJS3ZA67LODV2DQR3ZBTEXKGAQ6ZIWXBDLN7J4KBLIXNIQ",
+    lpAssetId: 2169404223,
+    pool0AppId: 971368268,
+    pool1AppId: 1258515734,
+    asset0Id: 0,
+    asset1Id: 246516580,
+    feeScale: ONE_4_DP,
+  },
   ALGOSILVERPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1258808812,
     lpAssetId: 1258808818,
+    pool0AppId: 971368268,
+    pool1AppId: 1258524099,
+    asset0Id: 0,
+    asset1Id: 246519683,
+    feeScale: ONE_4_DP,
+  },
+  ALGOSILVERTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "4LJMARM7FXLYLOUERA74QHUA4SIX2YMCTHGXBW7A75BOVGV6RXJYZTQSH4",
+    lpAssetId: 2169402187,
     pool0AppId: 971368268,
     pool1AppId: 1258524099,
     asset0Id: 0,
@@ -589,30 +609,10 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     asset1Id: 246516580,
     feeScale: ONE_4_DP,
   },
-  USDCGOLDTM: {
-    provider: LPTokenProvider.TINYMAN,
-    lpPoolAppAddress: "N44TFF4OLWLUTJS3ZA67LODV2DQR3ZBTEXKGAQ6ZIWXBDLN7J4KBLIXNIQ",
-    lpAssetId: 2169404223,
-    pool0AppId: 971372237,
-    pool1AppId: 1258515734,
-    asset0Id: 31566704,
-    asset1Id: 246516580,
-    feeScale: ONE_4_DP,
-  },
   USDCSILVERPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1736326581,
     lpAssetId: 1736326587,
-    pool0AppId: 971372237,
-    pool1AppId: 1258524099,
-    asset0Id: 31566704,
-    asset1Id: 246519683,
-    feeScale: ONE_4_DP,
-  },
-  USDCSILVERTM: {
-    provider: LPTokenProvider.TINYMAN,
-    lpPoolAppAddress: "4LJMARM7FXLYLOUERA74QHUA4SIX2YMCTHGXBW7A75BOVGV6RXJYZTQSH4",
-    lpAssetId: 2169402187,
     pool0AppId: 971372237,
     pool1AppId: 1258524099,
     asset0Id: 31566704,
