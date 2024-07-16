@@ -249,6 +249,10 @@ type MainnetLendingPoolKey =
   | "ALGOUSDCPLP"
   | "ALGOUSDCTM"
   | "ALGOEURSPLP"
+  | "ALGOgoBTCPLP"
+  | "ALGOgoBTCTM"
+  | "ALGOgoETHPLP"
+  | "ALGOgoETHTM"
   | "ALGOwBTCPLP"
   | "ALGOwBTCTM"
   | "ALGOwETHPLP"
@@ -264,13 +268,16 @@ type MainnetLendingPoolKey =
   | "USDCUSDtPLP"
   | "USDCUSDtTM"
   | "USDCEURSPLP"
+  | "USDCEURSTM"
   | "USDCwBTCTM"
   | "USDCwETHTM"
   | "USDCwAVAXTM"
   | "USDCwLINKTM"
   | "USDCwSOLTM"
   | "USDCGOLDPLP"
-  | "USDCSILVERPLP";
+  | "USDCGOLDTM"
+  | "USDCSILVERPLP"
+  | "USDCSILVERTM";
 const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
   ALGOgALGOPLP: {
     provider: LPTokenProvider.PACT,
@@ -320,6 +327,46 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     pool1AppId: 1247053569,
     asset0Id: 0,
     asset1Id: 227855942,
+    feeScale: ONE_4_DP,
+  },
+  ALGOgoBTCPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 2161677283,
+    lpAssetId: 2161677289,
+    pool0AppId: 971368268,
+    pool1AppId: 971373361,
+    asset0Id: 0,
+    asset1Id: 386192725,
+    feeScale: ONE_4_DP,
+  },
+  ALGOgoETHPLP: {
+    provider: LPTokenProvider.PACT,
+    lpPoolAppId: 2161681928,
+    lpAssetId: 2161681934,
+    pool0AppId: 971368268,
+    pool1AppId: 971373611,
+    asset0Id: 0,
+    asset1Id: 386195940,
+    feeScale: ONE_4_DP,
+  },
+  ALGOgoBTCTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "RB6SQMZINE5SEEYH6PZNSOGEUTC6BSYTOJ2YGEAHSE6MOPCLEUTCA6MNLM",
+    lpAssetId: 2169397535,
+    pool0AppId: 971368268,
+    pool1AppId: 971373361,
+    asset0Id: 0,
+    asset1Id: 386192725,
+    feeScale: ONE_4_DP,
+  },
+  ALGOgoETHTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "DU4NAE2N6FQLTYFRURJVTOC7Y7GOTZO4C7BQHHVJ2B5NZU6EDZLK7G6HKU",
+    lpAssetId: 2169399904,
+    pool0AppId: 971368268,
+    pool1AppId: 971373611,
+    asset0Id: 0,
+    asset1Id: 386195940,
     feeScale: ONE_4_DP,
   },
   ALGOwBTCPLP: {
@@ -472,6 +519,16 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     asset1Id: 227855942,
     feeScale: ONE_4_DP,
   },
+  USDCEURSTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "MSQ46LA7UBKA2JPG5MAMSKWJ5FO35PSKIFGTCKJ6YSL5NLZMZH4HAXMPKU",
+    lpAssetId: 1394310065,
+    pool0AppId: 971372237,
+    pool1AppId: 1247053569,
+    asset0Id: 31566704,
+    asset1Id: 227855942,
+    feeScale: ONE_4_DP,
+  },
   USDCwBTCTM: {
     provider: LPTokenProvider.TINYMAN,
     lpPoolAppAddress: "IT7H47FAYPVWHHYF23KIPNFDIOF36MIUI2T54R47WCX6MLMTVVQZ3UK5GI",
@@ -532,10 +589,30 @@ const MainnetLendingPools: Record<MainnetLendingPoolKey, LendingPool> = {
     asset1Id: 246516580,
     feeScale: ONE_4_DP,
   },
+  USDCGOLDTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "N44TFF4OLWLUTJS3ZA67LODV2DQR3ZBTEXKGAQ6ZIWXBDLN7J4KBLIXNIQ",
+    lpAssetId: 2169404223,
+    pool0AppId: 971372237,
+    pool1AppId: 1258515734,
+    asset0Id: 31566704,
+    asset1Id: 246516580,
+    feeScale: ONE_4_DP,
+  },
   USDCSILVERPLP: {
     provider: LPTokenProvider.PACT,
     lpPoolAppId: 1736326581,
     lpAssetId: 1736326587,
+    pool0AppId: 971372237,
+    pool1AppId: 1258524099,
+    asset0Id: 31566704,
+    asset1Id: 246519683,
+    feeScale: ONE_4_DP,
+  },
+  USDCSILVERTM: {
+    provider: LPTokenProvider.TINYMAN,
+    lpPoolAppAddress: "4LJMARM7FXLYLOUERA74QHUA4SIX2YMCTHGXBW7A75BOVGV6RXJYZTQSH4",
+    lpAssetId: 2169402187,
     pool0AppId: 971372237,
     pool1AppId: 1258524099,
     asset0Id: 31566704,
