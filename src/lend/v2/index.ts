@@ -10,3 +10,4 @@ export * from "./mathLib";
 export * from "./opup";
 export * from "./oracle";
 export * from "./types";
+export * from "./utils";
