@@ -366,6 +366,7 @@ function prepareDepositIntoPool(
   receiverAddr: string,
   assetAmount: number | bigint,
   params: SuggestedParams,
+  note?: Uint8Array,
 ): Transaction[] {
   const { appId, assetId, fAssetId } = pool;
 
@@ -383,6 +384,7 @@ function prepareDepositIntoPool(
     method: getMethodByName(poolABIContract.methods, "deposit"),
     methodArgs: [{ txn: sendAsset, signer }, receiverAddr, assetId, fAssetId, poolManagerAppId],
     suggestedParams: { ...params, flatFee: true, fee: 4000 },
+    note,
   });
   return atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
