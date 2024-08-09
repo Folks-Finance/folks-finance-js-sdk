@@ -357,6 +357,7 @@ function prepareOptDepositEscrowIntoAssetInDeposits(
  * @param receiverAddr - account address to receive the deposit (typically the user's deposit escrow or loan escrow)
  * @param assetAmount - the asset amount to deposit
  * @param params - suggested params for the transactions with the fees overwritten
+ * @param note - optional note field to add
  * @returns Transaction[] deposit asset group transaction
  */
 function prepareDepositIntoPool(
