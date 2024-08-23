@@ -190,7 +190,7 @@ function getTxnsAfterResourceAllocation(
  * @param amount - amount of ALGO to send
  * @param minReceivedAmount - min amount of xALGO expected to receive
  * @param params - suggested params for the transactions with the fees overwritten
- * @param allocationStrategy - determines which proposers the ALGO received comes from
+ * @param proposerAllocations - determines which proposers the ALGO received comes from
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] stake transactions
  */
@@ -201,13 +201,13 @@ function prepareImmediateStakeTransactions(
   amount: number | bigint,
   minReceivedAmount: number | bigint,
   params: SuggestedParams,
-  allocationStrategy = defaultStakeAllocationStrategy(consensusState, amount),
+  proposerAllocations = defaultStakeAllocationStrategy(consensusState, amount),
   note?: Uint8Array,
 ): Transaction[] {
   const { appId } = consensusConfig;
 
   const atc = new AtomicTransactionComposer();
-  allocationStrategy.forEach((splitMintAmount, proposerIndex) => {
+  proposerAllocations.forEach((splitMintAmount, proposerIndex) => {
     if (splitMintAmount === BigInt(0)) return;
 
     // calculate min received amount by proportional of total mint amount
@@ -247,7 +247,7 @@ function prepareImmediateStakeTransactions(
  * @param senderAddr - account address for the sender
  * @param amount - amount of ALGO to send
  * @param params - suggested params for the transactions with the fees overwritten
- * @param allocationStrategy - determines which proposers the ALGO received comes from
+ * @param proposerAllocations - determines which proposers the ALGO received comes from
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] stake transactions
  */
@@ -257,13 +257,13 @@ function prepareDelayedStakeTransactions(
   senderAddr: string,
   amount: number | bigint,
   params: SuggestedParams,
-  allocationStrategy = defaultStakeAllocationStrategy(consensusState, amount),
+  proposerAllocations = defaultStakeAllocationStrategy(consensusState, amount),
   note?: Uint8Array,
 ): Transaction[] {
   const { appId } = consensusConfig;
 
   const atc = new AtomicTransactionComposer();
-  allocationStrategy.forEach((splitMintAmount, proposerIndex) => {
+  proposerAllocations.forEach((splitMintAmount, proposerIndex) => {
     if (splitMintAmount === BigInt(0)) return;
 
     // generate txns for single proposer
@@ -354,7 +354,7 @@ function prepareClaimDelayedStakeTransactions(
  * @param amount - amount of xALGO to send
  * @param minReceivedAmount - min amount of ALGO expected to receive
  * @param params - suggested params for the transactions with the fees overwritten
- * @param allocationStrategy - determines which proposers the ALGO received comes from
+ * @param proposerAllocations - determines which proposers the ALGO received comes from
  * @param note - optional note to distinguish who is the burner (must pass to be eligible for revenue share)
  * @returns Transaction[] unstake transactions
  */
@@ -365,13 +365,13 @@ function prepareUnstakeTransactions(
   amount: number | bigint,
   minReceivedAmount: number | bigint,
   params: SuggestedParams,
-  allocationStrategy = defaultUnstakeAllocationStrategy(consensusState, amount),
+  proposerAllocations = defaultUnstakeAllocationStrategy(consensusState, amount),
   note?: Uint8Array,
 ): Transaction[] {
   const { appId, xAlgoId } = consensusConfig;
 
   const atc = new AtomicTransactionComposer();
-  allocationStrategy.forEach((splitBurnAmount, proposerIndex) => {
+  proposerAllocations.forEach((splitBurnAmount, proposerIndex) => {
     if (splitBurnAmount === BigInt(0)) return;
 
     // calculate min received amount by proportional of total burn amount
@@ -402,6 +402,7 @@ function prepareUnstakeTransactions(
 }
 
 export {
+  getConsensusState,
   prepareDummyTransaction,
   prepareImmediateStakeTransactions,
   prepareDelayedStakeTransactions,
