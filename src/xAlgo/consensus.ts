@@ -11,7 +11,7 @@ import {
   Transaction,
 } from "algosdk";
 import { randomBytes } from "crypto";
-import { maximum, minimum, mulScale, ONE_16_DP } from "../index";
+import { mulScale } from "../index";
 import {
   enc,
   getApplicationBox,
@@ -22,75 +22,11 @@ import {
   transferAlgoOrAsset,
 } from "../utils";
 import { xAlgoABIContract } from "./abiContracts";
-import { AllocationStrategy, ConsensusConfig, ConsensusState } from "./types";
-
-const MAX_APPL_CALLS = 8;
-const FIXED_CAPACITY_BUFFER = BigInt(1000e6);
-
-const defaultStakeAllocationStrategy = (
-  consensusState: ConsensusState,
-  amount: number | bigint,
-): AllocationStrategy => {
-  const { proposersBalances, maxProposerBalance } = consensusState;
-  const strategy = new Array<bigint>(proposersBalances.length);
-
-  // sort in ascending order
-  const indexed = proposersBalances.map((proposer, index) => ({ ...proposer, index }));
-  indexed.sort((p0, p1) => Number(p0.algoBalance - p1.algoBalance));
-
-  // allocate to proposers in greedy approach
-  let remaining = BigInt(amount);
-  for (let i = 0; i < strategy.length && i < MAX_APPL_CALLS; i++) {
-    const { algoBalance: proposerAlgoBalance, index: proposerIndex } = indexed[i];
-
-    // under-approximate capacity to leave wiggle room
-    const algoCapacity = maximum(maxProposerBalance - proposerAlgoBalance - FIXED_CAPACITY_BUFFER, BigInt(0));
-    const allocate = minimum(remaining, algoCapacity);
-    strategy[proposerIndex] = allocate;
-
-    // exit if fully allocated
-    remaining -= allocate;
-    if (remaining <= 0) break;
-  }
-
-  // handle case where still remaining
-  if (remaining > 0) throw Error("Insufficient capacity to stake");
-
-  return strategy;
-};
-
-const defaultUnstakeAllocationStrategy = (
-  consensusState: ConsensusState,
-  amount: number | bigint,
-): AllocationStrategy => {
-  const { proposersBalances, minProposerBalance } = consensusState;
-  const strategy = new Array<bigint>(proposersBalances.length);
-
-  // sort in descending order
-  const indexed = proposersBalances.map((proposer, index) => ({ ...proposer, index }));
-  indexed.sort((p0, p1) => Number(p1.algoBalance - p0.algoBalance));
-
-  // allocate to proposers in greedy approach
-  let remaining = BigInt(amount);
-  for (let i = 0; i < strategy.length && i < MAX_APPL_CALLS; i++) {
-    const { algoBalance: proposerAlgoBalance, index: proposerIndex } = indexed[i];
-
-    // under-approximate capacity to leave wiggle room
-    const algoCapacity = maximum(proposerAlgoBalance - minProposerBalance - FIXED_CAPACITY_BUFFER, BigInt(0));
-    const xAlgoCapacity = convertAlgoToXAlgoWhenDelay(algoCapacity, consensusState);
-    const allocate = minimum(remaining, xAlgoCapacity);
-    strategy[proposerIndex] = allocate;
-
-    // exit if fully allocated
-    remaining -= allocate;
-    if (remaining <= 0) break;
-  }
-
-  // handle case where still remaining
-  if (remaining > 0) throw Error("Insufficient capacity to unstake - override with your own strategy");
-
-  return strategy;
-};
+import {
+  greedyStakeAllocationStrategy as defaultStakeAllocationStrategy,
+  greedyUnstakeAllocationStrategy as defaultUnstakeAllocationStrategy,
+} from "./allocationStrategies";
+import { ConsensusConfig, ConsensusState } from "./types";
 
 /**
  *
@@ -193,16 +129,19 @@ function prepareDummyTransaction(
 // assumes txns has either structure:
 // period 1 [appl call, appl call, ...]
 // period 2 [transfer, appl call, transfer, appl call, ...]
-function allocateResources(
+function getTxnsAfterResourceAllocation(
   consensusConfig: ConsensusConfig,
   consensusState: ConsensusState,
-  txns: Transaction[],
+  txnsToAllocateTo: Transaction[],
   additionalAddresses: Address[],
   period: number,
   senderAddr: string,
   params: SuggestedParams,
-) {
+): Transaction[] {
   const { xAlgoId } = consensusConfig;
+
+  // make copy of txns
+  const txns = txnsToAllocateTo.slice();
   const availableCalls = txns.length / 2;
 
   // add xALGO asset and proposers box
@@ -237,6 +176,8 @@ function allocateResources(
     // add proposer accounts
     txns[txnIndex].appAccounts = accounts.slice(i, i + 4);
   }
+
+  return txns;
 }
 
 /**
@@ -294,9 +235,7 @@ function prepareImmediateStakeTransactions(
     txn.group = undefined;
     return txn;
   });
-  allocateResources(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
-
-  return txns;
+  return getTxnsAfterResourceAllocation(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
 }
 
 /**
@@ -352,9 +291,7 @@ function prepareDelayedStakeTransactions(
     txn.group = undefined;
     return txn;
   });
-  allocateResources(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
-
-  return txns;
+  return getTxnsAfterResourceAllocation(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
 }
 
 /**
@@ -396,9 +333,15 @@ function prepareClaimDelayedStakeTransactions(
     txn.group = undefined;
     return txn;
   });
-  allocateResources(consensusConfig, consensusState, txns, [decodeAddress(receiverAddr)], 1, senderAddr, params);
-
-  return txns;
+  return getTxnsAfterResourceAllocation(
+    consensusConfig,
+    consensusState,
+    txns,
+    [decodeAddress(receiverAddr)],
+    1,
+    senderAddr,
+    params,
+  );
 }
 
 /**
@@ -455,24 +398,7 @@ function prepareUnstakeTransactions(
     txn.group = undefined;
     return txn;
   });
-  allocateResources(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
-
-  return txns;
-}
-
-function convertAlgoToXAlgoWhenImmediate(algoAmount: bigint, consensusState: ConsensusState): bigint {
-  const { algoBalance, xAlgoCirculatingSupply, premium } = consensusState;
-  return mulScale(mulScale(algoAmount, xAlgoCirculatingSupply, algoBalance), ONE_16_DP - premium, ONE_16_DP);
-}
-
-function convertAlgoToXAlgoWhenDelay(algoAmount: bigint, consensusState: ConsensusState): bigint {
-  const { algoBalance, xAlgoCirculatingSupply } = consensusState;
-  return mulScale(algoAmount, xAlgoCirculatingSupply, algoBalance);
-}
-
-function convertXAlgoToAlgo(xAlgoAmount: bigint, consensusState: ConsensusState): bigint {
-  const { algoBalance, xAlgoCirculatingSupply } = consensusState;
-  return mulScale(xAlgoAmount, algoBalance, xAlgoCirculatingSupply);
+  return getTxnsAfterResourceAllocation(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
 }
 
 export {
@@ -481,7 +407,4 @@ export {
   prepareDelayedStakeTransactions,
   prepareClaimDelayedStakeTransactions,
   prepareUnstakeTransactions,
-  convertAlgoToXAlgoWhenImmediate,
-  convertAlgoToXAlgoWhenDelay,
-  convertXAlgoToAlgo,
 };

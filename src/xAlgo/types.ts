@@ -25,6 +25,6 @@ interface ConsensusState {
   canDelayStake: boolean;
 }
 
-type AllocationStrategy = bigint[];
+type ProposerAllocation = bigint[];
 
-export { ConsensusConfig, ConsensusState, AllocationStrategy };
+export { ConsensusConfig, ConsensusState, ProposerAllocation };
