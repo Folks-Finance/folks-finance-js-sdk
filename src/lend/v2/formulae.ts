@@ -1,4 +1,3 @@
-import { unixTime } from "../../utils";
 import {
   divScale,
   divScaleRoundUp,
@@ -11,7 +10,8 @@ import {
   ONE_4_DP,
   SECONDS_IN_YEAR,
   sqrt,
-} from "./mathLib";
+} from "../../mathLib";
+import { unixTime } from "../../utils";
 
 /**
  * Calculates the dollar value of a given asset amount

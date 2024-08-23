@@ -6,7 +6,6 @@ export * from "./deposit";
 export * from "./depositStaking";
 export * from "./formulae";
 export * from "./loan";
-export * from "./mathLib";
 export * from "./opup";
 export * from "./oracle";
 export * from "./types";

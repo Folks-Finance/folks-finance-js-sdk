@@ -1,5 +1,5 @@
 import { LendingPool, LoanType, LPTokenProvider, OpUp, Oracle, Pool, ReserveAddress } from "../types";
-import { ONE_4_DP } from "../mathLib";
+import { ONE_4_DP } from "../../../mathLib";
 
 const MainnetPoolManagerAppId = 971350278;
 

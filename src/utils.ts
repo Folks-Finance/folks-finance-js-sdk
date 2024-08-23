@@ -8,7 +8,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
-import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
+import { Box, TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 
 const enc = new TextEncoder();
 
@@ -83,6 +83,16 @@ async function getAccountApplicationLocalState(
     currentRound: res["current-round"],
     localState: localState["key-value"],
   };
+}
+
+/**
+ * Wraps a call to Algorand client (algod/indexer) and returns box value
+ */
+async function getApplicationBox(client: Algodv2 | Indexer, appId: number, boxName: Uint8Array): Promise<Box> {
+  return await (client instanceof Algodv2
+    ? client.getApplicationBoxByName(appId, boxName)
+    : client.lookupApplicationBoxByIDandName(appId, boxName)
+  ).do();
 }
 
 /**
@@ -221,6 +231,7 @@ export {
   unixTime,
   getApplicationGlobalState,
   getAccountApplicationLocalState,
+  getApplicationBox,
   getAccountDetails,
   fromIntToBytes8Hex,
   fromIntToByteHex,

@@ -6,3 +6,5 @@ export * as lendV1 from "./lend/v1";
 export * from "./lend/v2";
 
 export * from "./xAlgo";
+
+export * from "./mathLib";

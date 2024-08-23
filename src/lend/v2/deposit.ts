@@ -11,6 +11,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
+import { compoundEveryHour, compoundEverySecond, mulScale, ONE_10_DP, ONE_16_DP, UINT64 } from "../../mathLib";
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
@@ -25,7 +26,6 @@ import {
 } from "../../utils";
 import { depositsABIContract, poolABIContract } from "./abiContracts";
 import { calcBorrowInterestIndex, calcDepositInterestIndex, calcWithdrawReturn } from "./formulae";
-import { compoundEveryHour, compoundEverySecond, mulScale, ONE_10_DP, ONE_16_DP, UINT64 } from "./mathLib";
 import { getOraclePrices } from "./oracle";
 import { UserDepositFullInfo, Oracle, Pool, PoolInfo, PoolManagerInfo, UserDepositInfo } from "./types";
 import { getEscrows } from "./utils";

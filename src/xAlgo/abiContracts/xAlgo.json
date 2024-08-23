@@ -2,19 +2,55 @@
   "name": "XAlgo",
   "methods": [
     {
-      "name": "mint",
+      "name": "immediate_mint",
       "args": [
         {
           "type": "pay",
           "name": "send_algo"
         },
         {
-          "type": "asset",
-          "name": "x_algo"
+          "type": "uint8",
+          "name": "proposer_index"
         },
         {
           "type": "uint64",
           "name": "min_received"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "delayed_mint",
+      "args": [
+        {
+          "type": "pay",
+          "name": "send_algo"
+        },
+        {
+          "type": "uint8",
+          "name": "proposer_index"
+        },
+        {
+          "type": "byte[2]",
+          "name": "nonce"
+        }
+      ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "claim_delayed_mint",
+      "args": [
+        {
+          "type": "address",
+          "name": "receiver"
+        },
+        {
+          "type": "byte[2]",
+          "name": "nonce"
         }
       ],
       "returns": {
@@ -29,14 +65,28 @@
           "name": "send_xalgo"
         },
         {
-          "type": "asset",
-          "name": "x_algo"
+          "type": "uint8",
+          "name": "proposer_index"
         },
         {
           "type": "uint64",
           "name": "min_received"
         }
       ],
+      "returns": {
+        "type": "void"
+      }
+    },
+    {
+      "name": "get_xalgo_rate",
+      "args": [],
+      "returns": {
+        "type": "(uint64,uint64,byte[])"
+      }
+    },
+    {
+      "name": "dummy",
+      "args": [],
       "returns": {
         "type": "void"
       }
