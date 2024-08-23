@@ -190,7 +190,7 @@ function getTxnsAfterResourceAllocation(
  * @param amount - amount of ALGO to send
  * @param minReceivedAmount - min amount of xALGO expected to receive
  * @param params - suggested params for the transactions with the fees overwritten
- * @param proposerAllocations - determines which proposers the ALGO received comes from
+ * @param proposerAllocations - determines which proposers the ALGO sent goes to
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] stake transactions
  */
@@ -247,7 +247,7 @@ function prepareImmediateStakeTransactions(
  * @param senderAddr - account address for the sender
  * @param amount - amount of ALGO to send
  * @param params - suggested params for the transactions with the fees overwritten
- * @param proposerAllocations - determines which proposers the ALGO received comes from
+ * @param proposerAllocations - determines which proposers the ALGO sent goes to
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] stake transactions
  */
