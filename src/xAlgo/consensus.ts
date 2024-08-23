@@ -142,7 +142,7 @@ function getTxnsAfterResourceAllocation(
 
   // make copy of txns
   const txns = txnsToAllocateTo.slice();
-  const availableCalls = txns.length / 2;
+  const availableCalls = txns.length / period;
 
   // add xALGO asset and proposers box
   txns[period - 1].appForeignAssets = [xAlgoId];
