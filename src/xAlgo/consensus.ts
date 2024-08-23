@@ -5,7 +5,8 @@ import {
   decodeAddress,
   encodeAddress,
   getApplicationAddress,
-  getMethodByName, makeEmptyTransactionSigner,
+  getMethodByName,
+  makeEmptyTransactionSigner,
   modelsv2,
   SuggestedParams,
   Transaction,
@@ -137,7 +138,7 @@ function getTxnsAfterResourceAllocation(
   senderAddr: string,
   params: SuggestedParams,
 ): Transaction[] {
-  const { xAlgoId } = consensusConfig;
+  const { appId, xAlgoId } = consensusConfig;
 
   // make copy of txns
   const txns = txnsToAllocateTo.slice();
@@ -145,7 +146,7 @@ function getTxnsAfterResourceAllocation(
 
   // add xALGO asset and proposers box
   txns[period - 1].appForeignAssets = [xAlgoId];
-  const box = { appIndex: xAlgoId, name: enc.encode("pr") };
+  const box = { appIndex: appId, name: enc.encode("pr") };
   const { boxes } = txns[period - 1];
   if (boxes) {
     boxes.push(box);
@@ -246,6 +247,7 @@ function prepareImmediateStakeTransactions(
  * @param senderAddr - account address for the sender
  * @param amount - amount of ALGO to send
  * @param params - suggested params for the transactions with the fees overwritten
+ * @param includeBoxMinBalancePayment - whether to include ALGO payment to app for box min balance
  * @param proposerAllocations - determines which proposers the ALGO sent goes to
  * @param note - optional note to distinguish who is the minter (must pass to be eligible for revenue share)
  * @returns Transaction[] stake transactions
@@ -256,6 +258,7 @@ function prepareDelayedStakeTransactions(
   senderAddr: string,
   amount: number | bigint,
   params: SuggestedParams,
+  includeBoxMinBalancePayment = true,
   proposerAllocations = defaultStakeAllocationStrategy(consensusState, amount),
   note?: Uint8Array,
 ): Transaction[] {
@@ -278,7 +281,7 @@ function prepareDelayedStakeTransactions(
       signer,
       appID: appId,
       method: getMethodByName(xAlgoABIContract.methods, "delayed_mint"),
-      methodArgs: [sendAlgo, proposerIndex],
+      methodArgs: [sendAlgo, proposerIndex, nonce],
       boxes: [{ appIndex: appId, name: boxName }],
       suggestedParams: { ...params, flatFee: true, fee: 2000 },
       note,
@@ -286,11 +289,18 @@ function prepareDelayedStakeTransactions(
   });
 
   // allocate resources, modifies txns in place
-  const txns = atc.buildGroup().map(({ txn }) => {
+  let txns = atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
     return txn;
   });
-  return getTxnsAfterResourceAllocation(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
+  txns = getTxnsAfterResourceAllocation(consensusConfig, consensusState, txns, [], 2, senderAddr, params);
+
+  // add box min balance payment if specified
+  if (includeBoxMinBalancePayment) {
+    const minBalance = BigInt(36100);
+    txns.unshift(transferAlgoOrAsset(0, senderAddr, getApplicationAddress(appId), minBalance, params));
+  }
+  return txns;
 }
 
 /**
