@@ -476,6 +476,7 @@ function convertXAlgoToAlgo(xAlgoAmount: bigint, consensusState: ConsensusState)
 }
 
 export {
+  prepareDummyTransaction,
   prepareImmediateStakeTransactions,
   prepareDelayedStakeTransactions,
   prepareClaimDelayedStakeTransactions,
