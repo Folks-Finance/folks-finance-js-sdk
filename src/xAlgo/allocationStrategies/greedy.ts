@@ -5,7 +5,7 @@ import { FIXED_CAPACITY_BUFFER, MAX_APPL_CALLS } from "./constants";
 
 const greedyStakeAllocationStrategy = (consensusState: ConsensusState, amount: number | bigint): ProposerAllocation => {
   const { proposersBalances, maxProposerBalance } = consensusState;
-  const strategy = new Array<bigint>(proposersBalances.length);
+  const allocation = new Array<bigint>(proposersBalances.length);
 
   // sort in ascending order
   const indexed = proposersBalances.map((proposer, index) => ({ ...proposer, index }));
@@ -13,13 +13,13 @@ const greedyStakeAllocationStrategy = (consensusState: ConsensusState, amount: n
 
   // allocate to proposers in greedy approach
   let remaining = BigInt(amount);
-  for (let i = 0; i < strategy.length && i < MAX_APPL_CALLS; i++) {
+  for (let i = 0; i < allocation.length && i < MAX_APPL_CALLS; i++) {
     const { algoBalance: proposerAlgoBalance, index: proposerIndex } = indexed[i];
 
     // under-approximate capacity to leave wiggle room
     const algoCapacity = maximum(maxProposerBalance - proposerAlgoBalance - FIXED_CAPACITY_BUFFER, BigInt(0));
     const allocate = minimum(remaining, algoCapacity);
-    strategy[proposerIndex] = allocate;
+    allocation[proposerIndex] = allocate;
 
     // exit if fully allocated
     remaining -= allocate;
@@ -29,7 +29,7 @@ const greedyStakeAllocationStrategy = (consensusState: ConsensusState, amount: n
   // handle case where still remaining
   if (remaining > 0) throw Error("Insufficient capacity to stake");
 
-  return strategy;
+  return allocation;
 };
 
 const greedyUnstakeAllocationStrategy = (
@@ -37,7 +37,7 @@ const greedyUnstakeAllocationStrategy = (
   amount: number | bigint,
 ): ProposerAllocation => {
   const { proposersBalances, minProposerBalance } = consensusState;
-  const strategy = new Array<bigint>(proposersBalances.length);
+  const allocation = new Array<bigint>(proposersBalances.length);
 
   // sort in descending order
   const indexed = proposersBalances.map((proposer, index) => ({ ...proposer, index }));
@@ -45,14 +45,14 @@ const greedyUnstakeAllocationStrategy = (
 
   // allocate to proposers in greedy approach
   let remaining = BigInt(amount);
-  for (let i = 0; i < strategy.length && i < MAX_APPL_CALLS; i++) {
+  for (let i = 0; i < allocation.length && i < MAX_APPL_CALLS; i++) {
     const { algoBalance: proposerAlgoBalance, index: proposerIndex } = indexed[i];
 
     // under-approximate capacity to leave wiggle room
     const algoCapacity = maximum(proposerAlgoBalance - minProposerBalance - FIXED_CAPACITY_BUFFER, BigInt(0));
     const xAlgoCapacity = convertAlgoToXAlgoWhenDelay(algoCapacity, consensusState);
     const allocate = minimum(remaining, xAlgoCapacity);
-    strategy[proposerIndex] = allocate;
+    allocation[proposerIndex] = allocate;
 
     // exit if fully allocated
     remaining -= allocate;
@@ -60,9 +60,9 @@ const greedyUnstakeAllocationStrategy = (
   }
 
   // handle case where still remaining
-  if (remaining > 0) throw Error("Insufficient capacity to unstake - override with your own strategy");
+  if (remaining > 0) throw Error("Insufficient capacity to unstake - override with your own allocation");
 
-  return strategy;
+  return allocation;
 };
 
 export { greedyStakeAllocationStrategy, greedyUnstakeAllocationStrategy };
