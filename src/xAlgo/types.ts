@@ -4,7 +4,7 @@ interface ConsensusConfig {
 }
 
 interface ConsensusState {
-  currentRound?: number; // round the data was read at
+  currentRound: number; // round the data was read at
   algoBalance: bigint;
   xAlgoCirculatingSupply: bigint;
   proposersBalances: {

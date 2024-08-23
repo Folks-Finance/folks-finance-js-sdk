@@ -5,7 +5,7 @@ import {
   decodeAddress,
   encodeAddress,
   getApplicationAddress,
-  getMethodByName,
+  getMethodByName, makeEmptyTransactionSigner,
   modelsv2,
   SuggestedParams,
   Transaction,
@@ -37,7 +37,7 @@ import { ConsensusConfig, ConsensusState } from "./types";
  * @returns ConsensusState current state of the consensus application
  */
 async function getConsensusState(algodClient: Algodv2, consensusConfig: ConsensusConfig): Promise<ConsensusState> {
-  const [{ currentRound, globalState: state }, { value: boxValue }, params] = await Promise.all([
+  const [{ globalState: state }, { round, value: boxValue }, params] = await Promise.all([
     getApplicationGlobalState(algodClient, consensusConfig.appId),
     await getApplicationBox(algodClient, consensusConfig.appId, enc.encode("pr")),
     await algodClient.getTransactionParams().do(),
@@ -48,7 +48,7 @@ async function getConsensusState(algodClient: Algodv2, consensusConfig: Consensu
   const atc = new AtomicTransactionComposer();
   atc.addMethodCall({
     sender: "Q5Q5FC5PTYQIUX5PGNTEW22UJHJHVVUEMMWV2LSG6MGT33YQ54ST7FEIGA",
-    signer,
+    signer: makeEmptyTransactionSigner(),
     appID: consensusConfig.appId,
     method: getMethodByName(xAlgoABIContract.methods, "get_xalgo_rate"),
     methodArgs: [],
@@ -59,7 +59,6 @@ async function getConsensusState(algodClient: Algodv2, consensusConfig: Consensu
     allowEmptySignatures: true,
     allowUnnamedResources: true,
     extraOpcodeBudget: 70000,
-    fixSigners: true,
   });
   const { methodResults } = await atc.simulate(algodClient, simReq);
   const { returnValue } = methodResults[0];
@@ -86,7 +85,7 @@ async function getConsensusState(algodClient: Algodv2, consensusConfig: Consensu
   const canDelayStake = Boolean(getParsedValueFromState(state, "can_delay_mint"));
 
   return {
-    currentRound,
+    currentRound: Number(round),
     algoBalance,
     xAlgoCirculatingSupply,
     proposersBalances,
