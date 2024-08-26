@@ -162,7 +162,7 @@ function getTxnsAfterResourceAllocation(
   const MAX_FOREIGN_ACCOUNT_PER_TXN = 4;
   for (let i = 0; i < accounts.length; i += MAX_FOREIGN_ACCOUNT_PER_TXN) {
     // which txn to use
-    const callNum = (i % MAX_FOREIGN_ACCOUNT_PER_TXN) + 1;
+    const callNum = Math.floor(i / MAX_FOREIGN_ACCOUNT_PER_TXN) + 1;
     let txnIndex: number;
 
     // check if we need to add dummy call
