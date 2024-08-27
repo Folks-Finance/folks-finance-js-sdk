@@ -3,7 +3,10 @@ import { ProposerAllocations, ConsensusState } from "../types";
 import { convertAlgoToXAlgoWhenDelay } from "../formulae";
 import { FIXED_CAPACITY_BUFFER, MAX_APPL_CALLS } from "./constants";
 
-const greedyStakeAllocationStrategy = (consensusState: ConsensusState, amount: number | bigint): ProposerAllocations => {
+const greedyStakeAllocationStrategy = (
+  consensusState: ConsensusState,
+  amount: number | bigint,
+): ProposerAllocations => {
   const { proposersBalances, maxProposerBalance } = consensusState;
   const allocation = new Array<bigint>(proposersBalances.length);
 

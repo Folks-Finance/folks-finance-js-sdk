@@ -3,8 +3,8 @@ import {
   decodeAddress,
   getApplicationAddress,
   Indexer,
-  makeAssetTransferTxnWithSuggestedParams,
-  makePaymentTxnWithSuggestedParams,
+  makeAssetTransferTxnWithSuggestedParamsFromObject,
+  makePaymentTxnWithSuggestedParamsFromObject,
   SuggestedParams,
   Transaction,
 } from "algosdk";
@@ -23,8 +23,14 @@ function transferAlgoOrAsset(
   params: SuggestedParams,
 ): Transaction {
   return assetId !== 0
-    ? makeAssetTransferTxnWithSuggestedParams(from, to, undefined, undefined, amount, undefined, assetId, params)
-    : makePaymentTxnWithSuggestedParams(from, to, amount, undefined, undefined, params);
+    ? makeAssetTransferTxnWithSuggestedParamsFromObject({
+        from,
+        to,
+        amount,
+        suggestedParams: params,
+        assetIndex: assetId,
+      })
+    : makePaymentTxnWithSuggestedParamsFromObject({ from, to, amount, suggestedParams: params });
 }
 
 const signer = async () => [];
@@ -211,7 +217,13 @@ function addEscrowNoteTransaction(
   params: SuggestedParams,
 ): Transaction {
   const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
-  return makePaymentTxnWithSuggestedParams(userAddr, getApplicationAddress(appId), 0, undefined, note, params);
+  return makePaymentTxnWithSuggestedParamsFromObject({
+    from: userAddr,
+    to: getApplicationAddress(appId),
+    amount: 0,
+    note,
+    suggestedParams: params,
+  });
 }
 
 function removeEscrowNoteTransaction(
@@ -221,7 +233,14 @@ function removeEscrowNoteTransaction(
   params: SuggestedParams,
 ): Transaction {
   const note = Uint8Array.from([...enc.encode(notePrefix), ...decodeAddress(escrowAddr).publicKey]);
-  return makePaymentTxnWithSuggestedParams(escrowAddr, userAddr, 0, userAddr, note, params);
+  return makePaymentTxnWithSuggestedParamsFromObject({
+    from: escrowAddr,
+    to: userAddr,
+    amount: 0,
+    closeRemainderTo: userAddr,
+    note,
+    suggestedParams: params,
+  });
 }
 
 export {
