@@ -11,6 +11,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
+import { maximum } from "../../mathLib";
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
@@ -23,7 +24,6 @@ import {
   unixTime,
 } from "../../utils";
 import { depositStakingABIContract } from "./abiContracts";
-import { maximum } from "./mathLib";
 import { DepositStakingInfo, Pool, UserDepositStakingLocalState } from "./types";
 import { depositStakingLocalState, depositStakingProgramsInfo, getEscrows, userDepositStakingInfo } from "./utils";
 

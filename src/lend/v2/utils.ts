@@ -1,5 +1,6 @@
 import { encodeAddress, getApplicationAddress, Indexer } from "algosdk";
 import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
+import { compoundEverySecond, maximum, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "../../mathLib";
 import { enc, fromIntToByteHex, getParsedValueFromState, parseUint64s, unixTime } from "../../utils";
 import {
   calcBorrowAssetLoanValue,
@@ -11,7 +12,6 @@ import {
   calcLTVRatio,
   calcWithdrawReturn,
 } from "./formulae";
-import { compoundEverySecond, maximum, mulScale, ONE_10_DP, ONE_16_DP, ONE_4_DP, SECONDS_IN_YEAR } from "./mathLib";
 import {
   DepositStakingInfo,
   DepositStakingProgramInfo,

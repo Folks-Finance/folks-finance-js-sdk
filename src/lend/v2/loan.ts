@@ -11,6 +11,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
+import { divScale, minimum, mulScale, ONE_10_DP, ONE_4_DP } from "../../mathLib";
 import {
   addEscrowNoteTransaction,
   fromIntToByteHex,
@@ -24,7 +25,6 @@ import {
 import { loanABIContract, poolABIContract } from "./abiContracts";
 import { retrievePoolManagerInfo } from "./deposit";
 import { calcBorrowUtilisationRatio, calcDepositReturn, calcFlashLoanRepayment } from "./formulae";
-import { divScale, minimum, mulScale, ONE_10_DP, ONE_4_DP } from "./mathLib";
 import { getOraclePrices, prepareRefreshPricesInOracleAdapter } from "./oracle";
 import {
   LoanInfo,

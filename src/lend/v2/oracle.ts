@@ -9,6 +9,7 @@ import {
   SuggestedParams,
   Transaction,
 } from "algosdk";
+import { minimum } from "../../mathLib";
 import {
   fromIntToBytes8Hex,
   getAccountApplicationLocalState,
@@ -18,7 +19,6 @@ import {
 } from "../../utils";
 import { lpTokenOracleABIContract, oracleAdapterABIContract } from "./abiContracts";
 import { calcLPPrice } from "./formulae";
-import { minimum } from "./mathLib";
 import { LPToken, LPTokenProvider, Oracle, OraclePrice, OraclePrices, PactLPToken, TinymanLPToken } from "./types";
 import { TealKeyValue } from "algosdk/dist/types/client/v2/algod/models/types";
 
