@@ -230,7 +230,7 @@ function prepareImmediateStakeTransactions(
     });
   });
 
-  // allocate resources, modifies txns in place
+  // allocate resources
   const txns = atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
     return txn;
@@ -288,7 +288,7 @@ function prepareDelayedStakeTransactions(
     });
   });
 
-  // allocate resources, modifies txns in place
+  // allocate resources
   let txns = atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
     return txn;
@@ -326,7 +326,7 @@ function prepareClaimDelayedStakeTransactions(
   const { appId } = consensusConfig;
 
   const atc = new AtomicTransactionComposer();
-  const boxName = Uint8Array.from([...enc.encode("dm"), ...decodeAddress(senderAddr).publicKey, ...nonce]);
+  const boxName = Uint8Array.from([...enc.encode("dm"), ...decodeAddress(receiverAddr).publicKey, ...nonce]);
   atc.addMethodCall({
     sender: senderAddr,
     signer,
@@ -337,7 +337,7 @@ function prepareClaimDelayedStakeTransactions(
     suggestedParams: { ...params, flatFee: true, fee: 3000 },
   });
 
-  // allocate resources, modifies txns in place
+  // allocate resources
   const txns = atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
     return txn;
@@ -402,7 +402,7 @@ function prepareUnstakeTransactions(
     });
   });
 
-  // allocate resources, modifies txns in place
+  // allocate resources
   const txns = atc.buildGroup().map(({ txn }) => {
     txn.group = undefined;
     return txn;
